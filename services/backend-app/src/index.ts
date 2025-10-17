@@ -1,28 +1,25 @@
 // src/index.ts
-import express from "express";
-import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "./swagger";
+import { prisma } from '@asetflow/database/';
+import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 
-// Impor prisma client dari shared package
+import { swaggerSpec } from './swagger';
 
 const app = express();
 const port = 3001;
 
 app.use(express.json());
 
-import { prisma } from "@asetflow/database/"; // Sesuaikan dengan path package database
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Endpoint untuk dokumentasi Swagger
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-app.get("/users", async (req, res) => {
+app.get('/users', async (req, res) => {
   const users = await prisma.user.findMany();
   res.json(users);
 });
 
-app.post("/products", async (req, res) => {
+app.post('/products', async (req, res) => {
   res.status(201).json({
-    message: "Product created successfully",
+    message: 'Product created successfully',
     product: req.body,
   });
 });
