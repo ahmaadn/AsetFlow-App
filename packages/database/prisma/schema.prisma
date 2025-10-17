@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  passwordHash String    @map("password_hash")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+  folder       Folder[]
+  asset        Asset[]
+
+  @@map("users")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  folder    FolderTag[]
+  asset     AssetTag[]
+
+  @@map("tags")
+}
+
+model Folder {
+  id        String   @id @default(uuid())
+  ownerId   String   @map("owner_id")
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  asset     Asset[]
+  tags      FolderTag[]
+
+  @@map("folders")
+}
+
+model FolderTag {
+  folderId String @map("folder_id")
+  tagId    String @map("tag_id")
+
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([folderId, tagId])
+  @@map("folder_tags")
+}
+
+model Asset {
+  id              String           @id @default(uuid())
+  folderId        String           @map("folder_id")
+  ownerId         String           @map("owner_id")
+  originalName    String           @map("original_name")
+  slug            String           @unique
+  fileSizeBytes   BigInt           @map("file_size_bytes")
+  mimeType        String           @map("mime_type")
+  assetType       String           @map("asset_type")
+  url             String
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  folder          Folder           @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  owner           User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  cloudinaryAsset CloudinaryAsset?
+  tags            AssetTag[]
+
+  @@map("assets")
+}
+
+
+model AssetTag {
+  assetId String @map("asset_id")
+  tagId   String @map("tag_id")
+
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  tag     Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([assetId, tagId])
+  @@map("asset_tags")
+}
+
+model CloudinaryAsset {
+  id              String   @id @default(uuid())
+  publicId        String   @unique @map("public_id")
+  version         Int
+  signature       String
+  width           Int
+  height          Int
+  format          String
+  resourceType    String   @map("resource_type")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  bytes           BigInt
+  type            String
+  url             String
+  secureUrl       String   @map("secure_url")
+  folder          String?
+  accessMode      String   @map("access_mode")
+  originalAsset   Asset?   @relation(fields: [originalAssetId], references: [id], onDelete: SetNull)
+  originalAssetId String?  @unique @map("original_asset_id")
+
+  @@map("cloudinary_assets")
+}
