@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "pnpm --filter=@asetflow/database run db:generate",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "db:generate": "turbo run db:generate --filter=@asetflow/database",
