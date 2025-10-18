@@ -1,21 +1,38 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["tsconfig.json"],
-  "globalEnv": ["DATABASE_URL"],
   "tasks": {
     "build": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**"],
+      "env": ["DATABASE_URL"]
+    },
+    "start": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true,
+      "env": ["DATABASE_URL"]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["DATABASE_URL"]
     },
     "db:generate": {
       "cache": false
     },
     "db:migrate": {
+      "inputs": [".env"],
+      "env": ["DATABASE_URL"],
+      "cache": false
+    },
+    "db:migrate:deploy": {
+      "inputs": [".env"],
+      "env": ["DATABASE_URL"],
       "cache": false
     }
-  }
+  },
+  "ui": "tui"
 }
