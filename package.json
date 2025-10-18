@@ -7,6 +7,9 @@
   "scripts": {
     "postinstall": "pnpm --filter=@asetflow/database run db:generate",
     "dev": "turbo run dev",
+    "dev:web": "pnpm --filter=@asetflow/web run dev",
+    "dev:backend": "pnpm --filter=@asetflow/backend-app run dev",
+    "dev:service-public": "pnpm --filter=@asetflow/public-service run dev",
     "build": "turbo run build",
     "start": "turbo run start",
     "db:generate": "turbo run db:generate --filter=@asetflow/database",
@@ -14,7 +17,9 @@
     "db:migrate:deploy": "dotenv -e packages/database/.env.prod -- turbo run db:migrate:deploy --filter=@asetflow/database",
     "format": "prettier --write \"**/*.{ts,js,json,md}\"",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "lint:web": "pnpm --filter=@asetflow/web run lint",
+    "lint:web:fix": "pnpm --filter=@asetflow/web run lint:fix"
   },
   "keywords": [],
   "author": "",
