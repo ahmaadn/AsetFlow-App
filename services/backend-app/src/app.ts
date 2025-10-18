@@ -19,3 +19,5 @@ app.use((_req, res: Response) => {
     message: 'Not Found',
   });
 });
+
+export default app;
