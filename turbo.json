@@ -6,19 +6,19 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
-      "env": ["DATABASE_URL"]
+      "env": ["DATABASE_URL", "NODE_ENV"]
     },
     "start": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "dependsOn": ["build"],
       "cache": false,
       "persistent": true,
-      "env": ["DATABASE_URL"]
+      "env": ["DATABASE_URL", "NODE_ENV"]
     },
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["DATABASE_URL"]
+      "env": ["DATABASE_URL", "NODE_ENV"]
     },
     "db:generate": {
       "cache": false
