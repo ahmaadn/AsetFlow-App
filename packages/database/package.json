@@ -2,7 +2,7 @@
   "name": "@asetflow/database",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
