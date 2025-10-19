@@ -21,8 +21,8 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
-  folder       Folder[]
-  asset        Asset[]
+  folders      Folder[]
+  assets       Asset[]
 
   @@map("users")
 }
@@ -32,8 +32,8 @@ model Tag {
   name      String      @unique
   createdAt DateTime    @default(now()) @map("created_at")
   updatedAt DateTime    @updatedAt @map("updated_at")
-  folder    FolderTag[]
-  asset     AssetTag[]
+  folders   FolderTag[]
+  assets    AssetTag[]
 
   @@map("tags")
 }
@@ -46,7 +46,7 @@ model Folder {
   createdAt DateTime    @default(now()) @map("created_at")
   updatedAt DateTime    @updatedAt @map("updated_at")
   owner     User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  asset     Asset[]
+  assets    Asset[]
   tags      FolderTag[]
 
   @@map("folders")
@@ -66,7 +66,7 @@ model FolderTag {
 model Asset {
   id              String           @id @default(uuid())
   folderId        String           @map("folder_id")
-  ownerId         Int           @map("owner_id")
+  ownerId         Int              @map("owner_id")
   originalName    String           @map("original_name")
   slug            String           @unique
   fileSizeBytes   BigInt           @map("file_size_bytes")
