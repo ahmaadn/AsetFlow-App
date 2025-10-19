@@ -31,7 +31,9 @@ const format = winston.format.combine(
     ? winston.format.colorize({ all: true })
     : winston.format.uncolorize(),
   winston.format.align(),
-  winston.format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`)
+  winston.format.printf(
+    (info) => `[${info.timestamp}] ${info.level}: ${info.message}`
+  )
 );
 
 /**
@@ -41,18 +43,21 @@ const transports = [
   // Selalu tampilkan log di console
   new winston.transports.Console(),
 
+  // Menonaktifkan penyimpanan log ke file untuk saat ini dikarenakan vercel tidak
+  // mendukung penyimpanan file secara persisten
+
   // Simpan log error ke file jika di production
-  new winston.transports.File({
-    filename: 'logs/error.log',
-    level: 'error',
-    format: winston.format.combine(format, winston.format.uncolorize()),
-  }),
+  // new winston.transports.File({
+  //   filename: 'logs/error.log',
+  //   level: 'error',
+  //   format: winston.format.combine(format, winston.format.uncolorize()),
+  // }),
 
   // Simpan semua log ke file lain jika di production
-  new winston.transports.File({
-    filename: 'logs/all.log',
-    format: winston.format.combine(format, winston.format.uncolorize()),
-  }),
+  // new winston.transports.File({
+  //   filename: 'logs/all.log',
+  //   format: winston.format.combine(format, winston.format.uncolorize()),
+  // }),
 ];
 
 /**
