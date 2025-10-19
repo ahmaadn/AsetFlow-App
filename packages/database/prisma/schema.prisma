@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid())
+  id           Int       @id @default(autoincrement())
   email        String    @unique
   name         String
   passwordHash String    @map("password_hash")
@@ -40,7 +40,7 @@ model Tag {
 
 model Folder {
   id        String      @id @default(uuid())
-  ownerId   String      @map("owner_id")
+  ownerId   Int         @map("owner_id")
   name      String
   slug      String      @unique
   createdAt DateTime    @default(now()) @map("created_at")
@@ -66,7 +66,7 @@ model FolderTag {
 model Asset {
   id              String           @id @default(uuid())
   folderId        String           @map("folder_id")
-  ownerId         String           @map("owner_id")
+  ownerId         Int           @map("owner_id")
   originalName    String           @map("original_name")
   slug            String           @unique
   fileSizeBytes   BigInt           @map("file_size_bytes")

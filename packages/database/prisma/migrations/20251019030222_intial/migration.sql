@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "users" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "password_hash" TEXT NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE "tags" (
 -- CreateTable
 CREATE TABLE "folders" (
     "id" TEXT NOT NULL,
-    "owner_id" TEXT NOT NULL,
+    "owner_id" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -45,7 +45,7 @@ CREATE TABLE "folder_tags" (
 CREATE TABLE "assets" (
     "id" TEXT NOT NULL,
     "folder_id" TEXT NOT NULL,
-    "owner_id" TEXT NOT NULL,
+    "owner_id" INTEGER NOT NULL,
     "original_name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "file_size_bytes" BIGINT NOT NULL,

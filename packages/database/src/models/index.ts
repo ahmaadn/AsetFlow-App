@@ -1,5 +1,5 @@
 export interface UserModel {
-  id: string;
+  id: number;
   name: string;
   email: string;
   passwordHash: string;
@@ -17,7 +17,7 @@ export interface TagModel {
 
 export interface FolderModel {
   id: string;
-  ownerId: string;
+  ownerId: number;
   name: string;
   slug: string;
   createdAt: Date;
@@ -27,7 +27,7 @@ export interface FolderModel {
 export interface AssetModel {
   id: string;
   folderId: string;
-  ownerId: string;
+  ownerId: number;
   originalName: string;
   slug: string;
   fileSizeBytes: bigint;
