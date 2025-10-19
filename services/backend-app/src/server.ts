@@ -30,7 +30,7 @@ import { app } from './app';
 if (process.env.NODE_ENV === 'development') {
   app.listen(PORT, () => {
     console.info(`Server is running on http://localhost:${PORT}`);
-    console.info(`Swagger docs available at http://localhost:${PORT}/docs`);
+    console.info(`Swagger docs available at http://localhost:${PORT}/api-docs`);
   });
 }
 
