@@ -3,7 +3,7 @@ import { Router } from 'express';
 import * as FolderController from '../controllers/folder.controller';
 import { protect } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validation.middleware';
-import { getFoldersSchema } from '../schemas/folder.schema';
+import { createFolderSchema, getFoldersSchema } from '../schemas/folder.schema';
 
 const router = Router();
 
@@ -52,6 +52,44 @@ router.get(
   protect,
   validate(getFoldersSchema),
   FolderController.getAllFolder
+);
+
+/**
+ * @swagger
+ * /v1/folder
+ *  post:
+ *    summary: Create a Folder
+ *    tags: [folder]
+ *    security:
+ *      - bearerAuth: []
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Designs"
+ *               parentId:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "60b7c0f2e1d3c8a1f0a1b2c3"
+ *               description:
+ *                 type: string
+ *                 example: "Folder for design assets"
+ *    responses:
+ *      201:
+ *        description: Folder created successfully
+ */
+router.post(
+  '/',
+  protect,
+  validate(createFolderSchema),
+  FolderController.createFolder
 );
 
 export default router;

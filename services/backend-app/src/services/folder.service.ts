@@ -38,10 +38,7 @@ export const getAllFolders = async (
   // Mapping ke response type
   return {
     items: folders.map((folder) => ({
-      id: folder.id,
-      ownerId: folder.ownerId,
-      name: folder.name,
-      slug: folder.slug,
+      ...folder,
       createdAt: folder.createdAt.toISOString(),
       updatedAt: folder.updatedAt.toISOString(),
       assetCount: folder._count.assets,
@@ -50,5 +47,38 @@ export const getAllFolders = async (
     total: folders.length,
     page,
     per_page,
+  };
+};
+
+/**
+ * Membuat folder baru
+ * @param user Pemilik folder
+ * @param data Data folder yang akan dibuat
+ * @returns Folder yang telah dibuat
+ */
+export const createFolder = async (
+  user: UserModel,
+  data: { name: string; slug?: string }
+): Promise<FolderDetailResponse> => {
+  let slug = data.slug;
+  if (typeof data.slug !== 'string') {
+    // Buat slug dari nama dengan mengganti spasi menjadi '-'
+    slug = data.name.trim().toLowerCase().replace(/\s+/g, '-');
+  } else {
+    slug = data.slug.trim().toLowerCase();
+  }
+
+  const newFolder = await FolderRepository.create({
+    name: data.name,
+    slug,
+    ownerId: user.id,
+  });
+
+  return {
+    ...newFolder,
+    createdAt: newFolder.createdAt.toISOString(),
+    updatedAt: newFolder.updatedAt.toISOString(),
+    assetCount: 0,
+    tags: [],
   };
 };

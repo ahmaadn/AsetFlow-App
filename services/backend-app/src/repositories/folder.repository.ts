@@ -39,3 +39,18 @@ export const getByFilter = async (options: {
     },
   });
 };
+
+/**
+ * Membuat folder baru.
+ * @param data Data folder baru
+ * @returns Folder yang dibuat
+ */
+export const create = async (data: {
+  name: string;
+  ownerId: number;
+  slug: string;
+}): Promise<FolderModel> => {
+  return await prisma.folder.create({
+    data,
+  });
+};
