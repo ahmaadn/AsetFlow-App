@@ -15,14 +15,14 @@ const swaggerDefinition: SwaggerDefinition = {
   host: 'localhost:8000',
   basePath: '/v1',
   components: {
-    schemas: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
       },
+    },
+    schemas: {
       ValidationError: {
         type: 'object',
         properties: {
@@ -115,7 +115,7 @@ const swaggerDefinition: SwaggerDefinition = {
 };
 
 const options: Options = {
-  swaggerDefinition,
+  definition: swaggerDefinition,
   apis: ['./src/routes/**/*.routes.ts'],
 };
 

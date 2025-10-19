@@ -14,7 +14,7 @@ const router = Router();
  *     tags:
  *       - User
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved user profile
