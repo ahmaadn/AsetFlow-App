@@ -26,11 +26,12 @@ const PORT = process.env.PORT || 3000;
 
 // Import app setelah mengatur dotenv
 import { app } from './app';
+import logger from './utils/logger';
 
 if (process.env.NODE_ENV === 'development') {
   app.listen(PORT, () => {
-    console.info(`Server is running on http://localhost:${PORT}`);
-    console.info(`Swagger docs available at http://localhost:${PORT}/api-docs`);
+    logger.info(`Server is running on http://localhost:${PORT}`);
+    logger.info(`Swagger docs available at http://localhost:${PORT}/docs`);
   });
 }
 
