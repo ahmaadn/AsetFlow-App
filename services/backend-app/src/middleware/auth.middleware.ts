@@ -30,11 +30,12 @@ export const protect = async (
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      email: string;
       sub: string;
     };
 
     const currentUser = await prisma.user.findUnique({
-      where: { id: decoded.sub },
+      where: { email: decoded.email },
     });
 
     if (!currentUser) {
