@@ -16,6 +16,13 @@ const swaggerDefinition: SwaggerDefinition = {
   basePath: '/v1',
   components: {
     schemas: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
       ValidationError: {
         type: 'object',
         properties: {
