@@ -5,35 +5,25 @@
   "author": "Your Name",
   "license": "ISC",
   "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "types": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "scripts": {
-    "clean": "rimraf dist",
-    "build:cjs": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=dist/cjs/index.js --external:zod",
-    "build:esm": "esbuild src/index.ts --bundle --platform=neutral --format=esm --outfile=dist/esm/index.js --external:zod",
-    "build:types": "tsc -p tsconfig.json",
-    "build": "npm run build:cjs && npm run build:esm && npm run build:types",
-    "watch:cjs": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=dist/cjs/index.js --watch",
-    "watch:esm": "esbuild src/index.ts --bundle --platform=neutral --format=esm --outfile=dist/esm/index.js --watch",
-    "watch:types": "tsc -p tsconfig.json --watch",
-    "dev": "npm run clean && mkdirp dist/cjs && mkdirp dist/esm && concurrently \"npm:watch:cjs\" \"npm:watch:esm\" \"npm:watch:types\""
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --clean --watch"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
-    "esbuild": "^0.25.11",
-    "mkdirp": "^3.0.1",
-    "rimraf": "^6.0.1",
+    "tsup": "^8.5.0",
     "typescript": "^5.9.3",
     "zod": "^4.1.12"
   },

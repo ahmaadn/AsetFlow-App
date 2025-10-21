@@ -1,6 +1,19 @@
 <script setup lang="ts">
+import { loginSchema } from '@asetflow/validators';
+
 definePageMeta({
   layout: 'auth',
+});
+
+const { values, errors, handleSubmit } = useForm({
+  initialValues: {
+    email: '',
+    password: '',
+  },
+  validationSchema: loginSchema,
+  onSubmit: async (values) => {
+    window.alert(`Logged in as: ${values.email}`);
+  },
 });
 </script>
 
@@ -13,29 +26,44 @@ definePageMeta({
     </div>
     <form
       class="space-y-12 p-6 sm:p-8 w-full bg-base-100 shadow-lg rounded-lg border border-base-300"
+      @submit="handleSubmit"
     >
       <div class="space-y-4">
         <div>
           <fieldset class="fieldset w-full">
             <legend class="fieldset-legend text-base">Email</legend>
             <input
-              type="email"
+              v-model="values.email"
+              type="text"
               class="input w-full"
               placeholder="leroy@jenkins.com"
+              name="email1"
             />
+            <p v-if="errors.email" class="text-sm text-red-500">
+              {{ errors.email }}
+            </p>
           </fieldset>
         </div>
         <div>
           <fieldset class="fieldset w-full">
             <legend class="fieldset-legend text-base">Password</legend>
-            <input type="password" class="input w-full" placeholder="*******" />
+            <input
+              v-model="values.password"
+              type="password"
+              class="input w-full"
+              placeholder="*******"
+              name="password"
+            />
+            <p v-if="errors.password" class="text-sm text-red-500">
+              {{ errors.password }}
+            </p>
           </fieldset>
         </div>
       </div>
       <div class="space-y-2">
         <div>
           <button
-            type="button"
+            type="submit"
             class="btn btn-primary btn-block btn-soft border border-primary border-dashed"
           >
             Sign in

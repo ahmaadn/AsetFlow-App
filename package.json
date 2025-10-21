@@ -10,6 +10,7 @@
     "dev:web": "pnpm --filter=@asetflow/web run dev",
     "dev:backend": "pnpm --filter=@asetflow/backend-app run dev",
     "dev:service-public": "pnpm --filter=@asetflow/public-service run dev",
+    "dev:validators": "pnpm --filter=@asetflow/validators run dev",
     "build": "turbo run build",
     "start": "turbo run start",
     "db:generate": "turbo run db:generate --filter=@asetflow/database",

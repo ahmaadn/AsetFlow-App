@@ -1,9 +1,9 @@
+import { httpCreateFolder, httpFoldersQuery } from '@asetflow/validators';
 import { Router } from 'express';
 
 import * as FolderController from '../controllers/folder.controller';
 import { protect } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validation.middleware';
-import { createFolderSchema, getFoldersSchema } from '../schemas/folder.schema';
 
 const router = Router();
 
@@ -50,7 +50,7 @@ const router = Router();
 router.get(
   '/',
   protect,
-  validate(getFoldersSchema),
+  validate(httpFoldersQuery),
   FolderController.getAllFolder
 );
 
@@ -88,7 +88,7 @@ router.get(
 router.post(
   '/',
   protect,
-  validate(createFolderSchema),
+  validate(httpCreateFolder),
   FolderController.createFolder
 );
 

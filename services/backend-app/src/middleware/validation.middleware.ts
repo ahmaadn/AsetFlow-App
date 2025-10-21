@@ -1,9 +1,8 @@
+import { formatZodErrors } from '@asetflow/validators';
 import { Request, Response, NextFunction } from 'express';
 import z, { ZodError } from 'zod';
 
 import { BadRequestError } from '../utils/api-error';
-import { formatZodErrors } from '../utils/formatters';
-
 /**
  * Validasi data request menggunakan schema Zod.
  * @param schema  Schema Zod untuk validasi.

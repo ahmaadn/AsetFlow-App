@@ -1,8 +1,11 @@
+import {
+  httpLoginValidation,
+  httpRegisterValidation,
+} from '@asetflow/validators';
 import { Router } from 'express';
 
 import * as authController from '../controllers/auth.controller';
 import { validate } from '../middleware/validation.middleware';
-import { registerSchema } from '../schemas/auth.schema';
 
 const router = Router();
 
@@ -33,7 +36,11 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ApiError'
  */
-router.post('/register', validate(registerSchema), authController.register);
+router.post(
+  '/register',
+  validate(httpRegisterValidation),
+  authController.register
+);
 
 /**
  * @swagger
@@ -62,6 +69,6 @@ router.post('/register', validate(registerSchema), authController.register);
  *            schema:
  *              $ref: '#/components/schemas/ApiError'
  */
-router.post('/login', authController.login);
+router.post('/login', validate(httpLoginValidation), authController.login);
 
 export default router;
