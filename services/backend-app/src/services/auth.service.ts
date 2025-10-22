@@ -1,3 +1,4 @@
+import { AuthTokens } from '@asetflow/shared-types';
 import * as jwt from 'jsonwebtoken';
 
 import * as userRepository from '../repositories/user.repository';
@@ -61,7 +62,7 @@ export const createUser = async (data: {
 export const login = async (data: {
   email: string;
   password: string;
-}): Promise<{ accessToken: string; tokenType: string }> => {
+}): Promise<AuthTokens> => {
   logger.info(`User login attempt with email: ${data.email}`);
 
   // cek apakah email valid
