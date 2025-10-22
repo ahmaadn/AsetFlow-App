@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { loginSchema } from '@asetflow/validators';
+import type { AuthTokens } from '@asetflow/shared-types';
 
 definePageMeta({
   layout: 'auth',
 });
+
+const auth = useAuthStore();
+const { loading, execute } = useApiState<AuthTokens>('/auth/login');
 
 const { values, errors, handleSubmit } = useForm({
   initialValues: {
@@ -12,7 +16,32 @@ const { values, errors, handleSubmit } = useForm({
   },
   validationSchema: loginSchema,
   onSubmit: async (values) => {
-    window.alert(`Logged in as: ${values.email}`);
+    await execute({
+      method: 'POST',
+      body: {
+        email: values.email,
+        password: values.password,
+      },
+      onSuccess: (data) => {
+        window.console.log('Login successful:', data);
+        auth.setTokens(data);
+        navigateTo('/');
+      },
+    });
+    // await api.post(
+    //   '/auth/login',
+    //   {
+    //     email: values.email,
+    //     password: values.password,
+    //   },
+    //   {
+    //     onSuccess: (data: AuthTokens) => {
+    //       window.console.log('Login successful:', data);
+    //       auth.setTokens(data);
+    //       navigateTo('/');
+    //     },
+    //   }
+    // );
   },
 });
 </script>
@@ -63,7 +92,8 @@ const { values, errors, handleSubmit } = useForm({
       <div class="space-y-2">
         <div>
           <button
-            type="submit"
+            :disabled="loading"
+            :type="loading ? 'button' : 'submit'"
             class="btn btn-primary btn-block btn-soft border border-primary border-dashed"
           >
             Sign in
@@ -74,7 +104,7 @@ const { values, errors, handleSubmit } = useForm({
     <p class="mt-8 text-center text-sm text-gray-500">Asetflow &copy; 2025</p>
   </div>
 </template>
-<style>
+<style scoped>
 body {
   background-color: var(--color-base-200);
 }

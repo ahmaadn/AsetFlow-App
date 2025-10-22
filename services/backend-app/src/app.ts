@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express, { Response } from 'express';
 
 import { errorHandler } from './middleware/error-handler.middleware';
@@ -10,6 +11,7 @@ export const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(requestLogger);
