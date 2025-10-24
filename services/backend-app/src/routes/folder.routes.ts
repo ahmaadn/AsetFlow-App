@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @swagger
- * /v1/folder/:
+ * /v1/folders:
  *   get:
  *     summary: Get all folders
  *     tags:  [Folders]
@@ -56,10 +56,10 @@ router.get(
 
 /**
  * @swagger
- * /v1/folder
+ * /v1/folders:
  *  post:
  *    summary: Create a Folder
- *    tags: [folder]
+ *    tags: [Folders]
  *    security:
  *      - bearerAuth: []
  *    requestBody:
@@ -74,13 +74,10 @@ router.get(
  *               name:
  *                 type: string
  *                 example: "Designs"
- *               parentId:
+ *               slug:
  *                 type: string
  *                 nullable: true
- *                 example: "60b7c0f2e1d3c8a1f0a1b2c3"
- *               description:
- *                 type: string
- *                 example: "Folder for design assets"
+ *                 example: "designs"
  *    responses:
  *      201:
  *        description: Folder created successfully
