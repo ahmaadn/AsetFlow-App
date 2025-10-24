@@ -8,6 +8,7 @@ definePageMeta({
 
 const auth = useAuthStore();
 const { loading, execute } = useApiState<AuthTokens>('/auth/login');
+const toast = useToast();
 
 const { values, errors, handleSubmit } = useForm({
   initialValues: {
@@ -23,25 +24,14 @@ const { values, errors, handleSubmit } = useForm({
         password: values.password,
       },
       onSuccess: (data) => {
-        window.console.log('Login successful:', data);
         auth.setTokens(data);
+        toast.success('Login successful! Welcome back.');
         navigateTo('/');
       },
+      onError: (_) => {
+        toast.error('Login failed. Please try again.');
+      },
     });
-    // await api.post(
-    //   '/auth/login',
-    //   {
-    //     email: values.email,
-    //     password: values.password,
-    //   },
-    //   {
-    //     onSuccess: (data: AuthTokens) => {
-    //       window.console.log('Login successful:', data);
-    //       auth.setTokens(data);
-    //       navigateTo('/');
-    //     },
-    //   }
-    // );
   },
 });
 </script>
