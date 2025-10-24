@@ -1,18 +1,15 @@
 const publicRoutes = ['/login', '/404'];
 
 export default defineNuxtRouteMiddleware((to, from) => {
-  const nuxtApp = useNuxtApp();
-
-  // Panggil 'useAuthStore' dan berikan instance Pinia ($pinia) dari nuxtApp.
-  const authStore = useAuthStore(nuxtApp.$pinia);
+  const auth = useAuth();
 
   console.log(
-    `Navigating to ${to.path}. Is authenticated: ${authStore.isAuthenticated}`
+    `Navigating to ${to.path}. Is authenticated: ${auth.isAuthenticated.value}`
   );
 
   // Jika pengguna sudah login dan mencoba mengakses halaman '/login' lagi,
   // arahkan mereka kembali ke halaman sebelumnya atau ke dashboard.
-  if (to.path === '/login' && authStore.isAuthenticated) {
+  if (to.path === '/login' && auth.isAuthenticated.value) {
     const previous =
       from?.fullPath && from.fullPath !== to.fullPath
         ? from.fullPath
@@ -28,7 +25,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   // Jika pengguna belum login dan mencoba mengakses halaman yang bukan publik,
   // arahkan mereka ke halaman login.
-  if (!authStore.isAuthenticated) {
+  if (!auth.isAuthenticated.value) {
     return navigateTo('/login');
   }
 });

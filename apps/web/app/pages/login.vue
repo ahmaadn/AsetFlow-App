@@ -6,7 +6,7 @@ definePageMeta({
   layout: 'auth',
 });
 
-const auth = useAuthStore();
+const { setToken } = useAuth();
 const { loading, execute } = useApiState<AuthTokens>('/auth/login');
 const toast = useToast();
 
@@ -24,7 +24,7 @@ const { values, errors, handleSubmit } = useForm({
         password: values.password,
       },
       onSuccess: (data) => {
-        auth.setTokens(data);
+        setToken(data.accessToken);
         toast.success('Login successful! Welcome back.');
         navigateTo('/');
       },
