@@ -6,6 +6,7 @@ const folderState = useFolderStore();
 const isCreateFolder = ref(false);
 const selectedFolder = ref<FolderItem | null>(null);
 const modalDeleteOpen = ref(false);
+const modalEditOpen = ref(false);
 
 const columns = [
   { key: 'name', label: 'Name', sortable: true },
@@ -49,11 +50,13 @@ const onDelete = async () => {
 
 const onClickUpdate = (folder: FolderItem) => {
   selectedFolder.value = folder;
+  modalEditOpen.value = true;
 };
 
 const clearModal = () => {
   selectedFolder.value = null;
   modalDeleteOpen.value = false;
+  modalEditOpen.value = false;
 };
 
 onMounted(async () => {
@@ -164,8 +167,15 @@ onMounted(async () => {
         </template>
       </ui-table>
     </div>
+    <FolderModalEdit
+      v-if="selectedFolder && modalEditOpen"
+      v-model="modalEditOpen"
+      :folder-item="selectedFolder"
+      @update="clearModal"
+      @cancel="clearModal"
+    />
     <FolderModalDelete
-      v-if="selectedFolder"
+      v-if="selectedFolder && modalDeleteOpen"
       v-model="modalDeleteOpen"
       :folder-name="selectedFolder.name"
       :confirm-text="selectedFolder.slug"
