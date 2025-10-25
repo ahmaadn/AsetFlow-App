@@ -154,8 +154,8 @@ export function useToast() {
     promise: Promise<T>,
     options: {
       loading?: string;
-      success?: string | ((data: T) => string);
-      error?: string | ((error: unknown) => string);
+      onSuccess?: string | ((data: T) => string);
+      onError?: string | ((error: Error) => string);
     }
   ): Promise<T> => {
     let loadingToastId: string | undefined;
@@ -170,6 +170,7 @@ export function useToast() {
     }
 
     try {
+      // Menunggu promise selesai
       const data = await promise;
 
       // Remove loading toast
@@ -178,11 +179,12 @@ export function useToast() {
       }
 
       // Show success toast
-      if (options.success) {
+      if (options.onSuccess) {
         const message =
-          typeof options.success === 'function'
-            ? options.success(data)
-            : options.success;
+          typeof options.onSuccess === 'function'
+            ? options.onSuccess(data)
+            : options.onSuccess;
+        // tampilkan toast success
         success(message);
       }
 
@@ -194,11 +196,12 @@ export function useToast() {
       }
 
       // Show error toast
-      if (options.error) {
+      if (options.onError) {
         const message =
-          typeof options.error === 'function'
-            ? options.error(err)
-            : options.error;
+          typeof options.onError === 'function'
+            ? options.onError(err as Error)
+            : options.onError;
+        // tampilkan toast error
         error(message);
       }
 

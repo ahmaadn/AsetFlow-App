@@ -1,37 +1,27 @@
-// composables/useApi.ts
-import type { FetchOptions } from 'ofetch';
+import { FetchError, type FetchOptions } from 'ofetch';
 
 export interface ApiResponse<T> {
   data: T | null;
-  error: unknown;
+  error: FetchError | Error | null;
   loading: boolean;
   status: 'idle' | 'pending' | 'success' | 'error';
 }
 
 export interface UseApiOptions<T> extends Omit<FetchOptions, 'baseURL'> {
-  showToast?: boolean;
-  toastMessage?: string;
   onSuccess?: (data: T) => void | Promise<void>;
-  onError?: (error: unknown) => void | Promise<void>;
+  onError?: (error: Error) => void | Promise<void>;
 }
 
 export function useApi() {
   const config = useRuntimeConfig();
   const baseURL = (config.public.apiBase || '/api') as string;
 
+  // Buat request umum
   const request = async <T>(
     url: string,
     options?: UseApiOptions<T>
   ): Promise<ApiResponse<T>> => {
-    const {
-      showToast,
-      toastMessage,
-      onSuccess,
-      onError,
-      method,
-      body,
-      ...fetchOptions
-    } = options || {};
+    const { onSuccess, onError, method, body, ...fetchOptions } = options || {};
     try {
       const result = await (useNuxtApp().$api as typeof $fetch<T>)(url, {
         baseURL,
@@ -44,28 +34,24 @@ export function useApi() {
         await onSuccess(result as unknown as T);
       }
 
-      if (showToast && toastMessage) {
-        // Anda bisa integrate dengan toast library di sini
-        console.log('Success:', toastMessage);
-      }
-
       return {
-        data: result as unknown as T,
+        data: result,
         error: null,
         loading: false,
         status: 'success',
       };
     } catch (error) {
       if (onError) {
-        await onError(error);
+        await onError(error as Error);
+        return {
+          data: null,
+          error: error as Error,
+          loading: false,
+          status: 'error',
+        };
       }
-
-      return {
-        data: null,
-        error,
-        loading: false,
-        status: 'error',
-      };
+      // Jika tidak ada onError, lempar errornya
+      throw error;
     }
   };
 
@@ -157,14 +143,11 @@ export function useApiState<T extends object>(
     error.value = null;
     status.value = 'pending';
 
-    const {
-      showToast,
-      toastMessage,
-      onSuccess,
-      onError,
-      method,
-      ...fetchOptions
-    } = { ...options, ...customOptions };
+    // Merge options
+    const { onSuccess, onError, method, ...fetchOptions } = {
+      ...options,
+      ...customOptions,
+    };
 
     try {
       const result = await (useNuxtApp().$api as typeof $fetch<T>)(url, {
@@ -183,8 +166,10 @@ export function useApiState<T extends object>(
       error.value = err;
       status.value = 'error';
 
-      if (onError) {
-        await onError(err);
+      if (error instanceof FetchError) {
+        if (onError) {
+          await onError(error);
+        }
       }
     } finally {
       loading.value = false;
@@ -204,7 +189,6 @@ export function useApiState<T extends object>(
     loading,
     status,
     execute,
-
     reset,
   };
 }
