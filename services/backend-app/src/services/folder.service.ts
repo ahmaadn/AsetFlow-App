@@ -6,6 +6,8 @@ import type {
 
 import * as FolderRepository from '../repositories/folder.repository';
 import { QueryParams } from '../types/globals';
+import { BadRequestError } from '../utils/api-error';
+import { ErrorCode } from '../utils/error-code';
 
 /**
  * Mendapatkan semua folder milik user
@@ -66,6 +68,15 @@ export const createFolder = async (
     slug = data.name.trim().toLowerCase().replace(/\s+/g, '-');
   } else {
     slug = data.slug.trim().toLowerCase();
+  }
+
+  // cek slug sudah dipakai atau belum
+  const existingFolder = await FolderRepository.findSlug(slug);
+  if (existingFolder) {
+    throw new BadRequestError({
+      message: `Folder slug "${slug}" is already in use.`,
+      errorCode: ErrorCode.FOLDER_SLUG_EXISTS,
+    });
   }
 
   const newFolder = await FolderRepository.create({

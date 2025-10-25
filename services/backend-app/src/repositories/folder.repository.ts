@@ -54,3 +54,16 @@ export const create = async (data: {
     data,
   });
 };
+
+/**
+ * Mencari folder berdasarkan slug.
+ * @param slug  Slug folder
+ * @returns Folder yang ditemukan atau null
+ */
+export const findSlug = async (slug: string): Promise<FolderModel | null> => {
+  return await prisma.folder.findUnique({
+    where: {
+      slug,
+    },
+  });
+};
