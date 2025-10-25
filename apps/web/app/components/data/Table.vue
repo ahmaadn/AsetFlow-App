@@ -116,18 +116,33 @@ function onRowClick(row: RowType) {
       </thead>
       <tbody>
         <slot name="first-row" />
-        <tr
-          v-for="row in sortedRows"
-          :key="row[props.rowKey || 'id']"
-          class="hover:cursor-pointer hover:bg-base-300"
-          @click="onRowClick(row)"
-        >
-          <td v-for="col in props.columns" :key="col.key">
-            <slot :name="`cell-${col.key}`" :row="row">
-              {{ row[col.key] }}
-            </slot>
-          </td>
-        </tr>
+        <template v-if="props.rows.length === 0">
+          <tr>
+            <td :colspan="props.columns.length" class="text-center py-4">
+              <slot name="no-data">
+                <div
+                  class="h-32 flex items-center justify-center border border-dashed border-neutral/30 rounded-md"
+                >
+                  <p class="text-sm font-normal">No data available.</p>
+                </div>
+              </slot>
+            </td>
+          </tr>
+        </template>
+        <template v-else>
+          <tr
+            v-for="row in sortedRows"
+            :key="row[props.rowKey || 'id']"
+            class="hover:cursor-pointer hover:bg-base-300"
+            @click="onRowClick(row)"
+          >
+            <td v-for="col in props.columns" :key="col.key">
+              <slot :name="`cell-${col.key}`" :row="row">
+                {{ row[col.key] }}
+              </slot>
+            </td>
+          </tr>
+        </template>
         <slot name="last-row" />
       </tbody>
     </table>
