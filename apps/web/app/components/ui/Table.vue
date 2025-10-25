@@ -77,7 +77,7 @@ function onRowClick(row: RowType) {
 
 <template>
   <div class="overflow-x-auto">
-    <table class="table table-xs w-full">
+    <table class="table w-full">
       <thead>
         <slot name="first-head-row" />
         <tr>
@@ -137,7 +137,7 @@ function onRowClick(row: RowType) {
             @click="onRowClick(row)"
           >
             <td v-for="col in props.columns" :key="col.key">
-              <slot :name="`cell-${col.key}`" :row="row">
+              <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
                 {{ row[col.key] }}
               </slot>
             </td>

@@ -5,7 +5,6 @@ const isCreateFolder = ref(false);
 
 const columns = [
   { key: 'name', label: 'Name', sortable: true },
-  { key: 'slug', label: 'Slug', sortable: true },
   { key: 'tags', label: 'Tags' },
   { key: 'createdAt', label: 'Created', sortable: true },
   { key: 'updatedAt', label: 'Updated', sortable: true },
@@ -47,7 +46,7 @@ onMounted(async () => {
             @click="isCreateFolder = true"
           >
             <Icon
-              name="ri:add-large-fill"
+              name="ri:folder-add-line"
               class="size-5 opacity-80 hover:opacity-100"
             />
           </button>
@@ -96,10 +95,10 @@ onMounted(async () => {
             </div>
           </a>
         </template>
-        <template #cell-tags="{ row }">
+        <template #cell-tags="{ value }">
           <div class="flex gap-1">
             <span
-              v-for="tag in row.tags"
+              v-for="tag in value"
               :key="tag"
               class="badge badge-sm"
               :class="{
@@ -113,12 +112,25 @@ onMounted(async () => {
             >
               {{ tag }}
             </span>
+            <span v-if="!value.length">No Tags</span>
           </div>
         </template>
+        <template #cell-createdAt="{ value }">
+          {{ formatDisplayDate(new Date(value)) }}
+        </template>
+        <template #cell-updatedAt="{ value }">
+          {{ formatDisplayDate(new Date(value)) }}
+        </template>
+        <template #cell-assetCount="{ value }"> {{ value }} Assets </template>
         <template #cell-action>
-          <button class="btn btn-sm btn-ghost btn-square">
-            <Icon name="ri:more-2-fill" class="size-5 opacity-50" />
-          </button>
+          <div class="space-x-2">
+            <button class="btn btn-sm btn-square btn-warning">
+              <Icon name="ri:edit-line" class="size-5" />
+            </button>
+            <button class="btn btn-sm btn-square btn-error">
+              <Icon name="ri:delete-bin-4-line" class="size-5" />
+            </button>
+          </div>
         </template>
       </ui-table>
     </div>
