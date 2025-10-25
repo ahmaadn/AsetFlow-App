@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import type { FolderItem } from '@asetflow/shared-types';
+
 const folderState = useFolderStore();
 
 const isCreateFolder = ref(false);
+const selectedFolder = ref<FolderItem | null>(null);
+const modalDeleteOpen = ref(false);
 
 const columns = [
   { key: 'name', label: 'Name', sortable: true },
@@ -30,6 +34,26 @@ const tags = [
 const createFolder = async (name: string) => {
   await folderState.createFolder(name);
   isCreateFolder.value = false;
+};
+
+const onClickDelete = (folder: FolderItem) => {
+  selectedFolder.value = folder;
+  modalDeleteOpen.value = true;
+};
+
+const onDelete = async () => {
+  if (!selectedFolder.value && !modalDeleteOpen.value) return;
+
+  selectedFolder.value = null;
+};
+
+const onClickUpdate = (folder: FolderItem) => {
+  selectedFolder.value = folder;
+};
+
+const clearModal = () => {
+  selectedFolder.value = null;
+  modalDeleteOpen.value = false;
 };
 
 onMounted(async () => {
@@ -122,17 +146,31 @@ onMounted(async () => {
           {{ formatDisplayDate(new Date(value)) }}
         </template>
         <template #cell-assetCount="{ value }"> {{ value }} Assets </template>
-        <template #cell-action>
+        <template #cell-action="{ row }">
           <div class="space-x-2">
-            <button class="btn btn-sm btn-square btn-warning">
+            <button
+              class="btn btn-sm btn-square btn-warning"
+              @click="onClickUpdate(row as FolderItem)"
+            >
               <Icon name="ri:edit-line" class="size-5" />
             </button>
-            <button class="btn btn-sm btn-square btn-error">
+            <button
+              class="btn btn-sm btn-square btn-error"
+              @click="onClickDelete(row as FolderItem)"
+            >
               <Icon name="ri:delete-bin-4-line" class="size-5" />
             </button>
           </div>
         </template>
       </ui-table>
     </div>
+    <FolderModalDelete
+      v-if="selectedFolder"
+      v-model="modalDeleteOpen"
+      :folder-name="selectedFolder.name"
+      :confirm-text="selectedFolder.slug"
+      @confirm="onDelete"
+      @cancel="clearModal"
+    />
   </UiContent>
 </template>

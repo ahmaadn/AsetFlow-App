@@ -14,6 +14,7 @@ await init();
         <NuxtPage />
       </NuxtLayout>
     </div>
+    <div id="modal-container" class="fixed z-50"></div>
     <UiToastContainer class="fixed z-100" />
   </div>
 </template>
