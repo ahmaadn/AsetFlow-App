@@ -1,6 +1,6 @@
 import { SimpleTag } from './tag.types';
 
-export type FolderDetailResponse = {
+export type FolderItem = {
   id: string;
   ownerId: number;
   name: string;
@@ -10,3 +10,5 @@ export type FolderDetailResponse = {
   assetCount: number;
   tags: SimpleTag[];
 };
+
+export type FolderDetailResponse = FolderItem;
