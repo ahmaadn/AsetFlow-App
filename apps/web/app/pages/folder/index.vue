@@ -39,7 +39,7 @@ onMounted(async () => {
 </script>
 <template>
   <UiContent>
-    <ContentHeader>
+    <UiHeader>
       <template #left>
         <div class="flex items-center space-x-2">
           <button
@@ -68,9 +68,9 @@ onMounted(async () => {
           </label>
         </div>
       </template>
-    </ContentHeader>
+    </UiHeader>
     <div class="flex-1 overflow-auto p-4">
-      <data-table
+      <ui-table
         :columns="columns"
         :rows="folderState.folders"
         row-key="id"
@@ -120,7 +120,7 @@ onMounted(async () => {
             <Icon name="ri:more-2-fill" class="size-5 opacity-50" />
           </button>
         </template>
-      </data-table>
+      </ui-table>
     </div>
   </UiContent>
 </template>

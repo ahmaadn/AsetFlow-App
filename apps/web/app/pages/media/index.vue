@@ -110,7 +110,7 @@ function toggleSelect(asset: Asset) {
 </script>
 <template>
   <UiContent>
-    <ContentHeader>
+    <UiHeader>
       <template #left>
         <div class="flex items-center space-x-4">
           <button class="btn btn-sm btn-square btn-ghost">
@@ -162,7 +162,7 @@ function toggleSelect(asset: Asset) {
           </label>
         </div>
       </template>
-    </ContentHeader>
+    </UiHeader>
     <div class="flex-1 p-2 flex">
       <!-- Galeri Aset -->
       <div class="flex-1 rounded-lg overflow-y-auto">
