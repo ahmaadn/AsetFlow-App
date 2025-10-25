@@ -10,10 +10,15 @@ const modelValue = defineModel<string>({
 
 const emit = defineEmits<{
   (e: 'close'): void;
+  (e: 'submit', value: string): void;
 }>();
 
 function onCancel() {
   emit('close');
+}
+
+function onSubmit() {
+  emit('submit', modelValue.value);
 }
 
 const sizes = {
@@ -26,7 +31,7 @@ const sizes = {
 </script>
 
 <template>
-  <form class="flex items-center gap-2 flex-nowrap">
+  <form class="flex items-center gap-2 flex-nowrap" @submit.prevent="onSubmit">
     <input
       v-model="modelValue"
       type="text"

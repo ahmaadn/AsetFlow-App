@@ -1,186 +1,7 @@
 <script setup lang="ts">
-const data = [
-  {
-    id: 1,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 2,
-    name: 'Folder 2',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 3,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 4,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-  {
-    id: 5,
-    name: 'Folder 1',
-    slug: 'folder-1',
-    tags: ['work', 'project'],
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-02',
-    totalAssets: 10,
-  },
-];
+const folderState = useFolderStore();
+
+const isCreateFolder = ref(false);
 
 const columns = [
   { key: 'name', label: 'Name', sortable: true },
@@ -188,7 +9,7 @@ const columns = [
   { key: 'tags', label: 'Tags' },
   { key: 'createdAt', label: 'Created', sortable: true },
   { key: 'updatedAt', label: 'Updated', sortable: true },
-  { key: 'totalAssets', label: 'Total Assets', sortable: true },
+  { key: 'assetCount', label: 'Total Assets', sortable: true },
   { key: 'action', label: ' ', sortable: false },
 ];
 
@@ -207,7 +28,14 @@ const tags = [
   },
 ];
 
-const isCreateFolder = ref(false);
+const createFolder = async (name: string) => {
+  await folderState.createFolder(name);
+  isCreateFolder.value = false;
+};
+
+onMounted(async () => {
+  await folderState.loadFolders();
+});
 </script>
 <template>
   <UiContent>
@@ -242,11 +70,19 @@ const isCreateFolder = ref(false);
       </template>
     </ContentHeader>
     <div class="flex-1 overflow-auto p-4">
-      <data-table :columns="columns" :rows="data" row-key="id" class="w-full">
+      <data-table
+        :columns="columns"
+        :rows="folderState.folders"
+        row-key="id"
+        class="w-full"
+      >
         <template v-if="isCreateFolder" #first-row>
           <tr>
-            <td :colspan="columns.length" class="p-0">
-              <folder-form @close="isCreateFolder = false" />
+            <td :colspan="columns.length" class="px-2">
+              <folder-form
+                @close="isCreateFolder = false"
+                @submit="createFolder"
+              />
             </td>
           </tr>
         </template>
