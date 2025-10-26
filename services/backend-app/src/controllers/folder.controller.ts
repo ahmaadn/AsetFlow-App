@@ -87,3 +87,28 @@ export const deleteFolder = async (
     next(error);
   }
 };
+
+/**
+ * Memeriksa apakah folder dengan ID tertentu ada
+ */
+export const checkFolderExists = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new UnauthorizedError({ message: 'User not authenticated' });
+    }
+    const folderId = req.params.id;
+    const exists = await folderService.checkFolder(folderId);
+    if (exists) {
+      res.status(200).send();
+    } else {
+      res.status(404).send();
+    }
+  } catch (error) {
+    next(error);
+  }
+};

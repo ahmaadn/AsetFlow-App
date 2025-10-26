@@ -1,6 +1,6 @@
 import {
+  httpCheckFolder,
   httpCreateFolder,
-  httpDeleteFolder,
   httpFoldersQuery,
   httpUpdateFolder,
 } from '@asetflow/validators';
@@ -158,8 +158,36 @@ router.put(
 router.delete(
   '/:id',
   protect,
-  validate(httpDeleteFolder),
+  validate(httpCheckFolder),
   FolderController.deleteFolder
+);
+
+/**
+ * @swagger
+ * /v1/folders/check/{id}:
+ *  head:
+ *    summary: Check if a Folder exists
+ *    tags: [Folders]
+ *    security:
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *         type: string
+ *         format: uuid
+ *    responses:
+ *      200:
+ *        description: Folder exists
+ *      404:
+ *        description: Folder not found
+ */
+router.head(
+  '/check/:id',
+  protect,
+  validate(httpCheckFolder),
+  FolderController.checkFolderExists
 );
 
 export default router;

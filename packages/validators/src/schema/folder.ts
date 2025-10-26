@@ -56,11 +56,11 @@ export const httpUpdateFolder = http({
   params: z.object({ id: folderId }),
 });
 
-export const httpDeleteFolder = http({
+export const httpCheckFolder = http({
   params: z.object({ id: folderId }),
 });
 
 export type FoldersQueryInput = z.infer<typeof httpFoldersQuery>;
 export type CreateFolderInput = z.infer<typeof httpCreateFolder>;
 export type UpdateFolderInput = z.infer<typeof httpUpdateFolder>;
-export type DeleteFolderInput = z.infer<typeof httpDeleteFolder>;
+export type CheckFolderInput = z.infer<typeof httpCheckFolder>;

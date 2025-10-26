@@ -159,3 +159,17 @@ export const updateFolder = async (
     tags: [],
   };
 };
+
+/**
+ * Mengecek apakah folder ada
+ * @param folderId  ID folder yang akan dicek
+ * @returns  Folder yang ditemukan
+ */
+export const checkFolder = async (folderId: string): Promise<boolean> => {
+  const existingFolder = await FolderRepository.findById(folderId);
+  if (!existingFolder) {
+    return false;
+  }
+
+  return true;
+};
