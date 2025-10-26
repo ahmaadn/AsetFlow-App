@@ -1,4 +1,5 @@
 import { FolderModel, prisma } from '@asetflow/database';
+import { UpdateFolderType } from '@asetflow/validators';
 
 /**
  * Mengambil semua folder.
@@ -56,6 +57,41 @@ export const create = async (data: {
 };
 
 /**
+ * Menghapus folder berdasarkan ID.
+ * @param folderId ID folder yang akan dihapus
+ */
+export const deleteFolder = async (folderId: string): Promise<void> => {
+  await prisma.folder.delete({
+    where: {
+      id: folderId,
+    },
+  });
+};
+
+/**
+ * Mengupdate folder berdasarkan ID.
+ * @param folderId ID folder yang akan diupdate
+ * @param data Data folder yang akan diupdate
+ * @returns Folder yang telah diupdate
+ */
+export const update = async (folderId: string, data: UpdateFolderType) => {
+  return await prisma.folder.update({
+    where: {
+      id: folderId,
+    },
+    data: {
+      name: data.name,
+      slug: data.slug,
+    },
+    include: {
+      _count: {
+        select: { assets: true },
+      },
+    },
+  });
+};
+
+/**
  * Mencari folder berdasarkan slug.
  * @param slug  Slug folder
  * @returns Folder yang ditemukan atau null
@@ -64,6 +100,19 @@ export const findSlug = async (slug: string): Promise<FolderModel | null> => {
   return await prisma.folder.findUnique({
     where: {
       slug,
+    },
+  });
+};
+
+/**
+ * Mencari folder berdasarkan ID.
+ * @param id ID folder
+ * @returns Folder yang ditemukan atau null
+ */
+export const findById = async (id: string): Promise<FolderModel | null> => {
+  return await prisma.folder.findUnique({
+    where: {
+      id,
     },
   });
 };

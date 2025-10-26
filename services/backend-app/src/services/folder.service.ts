@@ -3,10 +3,11 @@ import type {
   PaginationResult,
   FolderDetailResponse,
 } from '@asetflow/shared-types';
+import { CreateFolderType, UpdateFolderType } from '@asetflow/validators';
 
 import * as FolderRepository from '../repositories/folder.repository';
 import { QueryParams } from '../types/globals';
-import { BadRequestError } from '../utils/api-error';
+import { BadRequestError, NotFoundError } from '../utils/api-error';
 import { ErrorCode } from '../utils/error-code';
 
 /**
@@ -39,11 +40,11 @@ export const getAllFolders = async (
 
   // Mapping ke response type
   return {
-    items: folders.map((folder) => ({
+    items: folders.map(({ _count, ...folder }) => ({
       ...folder,
       createdAt: folder.createdAt.toISOString(),
       updatedAt: folder.updatedAt.toISOString(),
-      assetCount: folder._count.assets,
+      assetCount: _count.assets,
       tags: [],
     })),
     total: folders.length,
@@ -60,7 +61,7 @@ export const getAllFolders = async (
  */
 export const createFolder = async (
   user: UserModel,
-  data: { name: string; slug?: string }
+  data: CreateFolderType
 ): Promise<FolderDetailResponse> => {
   let slug = data.slug;
   if (typeof data.slug !== 'string') {
@@ -90,6 +91,71 @@ export const createFolder = async (
     createdAt: newFolder.createdAt.toISOString(),
     updatedAt: newFolder.updatedAt.toISOString(),
     assetCount: 0,
+    tags: [],
+  };
+};
+
+/**
+ * Menhapus folder berdasarkan ID
+ * @param folderId ID folder yang akan dihapus
+ */
+export const deleteFolder = async (folderId: string): Promise<void> => {
+  const existingFolder = await FolderRepository.findById(folderId);
+  if (!existingFolder) {
+    throw new NotFoundError({
+      message: `Folder with ID "${folderId}" does not exist.`,
+      errorCode: ErrorCode.FOLDER_NOT_FOUND,
+    });
+  }
+
+  await FolderRepository.deleteFolder(folderId);
+};
+
+/**
+ * Menperbarui folder yang ada
+ * @param folderId ID folder yang akan diupdate
+ * @param data Data folder yang akan diupdate
+ * @returns Folder yang telah diupdate
+ */
+export const updateFolder = async (
+  folderId: string,
+  data: UpdateFolderType
+): Promise<FolderDetailResponse> => {
+  // Cek apakah folder ada
+  const existingFolder = await FolderRepository.findById(folderId);
+  if (!existingFolder) {
+    throw new NotFoundError({
+      message: `Folder with ID "${folderId}" does not exist.`,
+      errorCode: ErrorCode.FOLDER_NOT_FOUND,
+    });
+  }
+
+  // jika slug diupdate, cek apakah sudah dipakai atau belum
+  if (data.slug) {
+    const slugInUse = await FolderRepository.findSlug(data.slug);
+    if (slugInUse && slugInUse.id !== folderId) {
+      throw new BadRequestError({
+        message: `Folder slug "${data.slug}" is already in use.`,
+        errorCode: ErrorCode.FOLDER_SLUG_EXISTS,
+      });
+    }
+  }
+
+  // TODO: cek tags apakah valid (ada di DB)
+  // untuk sekarang tags tidak diupdate
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  const { tags, ...folderData } = data;
+
+  const { _count, ...updatedFolder } = await FolderRepository.update(
+    folderId,
+    folderData
+  );
+
+  return {
+    ...updatedFolder,
+    createdAt: updatedFolder.createdAt.toISOString(),
+    updatedAt: updatedFolder.updatedAt.toISOString(),
+    assetCount: _count.assets,
     tags: [],
   };
 };

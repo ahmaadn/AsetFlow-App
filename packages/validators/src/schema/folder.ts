@@ -2,6 +2,8 @@ import z from 'zod';
 
 import { http } from '../http';
 
+export const folderId = z.uuid({ version: 'v4' });
+
 /**
  * Schema untuk mendapatkan daftar folder dengan pagination dan filter.
  */
@@ -37,16 +39,28 @@ export const updateFolderSchema = z.object({
     .max(255)
     .regex(/^[a-zA-Z0-9-_]+$/)
     .optional(),
-  tags: z.array(z.uuid()).optional(),
+  tags: z.array(z.uuid({ version: 'v4' })).optional(),
 });
+
+export type GetFolderType = z.infer<typeof getFoldersSchema>;
+export type CreateFolderType = z.infer<typeof createFolderSchema>;
+export type UpdateFolderType = z.infer<typeof updateFolderSchema>;
 
 /**
  * khusus schema untuk validasi HTTP request (Express middleware)
  */
 export const httpFoldersQuery = http({ query: getFoldersSchema });
 export const httpCreateFolder = http({ body: createFolderSchema });
-export const httpUpdateFolder = http({ body: updateFolderSchema });
+export const httpUpdateFolder = http({
+  body: updateFolderSchema,
+  params: z.object({ id: folderId }),
+});
+
+export const httpDeleteFolder = http({
+  params: z.object({ id: folderId }),
+});
 
 export type FoldersQueryInput = z.infer<typeof httpFoldersQuery>;
 export type CreateFolderInput = z.infer<typeof httpCreateFolder>;
 export type UpdateFolderInput = z.infer<typeof httpUpdateFolder>;
+export type DeleteFolderInput = z.infer<typeof httpDeleteFolder>;

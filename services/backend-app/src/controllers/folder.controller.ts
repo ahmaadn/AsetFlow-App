@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import * as folderService from '../services/folder.service';
 import { QueryParams } from '../types/globals';
+import { UnauthorizedError } from '../utils/api-error';
 
 /**
  * Mengambil semua folder.
@@ -12,7 +13,10 @@ export const getAllFolder = async (
   next: NextFunction
 ) => {
   try {
-    const user = req.user!;
+    const user = req.user;
+    if (!user) {
+      throw new UnauthorizedError({ message: 'User not authenticated' });
+    }
     const queryParams = req.query as QueryParams;
 
     const result = await folderService.getAllFolders(user, queryParams);
@@ -24,9 +28,6 @@ export const getAllFolder = async (
 
 /**
  * Membuat sebuah folder baru
- * @param req
- * @param res
- * @param next
  */
 export const createFolder = async (
   req: Request,
@@ -34,9 +35,54 @@ export const createFolder = async (
   next: NextFunction
 ) => {
   try {
-    const user = req.user!;
+    const user = req.user;
+    if (!user) {
+      throw new UnauthorizedError({ message: 'User not authenticated' });
+    }
     const result = await folderService.createFolder(user, req.body);
     res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Untuk memperbarui folder yang ada
+ */
+export const updateFolder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new UnauthorizedError({ message: 'User not authenticated' });
+    }
+    const folderId = req.params.id;
+    const result = await folderService.updateFolder(folderId, req.body);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Untuk memperbarui folder yang ada
+ */
+export const deleteFolder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new UnauthorizedError({ message: 'User not authenticated' });
+    }
+    const folderId = req.params.id;
+    await folderService.deleteFolder(folderId);
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

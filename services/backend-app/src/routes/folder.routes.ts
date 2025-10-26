@@ -1,4 +1,9 @@
-import { httpCreateFolder, httpFoldersQuery } from '@asetflow/validators';
+import {
+  httpCreateFolder,
+  httpDeleteFolder,
+  httpFoldersQuery,
+  httpUpdateFolder,
+} from '@asetflow/validators';
 import { Router } from 'express';
 
 import * as FolderController from '../controllers/folder.controller';
@@ -87,6 +92,74 @@ router.post(
   protect,
   validate(httpCreateFolder),
   FolderController.createFolder
+);
+
+/**
+ * @swagger
+ * /v1/folders/{id}:
+ *  post:
+ *    summary: Update a Folder
+ *    tags: [Folders]
+ *    security:
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *         type: string
+ *         format: uuid
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Designs"
+ *               slug:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "designs"
+ *    responses:
+ *      201:
+ *        description: Folder updated successfully
+ */
+router.post(
+  '/:id',
+  protect,
+  validate(httpUpdateFolder),
+  FolderController.updateFolder
+);
+
+/**
+ * @swagger
+ * /v1/folders/{id}:
+ *  post:
+ *    summary: Update a Folder
+ *    tags: [Folders]
+ *    security:
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *         type: string
+ *         format: uuid
+ *    responses:
+ *      204:
+ *        description: Folder deleted successfully
+ */
+router.delete(
+  '/:id',
+  protect,
+  validate(httpDeleteFolder),
+  FolderController.deleteFolder
 );
 
 export default router;
