@@ -97,7 +97,7 @@ router.post(
 /**
  * @swagger
  * /v1/folders/{id}:
- *  post:
+ *  put:
  *    summary: Update a Folder
  *    tags: [Folders]
  *    security:
@@ -129,7 +129,7 @@ router.post(
  *      201:
  *        description: Folder updated successfully
  */
-router.post(
+router.put(
   '/:id',
   protect,
   validate(httpUpdateFolder),
