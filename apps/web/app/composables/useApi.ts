@@ -122,6 +122,7 @@ export function useApi() {
     put,
     patch,
     delete: del,
+    request,
   };
 }
 
