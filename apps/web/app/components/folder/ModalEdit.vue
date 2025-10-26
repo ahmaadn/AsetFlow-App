@@ -17,7 +17,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
   (e: 'cancel'): void;
-  (e: 'update', folderItem?: FolderItem): void;
+  (e: 'update', folderItem: FolderItem): void;
 }>();
 
 const isOpen = computed({
@@ -25,9 +25,7 @@ const isOpen = computed({
   set: (v: boolean) => emit('update:modelValue', v),
 });
 
-const toast = useToast();
-
-const { values, errors } = useForm({
+const { values, errors, handleSubmit } = useForm({
   initialValues: {
     name: props.folderItem.name,
     slug: props.folderItem.slug,
@@ -35,9 +33,10 @@ const { values, errors } = useForm({
   },
   validationSchema: updateFolderSchema,
   onSubmit: async (values) => {
-    toast.success(
-      `Folder updated successfully! data: ${JSON.stringify(values)}`
-    );
+    // TODO: Untuk Sekarang tags diabaikan dulu
+    // WIP
+    const { tags, ...newValues } = values;
+    emit('update', { ...props.folderItem, ...newValues });
   },
 });
 
@@ -47,11 +46,6 @@ function close() {
 
 function onCancel() {
   emit('cancel');
-  close();
-}
-
-function onUpdate() {
-  emit('update', props.folderItem);
   close();
 }
 </script>
@@ -68,7 +62,7 @@ function onUpdate() {
         }}</span>
         di bawah ini:
       </p>
-      <form action="">
+      <form @submit="handleSubmit">
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-base">Nama</legend>
           <input
@@ -92,8 +86,8 @@ function onUpdate() {
           <p v-if="errors.slug" class="label text-error">{{ errors.slug }}</p>
         </fieldset>
         <ModalAction>
-          <button class="btn" @click="onCancel">Cancel</button>
-          <button class="btn btn-warning" @click="onUpdate">Update</button>
+          <button class="btn" type="reset" @click="onCancel">Cancel</button>
+          <button class="btn btn-warning" type="submit">Update</button>
         </ModalAction>
       </form>
     </ModalContent>

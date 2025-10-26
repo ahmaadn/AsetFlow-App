@@ -1,4 +1,5 @@
 import type { FolderItem, PaginationResult } from '@asetflow/shared-types';
+import type { CreateFolderType, UpdateFolderType } from '@asetflow/validators';
 
 export interface QueryParams {
   page?: number;
@@ -8,7 +9,7 @@ export interface QueryParams {
   order?: 'asc' | 'desc';
 }
 
-export function fetchFolders(query: QueryParams, options = {}) {
+export function fetchFoldersApi(query: QueryParams, options = {}) {
   const { get } = useApi();
   return get<PaginationResult<FolderItem>>('/folders', {
     params: query,
@@ -16,9 +17,21 @@ export function fetchFolders(query: QueryParams, options = {}) {
   });
 }
 
-export function createFolder(data: { name: string; slug?: string }) {
+export function createFolderApi(data: CreateFolderType) {
   const { post } = useApi();
-  return post<FolderItem, { name: string; slug?: string }>('/folders', {
+  return post<FolderItem, CreateFolderType>('/folders', {
     ...data,
   });
+}
+
+export function updateFolderApi(folderId: string, data: UpdateFolderType) {
+  const { put } = useApi();
+  return put<FolderItem, UpdateFolderType>(`/folders/${folderId}`, {
+    ...data,
+  });
+}
+
+export function deleteFolderApi(folderId: string) {
+  const { delete: del } = useApi();
+  return del<null>(`/folders/${folderId}`);
 }

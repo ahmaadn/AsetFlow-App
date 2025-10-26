@@ -37,23 +37,31 @@ const createFolder = async (name: string) => {
   isCreateFolder.value = false;
 };
 
-const onClickDelete = (folder: FolderItem) => {
+const openModalDelete = (folder: FolderItem) => {
   selectedFolder.value = folder;
   modalDeleteOpen.value = true;
 };
 
 const onDelete = async () => {
   if (!selectedFolder.value && !modalDeleteOpen.value) return;
-
+  const { id } = selectedFolder.value as { id: string };
+  await folderState.deleteFolder(id);
   selectedFolder.value = null;
 };
 
-const onClickUpdate = (folder: FolderItem) => {
+const openModalUpdate = (folder: FolderItem) => {
   selectedFolder.value = folder;
   modalEditOpen.value = true;
 };
 
-const clearModal = () => {
+const onUpdate = async (newData: FolderItem) => {
+  if (!selectedFolder.value && !modalEditOpen.value) return;
+  const { id, name, slug } = newData;
+  await folderState.updateFolder(id, { name, slug });
+  selectedFolder.value = null;
+};
+
+const clear = () => {
   selectedFolder.value = null;
   modalDeleteOpen.value = false;
   modalEditOpen.value = false;
@@ -153,13 +161,13 @@ onMounted(async () => {
           <div class="space-x-2">
             <button
               class="btn btn-sm btn-square btn-warning"
-              @click="onClickUpdate(row as FolderItem)"
+              @click="openModalUpdate(row as FolderItem)"
             >
               <Icon name="ri:edit-line" class="size-5" />
             </button>
             <button
               class="btn btn-sm btn-square btn-error"
-              @click="onClickDelete(row as FolderItem)"
+              @click="openModalDelete(row as FolderItem)"
             >
               <Icon name="ri:delete-bin-4-line" class="size-5" />
             </button>
@@ -171,8 +179,8 @@ onMounted(async () => {
       v-if="selectedFolder && modalEditOpen"
       v-model="modalEditOpen"
       :folder-item="selectedFolder"
-      @update="clearModal"
-      @cancel="clearModal"
+      @update="onUpdate"
+      @cancel="clear"
     />
     <FolderModalDelete
       v-if="selectedFolder && modalDeleteOpen"
@@ -180,7 +188,7 @@ onMounted(async () => {
       :folder-name="selectedFolder.name"
       :confirm-text="selectedFolder.slug"
       @confirm="onDelete"
-      @cancel="clearModal"
+      @cancel="clear"
     />
   </UiContent>
 </template>

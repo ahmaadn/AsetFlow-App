@@ -25,7 +25,7 @@ export const createFolderSchema = z.object({
     .min(1)
     .max(255)
     .regex(/^[a-zA-Z0-9-_]+$/)
-    .nullable(),
+    .optional(),
 });
 
 /**
