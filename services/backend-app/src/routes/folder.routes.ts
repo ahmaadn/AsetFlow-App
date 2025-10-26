@@ -139,8 +139,8 @@ router.post(
 /**
  * @swagger
  * /v1/folders/{id}:
- *  post:
- *    summary: Update a Folder
+ *  delete:
+ *    summary: Delete a Folder
  *    tags: [Folders]
  *    security:
  *      - bearerAuth: []
