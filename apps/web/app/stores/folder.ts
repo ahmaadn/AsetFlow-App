@@ -126,5 +126,10 @@ export const useFolderStore = defineStore('folder', {
       });
       this.isLoading = false;
     },
+
+    findFolderById(folderId: string): FolderItem | null {
+      const folder = this.folders.find((folder) => folder.id === folderId);
+      return folder || null;
+    },
   },
 });

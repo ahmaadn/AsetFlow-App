@@ -122,13 +122,16 @@ onMounted(async () => {
         </template>
 
         <template #cell-name="{ row }">
-          <a class="flex items-center gap-3" :href="`/folder/${row.slug}`">
+          <NuxtLink
+            class="flex items-center gap-3"
+            :to="`/folder/${row.id}/media`"
+          >
             <Icon name="ri:folder-fill" class="size-5 text-amber-500" />
             <div>
               <div class="font-medium">{{ row.name }}</div>
               <div class="text-xs text-neutral/60">{{ row.slug }}</div>
             </div>
-          </a>
+          </NuxtLink>
         </template>
         <template #cell-tags="{ value }">
           <div class="flex gap-1">

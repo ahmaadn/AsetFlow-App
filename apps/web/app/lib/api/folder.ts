@@ -35,3 +35,10 @@ export function deleteFolderApi(folderId: string) {
   const { delete: del } = useApi();
   return del<null>(`/folders/${folderId}`);
 }
+
+export function checkFolderIdApi(folderId: string) {
+  const { request } = useApi();
+  return request<null>(`/folders/check/${folderId}`, {
+    method: 'HEAD',
+  });
+}

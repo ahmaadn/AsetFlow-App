@@ -1,5 +1,29 @@
 <script setup lang="ts">
+import { checkFolderIdApi } from '~/lib/api/folder';
 import type { Asset } from '~/types';
+
+definePageMeta({
+  title: 'Media Library',
+  async validate(route) {
+    const auth = useAuth();
+    if (!auth.isAuthenticated.value) return false;
+
+    // Mencoba mendapatkan folder dari store terlebih dahulu
+    const folderStore = useFolderStore();
+    const existingFolder = folderStore.findFolderById(
+      route.params.id as string
+    );
+    if (existingFolder) return true;
+
+    try {
+      await checkFolderIdApi(route.params.id as string);
+      return true;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      return false;
+    }
+  },
+});
 
 const assets: Asset[] = [
   {
@@ -99,6 +123,7 @@ const assets: Asset[] = [
 // selection state: null = hidden
 const selectedAsset = ref<Asset | null>(null);
 </script>
+
 <template>
   <UiContent>
     <MediaHeader />
