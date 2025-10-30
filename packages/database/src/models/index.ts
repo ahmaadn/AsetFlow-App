@@ -28,31 +28,17 @@ export interface AssetModel {
   id: string;
   folderId: string;
   ownerId: number;
+  publicId: string;
   originalName: string;
   slug: string;
-  fileSizeBytes: bigint;
+  size: string;
   mimeType: string;
   assetType: string;
   url: string;
+  format: string;
+  resourceType: string;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface CloudinaryAssetModel {
-  id: string;
-  public_id: string;
-  version: number;
-  signature: string;
   width: number;
   height: number;
-  format: string;
-  resource_type: string;
-  created_at: string;
-  updated_at: string;
-  bytes: number;
-  type: string;
-  url: string;
-  secureUrl: string;
-  tags: string[];
-  secure_url: string;
 }

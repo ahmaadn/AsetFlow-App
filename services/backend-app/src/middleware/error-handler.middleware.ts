@@ -22,6 +22,14 @@ export const errorHandler = (
     return res.status(err.statusCode).json(err.toJSON());
   }
 
+  // Handle error dari Multer (cth: file terlalu besar)
+  if (err.name === 'MulterError' && err.message === 'File too large') {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'File too large. Max size is 10MB.',
+    });
+  }
+
   // Pengaman untuk error Prisma yang tidak ditangani di service
   // Ini adalah error yang "tidak terduga" dari sisi bisnis
   if (err instanceof Prisma.PrismaClientKnownRequestError) {

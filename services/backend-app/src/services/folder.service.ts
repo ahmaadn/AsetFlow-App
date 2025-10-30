@@ -173,3 +173,20 @@ export const checkFolder = async (folderId: string): Promise<boolean> => {
 
   return true;
 };
+
+/**
+ * Mengambil folder berdasarkan ID
+ * @param folderId ID folder yang akan diambil
+ * @returns Folder yang ditemukan
+ */
+export const getFolderById = async (folderId: string) => {
+  const folder = await FolderRepository.findById(folderId);
+  if (!folder) {
+    throw new NotFoundError({
+      message: `Folder with ID "${folderId}" does not exist.`,
+      errorCode: ErrorCode.FOLDER_NOT_FOUND,
+    });
+  }
+
+  return folder;
+};

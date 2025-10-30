@@ -15,12 +15,12 @@ datasource db {
 
 model User {
   id           Int       @id @default(autoincrement())
-  email        String    @unique
-  name         String
+  email        String    @unique @map("email") @db.VarChar(255)
+  name         String    @map("name") @db.VarChar(255)
   passwordHash String    @map("password_hash")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
   folders      Folder[]
   assets       Asset[]
 
@@ -29,9 +29,9 @@ model User {
 
 model Tag {
   id        String      @id @default(uuid())
-  name      String      @unique
-  createdAt DateTime    @default(now()) @map("created_at")
-  updatedAt DateTime    @updatedAt @map("updated_at")
+  name      String      @unique @map("name") @db.VarChar(100)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
   folders   FolderTag[]
   assets    AssetTag[]
 
@@ -41,10 +41,10 @@ model Tag {
 model Folder {
   id        String      @id @default(uuid())
   ownerId   Int         @map("owner_id")
-  name      String
-  slug      String      @unique
-  createdAt DateTime    @default(now()) @map("created_at")
-  updatedAt DateTime    @updatedAt @map("updated_at")
+  name      String      @map("name") @db.VarChar(255)
+  slug      String      @unique @map("slug") @db.VarChar(255)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
   owner     User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   assets    Asset[]
   tags      FolderTag[]
@@ -64,21 +64,25 @@ model FolderTag {
 }
 
 model Asset {
-  id              String           @id @default(uuid())
-  folderId        String           @map("folder_id")
-  ownerId         Int              @map("owner_id")
-  originalName    String           @map("original_name")
-  slug            String           @unique
-  fileSizeBytes   BigInt           @map("file_size_bytes")
-  mimeType        String           @map("mime_type")
-  assetType       String           @map("asset_type")
-  url             String           @map("url")
-  createdAt       DateTime         @default(now()) @map("created_at")
-  updatedAt       DateTime         @updatedAt @map("updated_at")
-  folder          Folder           @relation(fields: [folderId], references: [id], onDelete: Cascade)
-  owner           User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  cloudinaryAsset CloudinaryAsset?
-  tags            AssetTag[]
+  id           String     @id @default(uuid())
+  folderId     String     @map("folder_id")
+  ownerId      Int        @map("owner_id")
+  publicId     String     @map("public_id")
+  originalName String     @map("original_name")
+  slug         String     @map("slug")
+  size         String     @map("size")
+  mimeType     String     @map("mime_type")
+  assetType    String     @map("asset_type")
+  url          String     @map("url")
+  format       String     @map("format")
+  resourceType String     @map("resource_type")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  width        Int        @map("width")
+  height       Int        @map("height")
+  folder       Folder     @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  owner        User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tags         AssetTag[]
 
   @@map("assets")
 }
@@ -92,27 +96,4 @@ model AssetTag {
 
   @@id([assetId, tagId])
   @@map("asset_tags")
-}
-
-model CloudinaryAsset {
-  id              String   @id @default(uuid())
-  publicId        String   @unique @map("public_id")
-  version         Int      @map("version")
-  signature       String   @map("signature")
-  width           Int      @map("width")
-  height          Int      @map("height")
-  format          String   @map("format")
-  resourceType    String   @map("resource_type")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-  bytes           BigInt   @map("bytes")
-  type            String   @map("type")
-  url             String   @map("url")
-  secureUrl       String   @map("secure_url")
-  folder          String?  @map("folder")
-  accessMode      String   @map("access_mode")
-  originalAsset   Asset?   @relation(fields: [originalAssetId], references: [id], onDelete: SetNull)
-  originalAssetId String?  @unique @map("original_asset_id")
-
-  @@map("cloudinary_assets")
 }
