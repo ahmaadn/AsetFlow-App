@@ -25,6 +25,12 @@ definePageMeta({
   },
 });
 
+const router = useRouter();
+
+const backToFolder = () => {
+  router.push('/folder');
+};
+
 const assets: Asset[] = [
   {
     name: 'hero-banner-v2.png',
@@ -126,7 +132,7 @@ const selectedAsset = ref<Asset | null>(null);
 
 <template>
   <UiContent>
-    <MediaHeader />
+    <MediaHeader @back="backToFolder" />
     <div class="flex-1 p-2 flex">
       <!-- Galeri Aset -->
       <MediaGrid v-model="selectedAsset" :assets="assets" />

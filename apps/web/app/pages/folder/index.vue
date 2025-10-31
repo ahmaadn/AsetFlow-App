@@ -83,6 +83,8 @@ onMounted(refresh);
         <div class="flex items-center space-x-2">
           <button
             class="btn btn-sm btn-square btn-ghost"
+            :disabled="loading"
+            title="Create New Folder"
             @click="isCreateFolder = true"
           >
             <Icon
@@ -90,7 +92,11 @@ onMounted(refresh);
               class="size-5 opacity-80 hover:opacity-100"
             />
           </button>
-          <button class="btn btn-sm btn-square btn-ghost" @click="refresh">
+          <button
+            class="btn btn-sm btn-square btn-ghost"
+            title="Refresh"
+            @click="refresh"
+          >
             <Icon
               name="ri:restart-line"
               class="size-5 opacity-80 hover:opacity-100"
@@ -100,10 +106,14 @@ onMounted(refresh);
       </template>
       <template #right>
         <div class="flex items-center space-x-4">
-          <!-- Search Input -->
           <label class="input w-72">
             <Icon name="ri:search-line" class="size-5 opacity-50" />
-            <input type="search" class="grow" placeholder="Search" />
+            <input
+              type="search"
+              class="grow"
+              placeholder="Search"
+              :disabled="loading"
+            />
           </label>
         </div>
       </template>
