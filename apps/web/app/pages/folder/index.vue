@@ -7,6 +7,7 @@ const isCreateFolder = ref(false);
 const selectedFolder = ref<FolderItem | null>(null);
 const modalDeleteOpen = ref(false);
 const modalEditOpen = ref(false);
+const loading = ref(false);
 
 const columns = [
   { key: 'name', label: 'Name', sortable: true },
@@ -67,9 +68,13 @@ const clear = () => {
   modalEditOpen.value = false;
 };
 
-onMounted(async () => {
+const refresh = async () => {
+  loading.value = true;
   await folderState.loadFolders();
-});
+  loading.value = false;
+};
+
+onMounted(refresh);
 </script>
 <template>
   <UiContent>
@@ -85,7 +90,7 @@ onMounted(async () => {
               class="size-5 opacity-80 hover:opacity-100"
             />
           </button>
-          <button class="btn btn-sm btn-square btn-ghost">
+          <button class="btn btn-sm btn-square btn-ghost" @click="refresh">
             <Icon
               name="ri:restart-line"
               class="size-5 opacity-80 hover:opacity-100"
@@ -107,6 +112,7 @@ onMounted(async () => {
       <ui-table
         :columns="columns"
         :rows="folderState.folders"
+        :loading="loading"
         row-key="id"
         class="w-full"
       >

@@ -9,11 +9,17 @@ type ColumnType = {
 
 type RowType = Record<string, unknown>;
 
-const props = defineProps<{
+interface Props {
   columns: ColumnType[];
   rows: RowType[];
   rowKey?: string;
-}>();
+  loading?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  rowKey: 'id',
+  loading: false,
+});
 
 const emit = defineEmits<{
   (e: 'row-click', row: RowType): void;
@@ -76,7 +82,7 @@ function onRowClick(row: RowType) {
 </script>
 
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto relative">
     <table class="table w-full">
       <thead>
         <slot name="first-head-row" />
@@ -146,5 +152,17 @@ function onRowClick(row: RowType) {
         <slot name="last-row" />
       </tbody>
     </table>
+    <template v-if="props.loading">
+      <slot name="loading-overlay">
+        <div class="absolute inset-0 bg-neutral/10">
+          <div
+            class="flex items-center justify-center h-full font-medium gap-x-2"
+          >
+            <Icon name="ri:loader-5-line" class="animate-spin size-10" />
+            <span>Loading...</span>
+          </div>
+        </div>
+      </slot>
+    </template>
   </div>
 </template>
