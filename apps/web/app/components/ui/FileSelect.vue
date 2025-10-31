@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps({
-  maxSize: { type: Number, default: 100 * 1024 * 1024 }, // 100MB
+  maxSize: { type: Number, default: 10 * 1024 * 1024 }, // 10MB
   accepts: { type: Array as PropType<string[]>, default: () => ['image/*'] },
 });
 
@@ -65,10 +65,7 @@ function handleFileDrop(files: File[] | FileList | null) {
 
 const { isOverDropZone } = useDropZone(dropZoneRef, {
   onDrop: handleFileDrop,
-  // specify the types of data to be received.
-  // control multi-file drop
   multiple: true,
-  // whether to prevent default behavior for unhandled events
   preventDefaultForUnhandled: false,
 });
 
@@ -91,7 +88,7 @@ watch(files, (newFiles) => handleFileDrop(newFiles));
         atau seret dan letakkan di sini
       </p>
       <p class="text-xs text-slate-500">
-        Maksimum ukuran file: 100MB {{ isOverDropZone }}
+        Maksimum ukuran file: {{ formatBytes(props.maxSize) }}
       </p>
       <div
         role="button"
