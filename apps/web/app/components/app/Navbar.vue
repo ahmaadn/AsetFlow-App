@@ -1,10 +1,27 @@
 <script setup lang="ts">
-const props = defineProps({
-  drawerId: {
-    type: String,
-    default: 'my-drawer-2',
-  },
+interface Props {
+  drawerId?: string;
+  title?: string;
+  showAddButton?: boolean;
+  addButtonLabel?: string;
+  addButtonTo?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  drawerId: 'my-drawer-2',
+  title: 'Dashboard',
+  showAddButton: true,
+  addButtonLabel: 'Add Assets',
+  addButtonTo: '/media/add',
 });
+
+const emit = defineEmits<{
+  (e: 'add-click'): void;
+}>();
+
+const handleAddClick = () => {
+  emit('add-click');
+};
 </script>
 
 <template>
@@ -19,14 +36,18 @@ const props = defineProps({
     </div>
     <div class="flex-1 h-full">
       <div class="flex items-center h-10">
-        <p class="px-4 font-bold text-xl">Dashboard</p>
+        <p class="px-4 font-bold text-xl">{{ props.title }}</p>
       </div>
     </div>
     <div class="flex-none">
-      <div class="px-4 flex items-center gap-x-2">
-        <NuxtLink class="btn btn-primary" to="/media/add">
+      <div v-if="showAddButton" class="px-4 flex items-center gap-x-2">
+        <NuxtLink
+          class="btn btn-primary"
+          :to="props.addButtonTo"
+          @click="handleAddClick"
+        >
           <Icon name="ri:add-line" class="h-5 w-5" />
-          Add Assets
+          {{ props.addButtonLabel }}
         </NuxtLink>
       </div>
     </div>

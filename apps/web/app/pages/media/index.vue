@@ -98,10 +98,15 @@ const assets: Asset[] = [
 
 // selection state: null = hidden
 const selectedAsset = ref<Asset | null>(null);
+
+const backToDashboard = () => {
+  // navigate to dashboard
+  navigateTo('/');
+};
 </script>
 <template>
   <UiContent>
-    <MediaHeader />
+    <MediaHeader @back="backToDashboard" />
     <div class="flex-1 p-2 flex">
       <!-- Galeri Aset -->
       <MediaGrid v-model="selectedAsset" :assets="assets" />

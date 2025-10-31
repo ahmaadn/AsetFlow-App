@@ -11,4 +11,18 @@ type Asset = {
   claudinaryUrl?: string;
 };
 
-export type { Asset, AssetType };
+interface MenuItem {
+  label: string;
+  icon: string;
+  to: string;
+  badge?: string | number;
+  disabled?: boolean;
+  external?: boolean;
+}
+
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
+
+export type { Asset, AssetType, MenuItem, MenuSection };
