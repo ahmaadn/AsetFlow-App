@@ -1,15 +1,14 @@
 <script setup lang="ts">
-const { remove, getToastsByPosition } = useToast();
+const { remove, toasts } = useToast();
 
-// Semua posisi yang mungkin
-const positions: ToastPosition[] = [
-  'top-left',
-  'top-center',
-  'top-right',
-  'bottom-left',
-  'bottom-center',
-  'bottom-right',
-];
+const props = withDefaults(
+  defineProps<{
+    position?: ToastPosition;
+  }>(),
+  {
+    position: 'top-right',
+  }
+);
 
 // CSS classes untuk setiap posisi
 const positionClasses: Record<ToastPosition, string> = {
@@ -40,22 +39,20 @@ const btnColor = {
 </script>
 
 <template>
-  <div class="toast-container">
-    <!-- Render toast container untuk setiap posisi -->
+  <div class="toast-container fixed z-50 pointer-events-none">
     <div
-      v-for="position in positions"
-      :key="position"
       :class="[
         'fixed z-50 flex flex-col gap-2 pointer-events-none',
-        positionClasses[position],
+        positionClasses[props.position],
       ]"
     >
+      <div id="toast-upload"></div>
       <TransitionGroup name="toast" tag="div" class="flex flex-col gap-2">
         <div
-          v-for="toast in getToastsByPosition(position).value"
+          v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'w-[400px] alert  pointer-events-auto animate-in slide-in-from-top-2 z-100 relative shadow-sm',
+            'max-w-md md:w-96 alert  pointer-events-auto animate-in slide-in-from-top-2 z-100 relative shadow-sm',
             typeClasses[toast.type],
           ]"
         >

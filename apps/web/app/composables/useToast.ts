@@ -1,5 +1,3 @@
-import { computed } from 'vue';
-
 export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'default';
 export type ToastPosition =
   | 'top-left'
@@ -15,7 +13,6 @@ export interface Toast {
   title?: string;
   message: string;
   duration?: number;
-  position?: ToastPosition;
   icon?: string;
   closable?: boolean;
   createdAt: number;
@@ -45,7 +42,6 @@ export function useToast() {
   const toasts = useState<Toast[]>('toasts', () => []);
 
   const defaultDuration = 3000;
-  const defaultPosition: ToastPosition = 'top-right';
 
   const generateId = (): string => {
     return `toast-${++toastId}-${Date.now()}`;
@@ -59,7 +55,6 @@ export function useToast() {
   ): string => {
     const id = generateId();
     const duration = options?.duration ?? defaultDuration;
-    const position = options?.position ?? defaultPosition;
 
     const toast: Toast = {
       id,
@@ -67,7 +62,7 @@ export function useToast() {
       title: options?.title,
       message,
       duration,
-      position,
+
       icon: options?.icon,
       closable: options?.closable ?? true,
       createdAt: Date.now(),
@@ -135,18 +130,6 @@ export function useToast() {
   // Remove all toasts
   const clear = (): void => {
     toasts.value = [];
-  };
-
-  // Remove by position
-  const clearByPosition = (position: ToastPosition): void => {
-    toasts.value = toasts.value.filter((t) => t.position !== position);
-  };
-
-  // Get toasts by position
-  const getToastsByPosition = (position: ToastPosition) => {
-    return computed(() =>
-      toasts.value.filter((t) => (t.position || defaultPosition) === position)
-    );
   };
 
   // Promise wrapper untuk async operations
@@ -221,8 +204,6 @@ export function useToast() {
     add: defaultToast,
     remove,
     clear,
-    clearByPosition,
-    getToastsByPosition,
     promise,
   };
 }
