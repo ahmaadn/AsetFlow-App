@@ -9,12 +9,13 @@ await init();
 
 <template>
   <div>
-    <div>
+    <div class="main relative">
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>
     </div>
     <div id="modal-container" class="fixed z-50"></div>
-    <UiToastContainer class="fixed z-100" />
+    <UiToastContainer class="fixed z-100" position="top-right" />
+    <UiUploadedToast />
   </div>
 </template>
