@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
-type Option = { label: string; value: string | number };
+type Option = { label: string; value: string | number; [key: string]: unknown };
 
 const props = defineProps({
   options: {
@@ -131,7 +131,9 @@ function isSelected(opt: Option) {
     );
   }
 
-  return !Array.isArray(modelValue.value) && modelValue.value === opt;
+  return (
+    !Array.isArray(modelValue.value) && modelValue.value?.value === opt.value
+  );
 }
 
 function onDocumentClick(e: MouseEvent) {
@@ -291,7 +293,9 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
           >
             <span v-if="isSelected(opt)">✓</span>
             <span v-else class="w-4 inline-block">&nbsp;</span>
-            {{ opt.label }}
+            <slot name="option" :option="opt">
+              {{ opt.label }}
+            </slot>
           </div>
         </li>
         <li v-if="filteredOptions.length === 0" class="opacity-50 italic">
