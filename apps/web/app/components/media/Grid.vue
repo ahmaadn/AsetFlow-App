@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { Asset } from '~/types';
 
-const { assets } = withDefaults(defineProps<{ assets?: Asset[] }>(), {
-  assets: () => [],
-});
+const { assets = [] } = defineProps<{ assets?: Asset[] }>();
 
 // v-model untuk item terpilih (Asset | null)
 const selected = defineModel<Asset | null>({ default: null });
