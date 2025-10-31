@@ -16,9 +16,12 @@ export const errorHandler = (
 ) => {
   // Catat pesan error
   logger.error(err.message);
+  logger.error(err.stack || '');
 
   // Tangani error yang sudah berupa ApiError
   if (err instanceof ApiError) {
+    logger.error(`Handling ApiError with status code ${err.statusCode}`);
+    logger.error(`ApiError details: ${JSON.stringify(err.toJSON())}`);
     return res.status(err.statusCode).json(err.toJSON());
   }
 
