@@ -313,5 +313,6 @@ onMounted(async () => {
         </button>
       </div>
     </section>
+    <BackToTop></BackToTop>
   </div>
 </template>
