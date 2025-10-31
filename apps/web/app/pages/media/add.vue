@@ -4,36 +4,33 @@ type UploadFile = {
   slug: string;
   mimeType: string;
   assetType: GeneralAssetType;
-  size: number; // dalam bytes
-  previewUrl?: string; // opsional URL untuk pratinjau file
-  file?: File; // original file
+  size: number;
+  previewUrl?: string;
+  file?: File;
 };
 
 type FolderOption = {
   label: string;
   value: string;
+  [key: string]: unknown;
 };
-const folders: FolderOption[] = [
-  { label: 'Dokumen Internal', value: 'dokumen-internal' },
-  { label: 'Marketing', value: 'marketing' },
-  { label: 'Campaign Q4', value: 'campaign-q4' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan2' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan3' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan4' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan5' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan6' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan7' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan8' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan9' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan10' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan11' },
-  { label: 'Laporan Bulanan', value: 'laporan-bulanan12' },
-];
+
+const folderStore = useFolderStore();
+const toast = useToast();
+const { $uploadQueue } = useNuxtApp();
 
 const folderTarget = ref<FolderOption | null>(null);
 const files = ref<File[] | null>(null);
 const stagingFiles = ref<UploadFile[]>([]);
+
+// Opsi folder untuk ComboBox
+const folders = computed<FolderOption[]>(() =>
+  folderStore.folders.map((f) => ({
+    label: f.name,
+    value: f.id,
+    slug: f.slug,
+  }))
+);
 
 // Detect duplicate names/slugs across staging files
 const duplicateNames = computed<Set<string>>(() => {
@@ -113,6 +110,38 @@ function deleteStagingFile(index: number) {
   }
   stagingFiles.value.splice(index, 1);
 }
+
+async function uploadFiles() {
+  if (hasDuplicate.value || stagingFiles.value.length === 0) {
+    return;
+  }
+
+  if (!folderTarget.value) {
+    toast.error('Please select a target folder before uploading.');
+    return;
+  }
+
+  const uploadItems: UploadItem[] = stagingFiles.value
+    .filter((item) => item.file)
+    .map((item) => ({
+      file: item.file!,
+      filename: item.name,
+      slug: item.slug,
+      apiEndpoint: `/folders/${folderTarget.value!.value}/upload`,
+      url: item.previewUrl,
+    }));
+
+  $uploadQueue.addFiles(uploadItems);
+  stagingFiles.value = [];
+
+  await $uploadQueue.startUpload();
+}
+
+onMounted(async () => {
+  if (folderStore.folders.length === 0) {
+    await folderStore.loadFolders();
+  }
+});
 </script>
 
 <template>
@@ -138,8 +167,23 @@ function deleteStagingFile(index: number) {
                 v-model="folderTarget"
                 :options="folders"
                 placeholder="Pilih folder"
+              >
+                <template #option="{ option }">
+                  <p>{{ option.label }}</p>
+                  <p class="text-sm text-neutral/60">{{ option.slug }}</p>
+                </template>
+              </UiComboBox>
+              <FolderForm
+                v-else
+                size="md"
+                @close="select(0)"
+                @submit="
+                  async (name: string) => {
+                    await folderStore.createFolder(name);
+                    select(0);
+                  }
+                "
               />
-              <folder-form v-else size="md" @close="select(0)" />
             </div>
           </template>
         </ui-tabs>
@@ -147,7 +191,7 @@ function deleteStagingFile(index: number) {
     </section>
 
     <!-- Step 2: Add Assets -->
-    <section>
+    <section v-if="folderTarget">
       <h2 class="text-lg font-semibold text-slate-800 mb-2">
         Langkah 2: Tambahkan Aset
       </h2>
@@ -161,7 +205,11 @@ function deleteStagingFile(index: number) {
     </section>
 
     <!-- Step 3: Review & Upload -->
-    <section id="staging-section" class="">
+    <section
+      v-if="folderTarget && stagingFiles.length"
+      id="staging-section"
+      class=""
+    >
       <h2 class="text-lg font-semibold text-slate-800 mb-2">
         Langkah 3: Tinjau & Unggah
       </h2>
@@ -258,6 +306,7 @@ function deleteStagingFile(index: number) {
         <button
           class="btn btn-primary gap-2 w-full"
           :disabled="hasDuplicate || stagingFiles.length === 0"
+          @click="uploadFiles"
         >
           <Icon name="ri:upload-cloud-2-line" class="size-5" />
           <span>Unggah {{ stagingFiles.length }} Asset</span>
