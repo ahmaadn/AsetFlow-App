@@ -1,5 +1,5 @@
 import { FolderModel, prisma } from '@asetflow/database';
-import { UpdateFolderType } from '@asetflow/validators';
+import { type UpdateFolderType } from '@asetflow/validators';
 
 /**
  * Mengambil semua folder.
