@@ -3,10 +3,6 @@ const publicRoutes = ['/login', '/404'];
 export default defineNuxtRouteMiddleware((to, from) => {
   const auth = useAuth();
 
-  console.log(
-    `Navigating to ${to.path}. Is authenticated: ${auth.isAuthenticated.value}`
-  );
-
   // Jika pengguna sudah login dan mencoba mengakses halaman '/login' lagi,
   // arahkan mereka kembali ke halaman sebelumnya atau ke dashboard.
   if (to.path === '/login' && auth.isAuthenticated.value) {
@@ -26,6 +22,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // Jika pengguna belum login dan mencoba mengakses halaman yang bukan publik,
   // arahkan mereka ke halaman login.
   if (!auth.isAuthenticated.value) {
+    auth.logout();
     return navigateTo('/login');
   }
 });
