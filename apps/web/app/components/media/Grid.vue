@@ -2,30 +2,17 @@
 import type { AssetResponse } from '@asetflow/shared-types';
 
 const { assets = [] } = defineProps<{ assets?: AssetResponse[] }>();
-
-// v-model untuk item terpilih
-const selected = defineModel<AssetResponse | null>({ default: null });
-
-function toggleSelect(asset: AssetResponse) {
-  if (!asset) return;
-  selected.value =
-    selected.value && selected.value.id === asset.id ? null : asset;
-}
 </script>
 
 <template>
   <div class="flex-1 overflow-y-auto rounded-lg">
     <div
       v-if="assets.length > 0"
-      class="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+      class="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4"
     >
-      <AssetItem
-        v-for="asset in assets"
-        :key="asset.id"
-        :asset="asset"
-        :selected="Boolean(selected && selected.id === asset.id)"
-        @click="toggleSelect(asset)"
-      />
+      <template v-for="asset in assets" :key="asset.id">
+        <slot :asset="asset" />
+      </template>
     </div>
 
     <!-- Empty State -->

@@ -9,7 +9,7 @@ await init();
 
 <template>
   <div>
-    <div class="main relative">
+    <div class="main-content relative">
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>

@@ -18,7 +18,6 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@nuxt/image',
-    '@unlazy/nuxt',
   ],
   fonts: {
     defaults: {

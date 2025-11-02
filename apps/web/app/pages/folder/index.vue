@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FolderItem } from '@asetflow/shared-types';
+import { formatDisplayDate } from '@asetflow/shared';
 
 const folderState = useFolderStore();
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AssetResponse } from '@asetflow/shared-types';
+import { formatDisplayDate, formatSize } from '@asetflow/shared';
 
 const props = defineProps<{
   asset: AssetResponse;
@@ -8,15 +9,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'close' | 'download' | 'edit' | 'delete'): void;
 }>();
-
-// Prevent body scroll when panel is open
-onMounted(() => {
-  document.body.style.overflow = 'hidden';
-});
-
-onUnmounted(() => {
-  document.body.style.overflow = '';
-});
 
 // Handle close
 const handleClose = () => {

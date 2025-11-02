@@ -17,6 +17,7 @@ definePageMeta({
     try {
       await checkFolderIdApi(route.params.id as string);
       return true;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
       return false;
     }
@@ -26,7 +27,6 @@ definePageMeta({
 const route = useRoute();
 const router = useRouter();
 const assetStore = useAssetStore();
-const folderStore = useFolderStore();
 
 const folderId = computed(() => route.params.id as string);
 const selectedAsset = ref<AssetResponse | null>(null);
@@ -37,11 +37,6 @@ const assets = computed(() => assetStore.getAssetsByFolder(folderId.value));
 const pagination = computed(() => assetStore.getPagination(folderId.value));
 const isLoading = computed(() => assetStore.isLoadingFolder(folderId.value));
 const error = computed(() => assetStore.getError(folderId.value));
-
-// Get folder info
-const currentFolder = computed(() =>
-  folderStore.findFolderById(folderId.value)
-);
 
 // Load more when scroll to bottom
 const { stop: stopIntersection } = useIntersectionObserver(
@@ -129,6 +124,12 @@ const handleDelete = async () => {
   }
 };
 
+function toggleSelect(asset: AssetResponse) {
+  if (!asset) return;
+  selectedAsset.value =
+    selectedAsset.value && selectedAsset.value.id === asset.id ? null : asset;
+}
+
 // Initial load
 onMounted(async () => {
   try {
@@ -155,20 +156,6 @@ onUnmounted(() => {
     />
 
     <div class="flex flex-1 flex-col overflow-hidden p-2">
-      <!-- Folder Info -->
-      <div v-if="currentFolder" class="mb-2 rounded-lg bg-base-200 p-3">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <Icon name="ri:folder-line" class="h-5 w-5 text-primary" />
-            <h2 class="text-lg font-semibold">{{ currentFolder.name }}</h2>
-          </div>
-          <span class="text-sm text-base-content/60">
-            {{ pagination.total }}
-            {{ pagination.total === 1 ? 'asset' : 'assets' }}
-          </span>
-        </div>
-      </div>
-
       <!-- Assets Grid with Infinite Scroll -->
       <div class="relative flex-1 overflow-hidden">
         <!-- Error State -->
@@ -202,8 +189,18 @@ onUnmounted(() => {
         </div>
 
         <!-- Assets Grid -->
-        <div v-else class="h-full overflow-y-auto">
-          <MediaGrid v-model="selectedAsset" :assets="assets" />
+        <div v-else class="w-full max-h-screen overflow-y-auto">
+          <MediaGrid v-model="selectedAsset" :assets="assets">
+            <template #default="{ asset }">
+              <AssetItem
+                :asset="asset"
+                :selected="
+                  Boolean(selectedAsset && selectedAsset.id === asset.id)
+                "
+                @click="toggleSelect(asset)"
+              />
+            </template>
+          </MediaGrid>
 
           <!-- Load More Trigger -->
           <div

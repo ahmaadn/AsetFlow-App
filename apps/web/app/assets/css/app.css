@@ -49,3 +49,12 @@
 .menu li > a:active {
   @apply bg-base-300 text-primary;
 }
+
+body {
+  @apply overflow-hidden;
+}
+
+
+.main-content {
+  @apply relative overflow-auto max-h-screen;
+}

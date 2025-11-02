@@ -1,60 +1,68 @@
 <script setup lang="ts">
 import type { AssetResponse } from '@asetflow/shared-types';
+import { formatSize } from '@asetflow/shared';
+
 interface Props {
   asset: AssetResponse;
   selected?: boolean;
 }
 
-const placeholder =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADklEQVR4AWL69u3bfwAAAAD//w3X+F0AAAAGSURBVAMACbQD5IV3B4oAAAAASUVORK5CYII=';
-
 const props = defineProps<Props>();
-const emit = defineEmits<{
-  (e: 'click'): void;
-}>();
+const target = useTemplateRef<HTMLDivElement>('target');
+const targetIsVisible = useElementVisibility(target, {
+  threshold: 0.1,
+  rootMargin: '200px',
+});
+const visibility = shallowRef(false);
+const imageError = shallowRef(false);
 
-const imageError = ref(false);
-
-const handleImageError = () => {
-  imageError.value = true;
-};
+watch(
+  targetIsVisible,
+  (isVisible) => {
+    if (isVisible && !visibility.value) {
+      visibility.value = true;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <div
-    ref="imageRef"
-    class="asset-item group relative cursor-pointer rounded-lg border-2 transition-all hover:shadow-lg"
+    ref="target"
+    class="asset-item group cursor-pointer rounded-lg border-2 transition-all hover:shadow-lg"
     :class="[
       selected
         ? 'border-primary bg-primary/5'
         : 'border-base-300 hover:border-primary/50',
     ]"
-    @click="emit('click')"
   >
     <!-- Preview/Icon Container -->
     <div
       class="relative aspect-square w-full overflow-hidden rounded-t-lg bg-base-200"
     >
       <!-- Image/Video Preview -->
-      <UnLazyImage
+      <NuxtImg
         v-if="
           (isImageMimeType(asset.mimeType) ||
             isVideoMimeType(asset.mimeType)) &&
-          !imageError
+          !imageError &&
+          visibility
         "
-        :ssr="false"
         :src="asset.url"
         :alt="asset.originalName"
         class="h-full w-full object-cover"
         loading="lazy"
+        densities="x1 x2"
         preload
         height="300"
         width="300"
-        auto-sizes
-        :placeholder-src="placeholder"
-        @error="handleImageError"
+        quality="80"
+        format="webp"
+        placeholder-class="bg-base-200"
+        @error="imageError = true"
       >
-      </UnLazyImage>
+      </NuxtImg>
 
       <!-- Fallback Icon -->
       <div v-else class="flex h-full w-full items-center justify-center">
