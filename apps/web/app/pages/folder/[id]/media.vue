@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { checkFolderIdApi } from '~/lib/api/folder';
-import type { Asset } from '~/types';
+import type { AsetResponse } from '@asetflow/shared-types';
 
 definePageMeta({
   title: 'Media Library',
@@ -8,7 +8,6 @@ definePageMeta({
     const auth = useAuth();
     if (!auth.isAuthenticated.value) return false;
 
-    // Mencoba mendapatkan folder dari store terlebih dahulu
     const folderStore = useFolderStore();
     const existingFolder = folderStore.findFolderById(
       route.params.id as string
@@ -18,133 +17,223 @@ definePageMeta({
     try {
       await checkFolderIdApi(route.params.id as string);
       return true;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
       return false;
     }
   },
 });
 
+const route = useRoute();
 const router = useRouter();
+const assetStore = useAssetStore();
+const folderStore = useFolderStore();
 
+const folderId = computed(() => route.params.id as string);
+const selectedAsset = ref<AsetResponse | null>(null);
+const selectedAssetType = ref<string>('all');
+const loadMoreRef = ref<HTMLElement>();
+
+const assets = computed(() => assetStore.getAssetsByFolder(folderId.value));
+const pagination = computed(() => assetStore.getPagination(folderId.value));
+const isLoading = computed(() => assetStore.isLoadingFolder(folderId.value));
+const error = computed(() => assetStore.getError(folderId.value));
+
+// Get folder info
+const currentFolder = computed(() =>
+  folderStore.findFolderById(folderId.value)
+);
+
+// Load more when scroll to bottom
+const { stop: stopIntersection } = useIntersectionObserver(
+  loadMoreRef,
+  async ([entry]) => {
+    if (entry?.isIntersecting && pagination.value.hasMore && !isLoading.value) {
+      try {
+        await assetStore.loadMoreAssets(folderId.value, {
+          assetType:
+            selectedAssetType.value === 'all'
+              ? undefined
+              : selectedAssetType.value,
+        });
+      } catch (err) {
+        console.error('Error loading more assets:', err);
+      }
+    }
+  }
+);
+
+// Handlers
 const backToFolder = () => {
   router.push('/folder');
 };
 
-const assets: Asset[] = [
-  {
-    name: 'hero-banner-v2.png',
-    slug: 'hero-banner-v2',
-    type: 'image',
-    size: '1.2 MB',
-    assetUrl: 'https://placehold.co/600x400?text=Hero+Banner',
-    publicUrl: '/laporan-bulanan/hero-banner-v2',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'product-hero.jpg',
-    slug: 'product-hero',
-    type: 'image',
-    size: '850 KB',
-    assetUrl: 'https://placehold.co/600x400?text=Product',
-    publicUrl: '/product/product-hero',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'library-thumb.png',
-    slug: 'library-thumb',
-    type: 'image',
-    size: '450 KB',
-    assetUrl: 'https://placehold.co/600x400?text=Library',
-    publicUrl: '/media/library-thumb',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'office-photo.jpg',
-    slug: 'office-photo',
-    type: 'image',
-    size: '2.1 MB',
-    assetUrl: 'https://placehold.co/600x400?text=Office',
-    publicUrl: '/media/office-photo',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'intro-video.mp4',
-    slug: 'intro-video',
-    type: 'video',
-    size: '12.4 MB',
-    assetUrl: 'https://placehold.co/600x400',
-    thumbnail: 'https://placehold.co/600x400?text=Thumb',
-    publicUrl: '/media/intro-video',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'presentation.pdf',
-    slug: 'presentation',
-    type: 'document',
-    size: '320 KB',
-    assetUrl: 'https://placehold.co/600x400',
-    publicUrl: '/media/presentation',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'podcast-ep1.mp3',
-    slug: 'podcast-ep1',
-    type: 'audio',
-    size: '5.6 MB',
-    assetUrl: 'https://placehold.co/600x400',
-    publicUrl: '/media/podcast-ep1',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'gallery-01.jpg',
-    slug: 'gallery-01',
-    type: 'image',
-    size: '780 KB',
-    assetUrl: 'https://placehold.co/600x400?text=Gallery+1',
-    publicUrl: '/media/gallery-01',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'gallery-02.jpg',
-    slug: 'gallery-02',
-    type: 'image',
-    size: '910 KB',
-    assetUrl: 'https://placehold.co/600x400?text=Gallery+2',
-    publicUrl: '/media/gallery-02',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-  {
-    name: 'product-demo.mp4',
-    slug: 'product-demo',
-    type: 'video',
-    size: '24.8 MB',
-    assetUrl: 'https://placehold.co/600x400',
-    thumbnail: 'https://placehold.co/600x400?text=Demo+Thumb',
-    publicUrl: '/media/product-demo',
-    claudinaryUrl: '/laporan-bulanan/hero-banner-v2',
-  },
-];
+const handleRefresh = async () => {
+  try {
+    selectedAsset.value = null;
+    await assetStore.refreshAssets(folderId.value, {
+      assetType:
+        selectedAssetType.value === 'all' ? undefined : selectedAssetType.value,
+    });
+  } catch (err) {
+    console.error('Error refreshing assets:', err);
+  }
+};
 
-// selection state: null = hidden
-const selectedAsset = ref<Asset | null>(null);
+const handleAssetTypeChange = async (type: string) => {
+  try {
+    selectedAssetType.value = type;
+    selectedAsset.value = null;
+    await assetStore.refreshAssets(folderId.value, {
+      assetType: type === 'all' ? undefined : type,
+    });
+  } catch (err) {
+    console.error('Error changing asset type:', err);
+  }
+};
+
+// Panel handlers
+const handleClosePanel = () => {
+  selectedAsset.value = null;
+};
+
+const handleDownload = () => {
+  // Download logic already handled in panel
+  console.log('Download asset:', selectedAsset.value?.id);
+};
+
+const handleEdit = () => {
+  if (!selectedAsset.value) return;
+  // TODO: Navigate to edit page or open edit modal
+  console.log('Edit asset:', selectedAsset.value.id);
+  // router.push(`/folder/${folderId.value}/asset/${selectedAsset.value.id}/edit`);
+};
+
+const handleDelete = async () => {
+  if (!selectedAsset.value) return;
+
+  // TODO: Show confirmation dialog
+  const confirmed = confirm(
+    `Are you sure you want to delete "${selectedAsset.value.originalName}"?`
+  );
+
+  if (confirmed) {
+    try {
+      // TODO: Call delete API
+      console.log('Delete asset:', selectedAsset.value.id);
+      // await deleteAssetApi(selectedAsset.value.id);
+      // assetStore.removeAsset(folderId.value, selectedAsset.value.id);
+      selectedAsset.value = null;
+    } catch (err) {
+      console.error('Error deleting asset:', err);
+    }
+  }
+};
+
+// Initial load
+onMounted(async () => {
+  try {
+    if (assets.value.length === 0) {
+      await assetStore.loadAssets(folderId.value);
+    }
+  } catch (err) {
+    console.error('Error loading initial assets:', err);
+  }
+});
+
+// Cleanup on unmount
+onUnmounted(() => {
+  stopIntersection();
+});
 </script>
 
 <template>
   <UiContent>
-    <MediaHeader @back="backToFolder" />
-    <div class="flex-1 p-2 flex">
-      <!-- Galeri Aset -->
-      <MediaGrid v-model="selectedAsset" :assets="assets" />
-    </div>
-    <template v-if="selectedAsset">
-      <!-- mobile-only overlay: click to close -->
-      <div
-        class="fixed inset-0 bg-black/30 z-40"
-        @click="selectedAsset = null"
-      />
+    <MediaHeader
+      @back="backToFolder"
+      @refresh="handleRefresh"
+      @asset-type-change="handleAssetTypeChange"
+    />
 
-      <aset-panel :asset="selectedAsset" />
-    </template>
+    <div class="flex flex-1 flex-col overflow-hidden p-2">
+      <!-- Folder Info -->
+      <div v-if="currentFolder" class="mb-2 rounded-lg bg-base-200 p-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <Icon name="ri:folder-line" class="h-5 w-5 text-primary" />
+            <h2 class="text-lg font-semibold">{{ currentFolder.name }}</h2>
+          </div>
+          <span class="text-sm text-base-content/60">
+            {{ pagination.total }}
+            {{ pagination.total === 1 ? 'asset' : 'assets' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Assets Grid with Infinite Scroll -->
+      <div class="relative flex-1 overflow-hidden">
+        <!-- Error State -->
+        <div
+          v-if="error"
+          class="flex h-full flex-col items-center justify-center p-8"
+        >
+          <Icon
+            name="ri:error-warning-line"
+            class="mb-4 h-24 w-24 text-error/50"
+          />
+          <p class="mb-2 text-lg font-medium text-error">
+            Error Loading Assets
+          </p>
+          <p class="mb-4 text-sm text-base-content/60">{{ error }}</p>
+          <button class="btn btn-primary btn-sm" @click="handleRefresh">
+            <Icon name="ri:restart-line" class="h-4 w-4" />
+            Try Again
+          </button>
+        </div>
+
+        <!-- Loading First Time -->
+        <div
+          v-else-if="isLoading && assets.length === 0"
+          class="flex h-full items-center justify-center"
+        >
+          <div class="flex flex-col items-center gap-2">
+            <span class="loading loading-spinner loading-lg text-primary" />
+            <p class="text-sm text-base-content/60">Loading assets...</p>
+          </div>
+        </div>
+
+        <!-- Assets Grid -->
+        <div v-else class="h-full overflow-y-auto">
+          <MediaGrid v-model="selectedAsset" :assets="assets" />
+
+          <!-- Load More Trigger -->
+          <div
+            v-if="pagination.hasMore"
+            ref="loadMoreRef"
+            class="flex justify-center p-4"
+          >
+            <span class="loading loading-spinner loading-md text-primary" />
+          </div>
+
+          <!-- End Message -->
+          <div
+            v-else-if="assets.length > 0"
+            class="p-4 text-center text-sm text-base-content/40"
+          >
+            All assets loaded
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <AsetPanel
+      v-if="selectedAsset"
+      :asset="selectedAsset"
+      @close="handleClosePanel"
+      @download="handleDownload"
+      @edit="handleEdit"
+      @delete="handleDelete"
+    />
+
+    <BackToTop />
   </UiContent>
 </template>

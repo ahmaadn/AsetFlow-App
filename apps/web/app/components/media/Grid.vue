@@ -1,42 +1,43 @@
 <script setup lang="ts">
-import type { Asset } from '~/types';
+import type { AsetResponse } from '@asetflow/shared-types';
 
-const { assets = [] } = defineProps<{ assets?: Asset[] }>();
+const { assets = [] } = defineProps<{ assets?: AsetResponse[] }>();
 
-// v-model untuk item terpilih (Asset | null)
-const selected = defineModel<Asset | null>({ default: null });
+// v-model untuk item terpilih
+const selected = defineModel<AsetResponse | null>({ default: null });
 
-function toggleSelect(asset: Asset) {
+function toggleSelect(asset: AsetResponse) {
   if (!asset) return;
   selected.value =
-    selected.value && selected.value.slug === asset.slug ? null : asset;
+    selected.value && selected.value.id === asset.id ? null : asset;
 }
 </script>
+
 <template>
-  <div class="flex-1 rounded-lg overflow-y-auto">
-    <aset-grid class="p-4">
-      <aset-item
+  <div class="flex-1 overflow-y-auto rounded-lg">
+    <div
+      v-if="assets.length > 0"
+      class="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+    >
+      <AsetItem
         v-for="asset in assets"
-        :key="asset.slug"
-        :type="asset.type"
-        :filename="asset.name"
-        :selected="Boolean(selected && selected.slug === asset.slug)"
+        :key="asset.id"
+        :asset="asset"
+        :selected="Boolean(selected && selected.id === asset.id)"
         @click="toggleSelect(asset)"
-      >
-        <template
-          v-if="
-            (asset.type === 'image' && asset.assetUrl) ||
-            (asset.type === 'video' && asset.thumbnail)
-          "
-          #preview
-        >
-          <img
-            :src="asset.type === 'video' ? asset.thumbnail : asset.assetUrl"
-            :alt="asset.name"
-            class="absolute inset-0 w-full h-full object-cover rounded opacity-100 transition-opacity duration-300"
-          />
-        </template>
-      </aset-item>
-    </aset-grid>
+      />
+    </div>
+
+    <!-- Empty State -->
+    <div v-else class="flex h-full flex-col items-center justify-center p-8">
+      <Icon
+        name="ri:folder-open-line"
+        class="mb-4 h-24 w-24 text-base-content/20"
+      />
+      <p class="text-lg font-medium text-base-content/60">No Assets Found</p>
+      <p class="text-sm text-base-content/40">
+        This folder is empty. Upload some assets to get started.
+      </p>
+    </div>
   </div>
 </template>

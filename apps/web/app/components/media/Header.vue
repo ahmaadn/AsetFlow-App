@@ -9,7 +9,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  defaultViewMode: 'list',
+  defaultViewMode: 'grid',
   defaultAssetType: 'all',
   defaultSearchQuery: '',
 });
@@ -38,51 +38,40 @@ const handleViewModeChange = (mode: ViewMode) => {
   emit('viewModeChange', mode);
 };
 
-const handleAssetTypeChange = (event: Event) => {
-  const target = event.target as HTMLSelectElement;
-  const type = target.value as AssetType;
-  selectedAssetType.value = type;
-  emit('assetTypeChange', type);
+const handleAssetTypeChange = () => {
+  emit('assetTypeChange', selectedAssetType.value);
 };
 
-// Debounce search untuk performa lebih baik
-const debouncedSearch = useDebounceFn((query: string) => {
-  emit('search', query);
-}, 300);
-
-const handleSearch = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  searchQuery.value = target.value;
-  debouncedSearch(target.value);
+const handleSearch = () => {
+  emit('search', searchQuery.value);
 };
 </script>
 
 <template>
   <UiHeader>
     <template #left>
-      <div class="flex items-center gap-x-2">
+      <div class="flex items-center space-x-2">
         <button
-          class="btn btn-sm btn-square btn-ghost"
+          class="btn btn-ghost btn-sm btn-square"
           title="Back"
           @click="handleBack"
         >
-          <Icon
-            name="ri:arrow-left-line"
-            class="size-5 opacity-80 hover:opacity-100"
-          />
+          <Icon name="ri:arrow-left-line" class="size-5" />
         </button>
-
         <button
-          class="btn btn-sm btn-square btn-ghost"
+          class="btn btn-ghost btn-sm btn-square"
           title="Refresh"
           @click="handleRefresh"
         >
-          <Icon
-            name="ri:restart-line"
-            class="size-5 opacity-80 hover:opacity-100"
-          />
+          <Icon name="ri:restart-line" class="size-5" />
         </button>
-        <div role="tablist" class="tabs tabs-box tabs-sm">
+
+        <!-- View Mode Toggle (Desktop only) -->
+
+        <div
+          role="tablist"
+          class="hidden space-x-1 md:flex tabs tabs-box tabs-sm"
+        >
           <a
             role="tab"
             class="tab"
@@ -114,25 +103,28 @@ const handleSearch = (event: Event) => {
     </template>
     <template #right>
       <div class="flex items-center space-x-4">
+        <!-- Asset Type Filter -->
         <select
           v-model="selectedAssetType"
-          class="select w-36"
+          class="select select-bordered w-36"
           @change="handleAssetTypeChange"
         >
-          <option value="all">All</option>
+          <option value="all">All Types</option>
           <option value="image">Image</option>
           <option value="video">Video</option>
           <option value="document">Document</option>
           <option value="audio">Audio</option>
         </select>
 
-        <label class="input w-72">
+        <!-- Search (Disabled for now) -->
+        <label class="input input-bordered hidden w-72 md:flex">
           <Icon name="ri:search-line" class="size-5 opacity-50" />
           <input
             v-model="searchQuery"
             type="search"
             class="grow"
-            placeholder="Search"
+            placeholder="Search (coming soon)"
+            disabled
             @input="handleSearch"
           />
         </label>

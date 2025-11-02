@@ -88,7 +88,7 @@ watch(files, (newFiles) => handleFileDrop(newFiles));
         atau seret dan letakkan di sini
       </p>
       <p class="text-xs text-slate-500">
-        Maksimum ukuran file: {{ formatBytes(props.maxSize) }}
+        Maksimum ukuran file: {{ formatSize(props.maxSize) }}
       </p>
       <div
         role="button"

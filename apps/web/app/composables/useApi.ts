@@ -193,3 +193,48 @@ export function useApiState<T extends object>(
     reset,
   };
 }
+
+export function useLazyApi<T extends object>(
+  url: string,
+  options?: UseApiOptions<T>
+) {
+  const config = useRuntimeConfig();
+  const baseURL = config.public.apiBase || '/api';
+  const auth = useAuth();
+
+  const { onSuccess, onError, method, body, ...fetchOptions } = options || {};
+  const headers: Record<string, string> = {};
+  // Jika ada token, tambahkan ke header Authorization
+  if (auth.isAuthenticated.value && auth.tokenCookie.value) {
+    headers['Authorization'] = `Bearer ${auth.tokenCookie.value}`;
+  }
+  const { data, error, status, execute, refresh } = useLazyFetch<T>(url, {
+    baseURL,
+    immediate: false,
+    ...fetchOptions,
+    headers,
+  });
+
+  const loading = computed(() => status.value === 'pending');
+
+  const fetch = async () => {
+    await execute();
+
+    if (data.value && onSuccess) {
+      onSuccess(data.value as unknown as T);
+    }
+
+    if (error.value && onError) {
+      onError(error.value);
+    }
+  };
+
+  return {
+    data,
+    error,
+    loading,
+    status,
+    fetch,
+    refresh,
+  };
+}

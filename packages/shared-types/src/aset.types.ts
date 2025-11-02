@@ -1,4 +1,4 @@
-export type AsetCreate = {
+export interface AsetBase {
   folderId: string;
   ownerId: number;
   publicId: string;
@@ -10,51 +10,29 @@ export type AsetCreate = {
   url: string;
   format: string;
   resourceType: string;
+}
+
+export type AsetCreate = AsetBase & {
   width: number;
   height: number;
 };
 
-export type AsetResponse = {
+export interface Aset extends AsetBase {
   id: string;
-  folderId: string;
-  ownerId: number;
-  publicId: string;
-  originalName: string;
-  slug: string;
-  size: number;
-  mimeType: string;
-  assetType: string;
-  url: string;
-  format: string;
-  resourceType: string;
-  width?: number;
-  height?: number;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export interface AsetItem {
-  id: string;
-  folderId: string;
-  ownerId: number;
-  publicId: string;
-  originalName: string;
-  slug: string;
-  size: number;
-  mimeType: string;
-  assetType: string;
-  url: string;
-  format: string;
-  resourceType: string;
   width?: number;
   height?: number;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface AsetListResponse {
-  items: AsetItem[];
+export type AsetResponse = Aset;
+export type AsetItem = Aset;
+
+export interface Paginated<T> {
+  items: T[];
   total: number;
   page: number;
   per_page: number;
 }
+
+export type AsetListResponse = Paginated<Aset>;
