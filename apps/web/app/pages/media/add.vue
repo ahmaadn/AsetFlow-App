@@ -193,7 +193,7 @@ onMounted(async () => {
     <!-- Step 2: Add Assets -->
     <section v-if="folderTarget">
       <h2 class="text-lg font-semibold text-slate-800 mb-2">
-        Langkah 2: Tambahkan Aset
+        Langkah 2: Tambahkan Asset
       </h2>
       <p class="text-sm text-slate-500 mb-4">
         Unggah file dari komputer Anda atau impor dari URL.

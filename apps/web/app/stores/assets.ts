@@ -1,8 +1,8 @@
-import type { AsetResponse } from '@asetflow/shared-types';
+import type { AssetResponse } from '@asetflow/shared-types';
 import { lazyFetchAssetsApi, type AssetQueryParams } from '~/lib/api/asset';
 
 interface AssetState {
-  assets: Map<string, AsetResponse[]>; // Key: folderId
+  assets: Map<string, AssetResponse[]>; // Key: folderId
   pagination: Map<string, PaginationInfo>; // Key: folderId
   isLoading: Map<string, boolean>; // Key: folderId
   errors: Map<string, string | null>; // Key: folderId
@@ -158,7 +158,7 @@ export const useAssetStore = defineStore('asset', {
     /**
      * Add new asset to store (after upload)
      */
-    addAsset(folderId: string, asset: AsetResponse) {
+    addAsset(folderId: string, asset: AssetResponse) {
       const currentAssets = this.assets.get(folderId) || [];
       this.assets.set(folderId, [asset, ...currentAssets]);
 

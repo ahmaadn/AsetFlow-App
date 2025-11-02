@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { AsetResponse } from '@asetflow/shared-types';
+import type { AssetResponse } from '@asetflow/shared-types';
 
-const { assets = [] } = defineProps<{ assets?: AsetResponse[] }>();
+const { assets = [] } = defineProps<{ assets?: AssetResponse[] }>();
 
 // v-model untuk item terpilih
-const selected = defineModel<AsetResponse | null>({ default: null });
+const selected = defineModel<AssetResponse | null>({ default: null });
 
-function toggleSelect(asset: AsetResponse) {
+function toggleSelect(asset: AssetResponse) {
   if (!asset) return;
   selected.value =
     selected.value && selected.value.id === asset.id ? null : asset;
@@ -19,7 +19,7 @@ function toggleSelect(asset: AsetResponse) {
       v-if="assets.length > 0"
       class="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
     >
-      <AsetItem
+      <AssetItem
         v-for="asset in assets"
         :key="asset.id"
         :asset="asset"

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import * as asetService from '../services/aset.service';
+import * as asetService from '../services/asset.service';
 import { QueryParams } from '../types/globals';
 import { UnauthorizedError } from '../utils/api-error';
 

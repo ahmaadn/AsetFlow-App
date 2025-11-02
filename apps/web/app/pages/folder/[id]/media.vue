@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { checkFolderIdApi } from '~/lib/api/folder';
-import type { AsetResponse } from '@asetflow/shared-types';
+import type { AssetResponse } from '@asetflow/shared-types';
 
 definePageMeta({
   title: 'Media Library',
@@ -29,7 +29,7 @@ const assetStore = useAssetStore();
 const folderStore = useFolderStore();
 
 const folderId = computed(() => route.params.id as string);
-const selectedAsset = ref<AsetResponse | null>(null);
+const selectedAsset = ref<AssetResponse | null>(null);
 const selectedAssetType = ref<string>('all');
 const loadMoreRef = ref<HTMLElement>();
 
@@ -225,7 +225,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <AsetPanel
+    <AssetPanel
       v-if="selectedAsset"
       :asset="selectedAsset"
       @close="handleClosePanel"

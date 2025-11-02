@@ -1,7 +1,7 @@
 import { httpGetAssets } from '@asetflow/validators';
 import { Router } from 'express';
 
-import * as AsetController from '../controllers/aset.controller';
+import * as AssetController from '../controllers/asset.controller';
 import { protect } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validation.middleware';
 
@@ -58,7 +58,7 @@ router.get(
   '/:id/assets',
   protect,
   validate(httpGetAssets),
-  AsetController.getAssetsByFolder
+  AssetController.getAssetsByFolder
 );
 
 export default router;

@@ -1,4 +1,4 @@
-export interface AsetBase {
+export interface AssetBase {
   folderId: string;
   ownerId: number;
   publicId: string;
@@ -12,12 +12,12 @@ export interface AsetBase {
   resourceType: string;
 }
 
-export type AsetCreate = AsetBase & {
+export type AssetCreate = AssetBase & {
   width: number;
   height: number;
 };
 
-export interface Aset extends AsetBase {
+export interface Asset extends AssetBase {
   id: string;
   width?: number;
   height?: number;
@@ -25,8 +25,8 @@ export interface Aset extends AsetBase {
   updatedAt: string;
 }
 
-export type AsetResponse = Aset;
-export type AsetItem = Aset;
+export type AssetResponse = Asset;
+export type AssetItem = Asset;
 
 export interface Paginated<T> {
   items: T[];
@@ -35,4 +35,4 @@ export interface Paginated<T> {
   per_page: number;
 }
 
-export type AsetListResponse = Paginated<Aset>;
+export type AssetListResponse = Paginated<Asset>;

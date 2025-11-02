@@ -1,18 +1,18 @@
 import {
-  AsetCreate,
-  AsetResponse,
+  AssetCreate,
+  AssetResponse,
   PaginationResult,
 } from '@asetflow/shared-types';
 
-import * as AssetRepository from '../repositories/aset.repository';
+import * as AssetRepository from '../repositories/asset.repository';
 import logger from '../utils/logger';
 
 /**
  * Membuat aset baru.
  * @param data Data aset yang akan dibuat.
- * @returns Aset yang telah dibuat.
+ * @returns Asset yang telah dibuat.
  */
-export const createAset = async (data: AsetCreate) => {
+export const createAset = async (data: AssetCreate) => {
   return await AssetRepository.create(data);
 };
 
@@ -31,7 +31,7 @@ export const getAssetsByFolder = async (
     sort_by?: string;
     order?: 'asc' | 'desc';
   }
-): Promise<PaginationResult<AsetResponse>> => {
+): Promise<PaginationResult<AssetResponse>> => {
   const {
     page = 1,
     per_page = 20,

@@ -1,8 +1,8 @@
 import { UserModel } from '@asetflow/database';
-import { AsetResponse } from '@asetflow/shared-types';
+import { AssetResponse } from '@asetflow/shared-types';
 import { type Express } from 'express';
 
-import * as AssetRepository from '../repositories/aset.repository';
+import * as AssetRepository from '../repositories/asset.repository';
 import * as FolderRepository from '../repositories/folder.repository';
 import { NotFoundError } from '../utils/api-error';
 import { uploadToCloudinary } from '../utils/cloudinary';
@@ -13,7 +13,7 @@ export const uploadAset = async (
   file: Express.Multer.File,
   filename: string,
   slug: string | undefined
-): Promise<AsetResponse> => {
+): Promise<AssetResponse> => {
   // Cek folder
   const folder = await FolderRepository.findById(folderId);
   if (!folder) {
@@ -45,7 +45,7 @@ export const uploadAset = async (
   );
 
   // simpan
-  const aset = await AssetRepository.create({
+  const asset = await AssetRepository.create({
     folderId: folder.id,
     ownerId: user.id,
     publicId: result.public_id,
@@ -62,21 +62,21 @@ export const uploadAset = async (
   });
 
   return {
-    id: aset.id,
-    folderId: aset.folderId,
-    ownerId: aset.ownerId,
-    publicId: aset.publicId,
-    originalName: aset.originalName,
-    slug: aset.slug,
-    size: aset.size,
-    mimeType: aset.mimeType,
-    assetType: aset.assetType,
-    url: aset.url,
-    format: aset.format,
-    resourceType: aset.resourceType,
-    width: aset.width,
-    height: aset.height,
-    createdAt: aset.createdAt.toISOString(),
-    updatedAt: aset.updatedAt.toISOString(),
+    id: asset.id,
+    folderId: asset.folderId,
+    ownerId: asset.ownerId,
+    publicId: asset.publicId,
+    originalName: asset.originalName,
+    slug: asset.slug,
+    size: asset.size,
+    mimeType: asset.mimeType,
+    assetType: asset.assetType,
+    url: asset.url,
+    format: asset.format,
+    resourceType: asset.resourceType,
+    width: asset.width,
+    height: asset.height,
+    createdAt: asset.createdAt.toISOString(),
+    updatedAt: asset.updatedAt.toISOString(),
   };
 };

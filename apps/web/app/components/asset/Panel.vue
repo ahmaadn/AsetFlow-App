@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { AsetResponse } from '@asetflow/shared-types';
+import type { AssetResponse } from '@asetflow/shared-types';
 
 const props = defineProps<{
-  asset: AsetResponse;
+  asset: AssetResponse;
 }>();
 
 const emit = defineEmits<{

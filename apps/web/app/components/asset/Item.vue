@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { AsetResponse } from '@asetflow/shared-types';
+import type { AssetResponse } from '@asetflow/shared-types';
 interface Props {
-  asset: AsetResponse;
+  asset: AssetResponse;
   selected?: boolean;
 }
 

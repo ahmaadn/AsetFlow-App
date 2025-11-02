@@ -1,4 +1,4 @@
-import type { AsetListResponse } from '@asetflow/shared-types';
+import type { AssetListResponse } from '@asetflow/shared-types';
 
 export interface AssetQueryParams {
   page?: number;
@@ -10,7 +10,7 @@ export interface AssetQueryParams {
 
 export function fetchAssetsApi(folderId: string, query: AssetQueryParams = {}) {
   const { get } = useApi();
-  return get<AsetListResponse>(`/folders/${folderId}/assets`, {
+  return get<AssetListResponse>(`/folders/${folderId}/assets`, {
     params: query,
   });
 }
@@ -22,7 +22,7 @@ export function lazyFetchAssetsApi(
   folderId: string,
   query: AssetQueryParams = {}
 ) {
-  return useLazyApi<AsetListResponse>(`/folders/${folderId}/assets`, {
+  return useLazyApi<AssetListResponse>(`/folders/${folderId}/assets`, {
     method: 'GET',
     params: query,
   });

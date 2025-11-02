@@ -1,16 +1,20 @@
 /**
  * Mendefinisikan tipe umum dari sebuah aset untuk memudahkan kategorisasi.
  */
-export enum GeneralAssetType {
-  IMAGE = 'image',
-  VIDEO = 'video',
-  AUDIO = 'audio',
-  DOCUMENT = 'document',
-  UNKNOWN = 'unknown',
-}
+export const GeneralAssetType = {
+  IMAGE: 'image',
+  VIDEO: 'video',
+  AUDIO: 'audio',
+  DOCUMENT: 'document',
+  UNKNOWN: 'unknown',
+} as const;
+
+export type GeneralAssetType =
+  (typeof GeneralAssetType)[keyof typeof GeneralAssetType];
+
 /**
  * Pemetaan dari GeneralAssetType ke nama ikon yang sesuai.
- * Kunci adalah enum GeneralAssetType, dan nilainya adalah string nama ikon.
+ * Kunci adalah GeneralAssetType, dan nilainya adalah string nama ikon.
  */
 export const iconMapping: Readonly<Record<GeneralAssetType, string>> = {
   [GeneralAssetType.IMAGE]: 'ri:multi-image-line',

@@ -1,12 +1,12 @@
 import { AssetModel, prisma } from '@asetflow/database';
-import { AsetCreate } from '@asetflow/shared-types';
+import { AssetCreate } from '@asetflow/shared-types';
 
 /**
  * Membuat aset baru
  * @param data Data aset baru
- * @returns Aset yang telah dibuat
+ * @returns Asset yang telah dibuat
  */
-export const create = async (data: AsetCreate): Promise<AssetModel> => {
+export const create = async (data: AssetCreate): Promise<AssetModel> => {
   return await prisma.asset.create({
     data: {
       folderId: data.folderId,
@@ -29,7 +29,7 @@ export const create = async (data: AsetCreate): Promise<AssetModel> => {
 /**
  * Mencari aset berdasarkan ID
  * @param id ID aset
- * @returns Aset yang ditemukan atau null jika tidak ada
+ * @returns Asset yang ditemukan atau null jika tidak ada
  */
 export const findById = async (id: string): Promise<AssetModel | null> => {
   return await prisma.asset.findUnique({
@@ -40,7 +40,7 @@ export const findById = async (id: string): Promise<AssetModel | null> => {
 /**
  * Mencari aset berdasarkan slug
  * @param slug Slug aset
- * @returns Aset yang ditemukan atau null jika tidak ada
+ * @returns Asset yang ditemukan atau null jika tidak ada
  */
 export const findBySlug = async (slug: string): Promise<AssetModel | null> => {
   return await prisma.asset.findFirst({
