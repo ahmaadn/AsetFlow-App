@@ -9,7 +9,7 @@ export interface AssetBase {
   assetType: string;
   url: string;
   format: string;
-  resourceType: string;
+  viewCount: number;
 }
 
 export type AssetCreate = AssetBase & {

@@ -5,6 +5,7 @@ import {
   getIconForMimeType,
   isImageMimeType,
   stripExtension,
+  getExtension,
   type GeneralAssetType,
 } from '@asetflow/shared';
 
@@ -16,6 +17,7 @@ type UploadFile = {
   size: number;
   previewUrl?: string;
   file?: File;
+  format?: string;
 };
 
 type FolderOption = {
@@ -92,6 +94,7 @@ watch(
           assetType: getAssetTypeFromMime(file.type) as GeneralAssetType,
           size: file.size,
           previewUrl: URL.createObjectURL(file),
+          format: getExtension(file.name),
           file,
         })
       );
@@ -127,7 +130,7 @@ async function uploadFiles() {
     .filter((item) => item.file)
     .map((item) => ({
       file: item.file!,
-      filename: item.name,
+      filename: item.name + (item.format ? `.${item.format}` : ''),
       slug: item.slug,
       apiEndpoint: `/folders/${folderTarget.value!.value}/upload`,
       url: item.previewUrl,

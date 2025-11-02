@@ -182,6 +182,9 @@ importers:
       '@asetflow/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@asetflow/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@asetflow/validators':
         specifier: workspace:*
         version: link:../../packages/validators

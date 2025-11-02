@@ -55,7 +55,20 @@ export const getAssetsByFolder = async (
 
   return {
     items: assets.map((asset) => ({
-      ...asset,
+      id: asset.id,
+      folderId: asset.folderId,
+      ownerId: asset.ownerId,
+      publicId: asset.publicId,
+      originalName: asset.originalName,
+      slug: asset.slug,
+      size: asset.size,
+      mimeType: asset.mimeType,
+      assetType: asset.assetType,
+      url: asset.url,
+      format: asset.format,
+      width: asset.width ?? 0,
+      height: asset.height ?? 0,
+      viewCount: asset.viewCount,
       createdAt: asset.createdAt.toISOString(),
       updatedAt: asset.updatedAt.toISOString(),
     })),

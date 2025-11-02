@@ -36,7 +36,7 @@ export interface AssetModel {
   assetType: string;
   url: string;
   format: string;
-  resourceType: string;
+  viewCount: number;
   createdAt: Date;
   updatedAt: Date;
   width: number;

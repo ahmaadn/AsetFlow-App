@@ -75,7 +75,7 @@ model Asset {
   assetType    String     @map("asset_type")
   url          String     @map("url")
   format       String     @map("format")
-  resourceType String     @map("resource_type")
+  viewCount    Int        @default(0) @map("view_count")
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
   width        Int        @map("width")

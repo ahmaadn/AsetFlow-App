@@ -1,6 +1,10 @@
 import { UserModel } from '@asetflow/database';
+import {
+  generateSlug,
+  getAssetTypeFromMime,
+  getExtension,
+} from '@asetflow/shared';
 import { AssetResponse } from '@asetflow/shared-types';
-import { type Express } from 'express';
 
 import * as AssetRepository from '../repositories/asset.repository';
 import * as FolderRepository from '../repositories/folder.repository';
@@ -25,15 +29,7 @@ export const uploadAset = async (
   // buat slug jika tidak ada
   // Gunakan format: nama-file-tanpa-ekstensi-timestamp
   if (!slug) {
-    slug =
-      filename
-        .split('.')
-        .slice(0, -1)
-        .join('.')
-        .toLowerCase()
-        .replace(/\s+/g, '-') +
-      '-' +
-      Date.now();
+    slug = generateSlug(filename + '-' + new Date().getTime());
   }
 
   // Upload file ke Cloudinary
@@ -53,12 +49,11 @@ export const uploadAset = async (
     slug: slug,
     size: file.size.toString(),
     mimeType: file.mimetype,
-    assetType: result.resource_type,
+    assetType: getAssetTypeFromMime(file.mimetype),
     url: result.secure_url,
-    format: result.format,
-    resourceType: result.resource_type,
-    width: result.width,
-    height: result.height,
+    format: result.format || getExtension(filename),
+    width: result.width || 0, //
+    height: result.height || 0,
   });
 
   return {
@@ -73,7 +68,7 @@ export const uploadAset = async (
     assetType: asset.assetType,
     url: asset.url,
     format: asset.format,
-    resourceType: asset.resourceType,
+    viewCount: asset.viewCount,
     width: asset.width,
     height: asset.height,
     createdAt: asset.createdAt.toISOString(),

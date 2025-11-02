@@ -1,31 +1,20 @@
+import { MAX_UPLOAD_SIZE_BYTES, SUPPORTED_MIME_TYPES } from '@asetflow/shared';
 import { Request } from 'express';
 import multer, { FileFilterCallback } from 'multer';
 
 import { BadRequestError } from '../utils/api-error';
-
-// Tentukan tipe file yang diizinkan
-const ALLOWED_MIMETYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'application/pdf',
-  'image/gif',
-];
-
-// Batas ukuran file (10 MB)
-const MAX_SIZE = 10 * 1024 * 1024;
 
 const fileFilter = (
   req: Request,
   file: Express.Multer.File,
   cb: FileFilterCallback
 ) => {
-  if (ALLOWED_MIMETYPES.includes(file.mimetype)) {
+  if (SUPPORTED_MIME_TYPES.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(
       new BadRequestError({
-        message: 'Invalid file type. Only images and PDFs are allowed.',
+        message: 'Invalid file type. Unsupported MIME type.',
       })
     );
   }
@@ -33,6 +22,6 @@ const fileFilter = (
 
 export const uploadMiddleware = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_SIZE },
+  limits: { fileSize: MAX_UPLOAD_SIZE_BYTES },
   fileFilter: fileFilter,
 });

@@ -22,3 +22,12 @@ export function stripExtension(filename: string) {
   if (lastDot <= 0) return filename;
   return filename.slice(0, lastDot);
 }
+
+/**
+ * Mengambil extension dari filename
+ */
+export function getExtension(filename: string) {
+  const lastDot = filename.lastIndexOf('.');
+  if (lastDot === -1 || lastDot === filename.length - 1) return '';
+  return filename.slice(lastDot + 1);
+}

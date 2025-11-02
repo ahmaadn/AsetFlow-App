@@ -19,7 +19,7 @@ export const create = async (data: AssetCreate): Promise<AssetModel> => {
       assetType: data.assetType,
       url: data.url,
       format: data.format,
-      resourceType: data.resourceType,
+      viewCount: 0,
       width: data.width,
       height: data.height,
     },
