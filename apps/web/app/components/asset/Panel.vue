@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { AssetResponse } from '@asetflow/shared-types';
-import { formatDisplayDate, formatSize } from '@asetflow/shared';
+import {
+  formatDisplayDate,
+  formatSize,
+  isImageMimeType,
+  isVideoMimeType,
+} from '@asetflow/shared';
 
 const props = defineProps<{
   asset: AssetResponse;

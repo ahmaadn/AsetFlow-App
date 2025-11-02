@@ -1,3 +1,5 @@
+import { MAX_CONCURRENT_UPLOADS } from '@asetflow/shared';
+
 export interface UploadItem {
   file: File;
   filename: string;
@@ -15,7 +17,6 @@ export interface UploadQueueItem extends UploadItem {
 }
 
 export const useUploadQueue = () => {
-  const MAX_CONCURRENT_UPLOADS = 3;
   const queue = useState<Array<UploadQueueItem>>('uploadQueue', () => []);
   const config = useRuntimeConfig();
   const baseURL = (config.public.apiBase || '/api') as string;

@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import {
+  generateSlug,
+  getAssetTypeFromMime,
+  getIconForMimeType,
+  isImageMimeType,
+  stripExtension,
+  type GeneralAssetType,
+} from '@asetflow/shared';
+
 type UploadFile = {
   name: string;
   slug: string;
@@ -69,13 +78,6 @@ function isNameDuplicate(item: UploadFile) {
 function isSlugDuplicate(item: UploadFile) {
   const key = (item.slug || '').trim().toLowerCase();
   return key && duplicateSlugs.value.has(key);
-}
-
-// Remove extension from a filename (e.g., "photo.png" -> "photo")
-function stripExtension(filename: string) {
-  const lastDot = filename.lastIndexOf('.');
-  if (lastDot <= 0) return filename; // no extension or hidden file like .env
-  return filename.slice(0, lastDot);
 }
 
 watch(
@@ -200,7 +202,7 @@ onMounted(async () => {
       </p>
 
       <div class="px-6">
-        <ui-file-select v-model="files" :accepts="supportedMimeTypes" />
+        <ui-file-select v-model="files" />
       </div>
     </section>
 
@@ -246,7 +248,7 @@ onMounted(async () => {
                   class="bg-base-200 h-full w-full flex items-center justify-center rounded-md"
                 >
                   <Icon
-                    :name="iconMapping[item.assetType]"
+                    :name="getIconForMimeType(item.mimeType)"
                     class="size-8 text-neutral"
                   />
                 </div>

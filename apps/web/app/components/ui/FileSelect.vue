@@ -1,8 +1,9 @@
 <script setup lang="ts">
-const props = defineProps({
-  maxSize: { type: Number, default: 10 * 1024 * 1024 }, // 10MB
-  accepts: { type: Array as PropType<string[]>, default: () => ['image/*'] },
-});
+import {
+  formatSize,
+  MAX_UPLOAD_SIZE_BYTES,
+  validateAssets,
+} from '@asetflow/shared';
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: File[] | null): void;
@@ -10,6 +11,7 @@ const emit = defineEmits<{
 
 const selectedFiles = ref<File[]>();
 const dropZoneRef = ref<HTMLDivElement>();
+const toast = useToast();
 
 const { files, open } = useFileDialog({
   accept: '*/*',
@@ -18,32 +20,13 @@ const { files, open } = useFileDialog({
 });
 
 function validateFile(file: File) {
-  // validasi ukuran file
-  if (file.size > props.maxSize) {
-    // You can use your own notification system here
-    alert(
-      `File ${file.name} exceeds the maximum size of ${props.maxSize} bytes.`
-    );
+  try {
+    validateAssets(file);
+    return true;
+  } catch (error) {
+    toast.error((error as Error).message);
     return false;
   }
-
-  //   validasi tipe file
-  if (props.accepts.length > 0 && !props.accepts.includes('*/*')) {
-    const isValidType = props.accepts.some((type) => {
-      if (type.endsWith('/*')) {
-        // handle wildcard, misal image/*
-        const mainType = type.split('/')[0];
-        return file.type.startsWith(mainType + '/');
-      }
-      return file.type === type;
-    });
-    if (!isValidType) {
-      alert(`File ${file.name} is not an accepted file type.`);
-      return false;
-    }
-  }
-
-  return true;
 }
 
 function handleFileDrop(files: File[] | FileList | null) {
@@ -88,7 +71,7 @@ watch(files, (newFiles) => handleFileDrop(newFiles));
         atau seret dan letakkan di sini
       </p>
       <p class="text-xs text-slate-500">
-        Maksimum ukuran file: {{ formatSize(props.maxSize) }}
+        Maksimum ukuran file: {{ formatSize(MAX_UPLOAD_SIZE_BYTES) }}
       </p>
       <div
         role="button"

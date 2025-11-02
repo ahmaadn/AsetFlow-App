@@ -1,4 +1,10 @@
-import { DEFAULT_ICONS, MIME_TYPE_REGISTRY } from '../config';
+import {
+  DEFAULT_ICONS,
+  MAX_UPLOAD_SIZE_BYTES,
+  MIME_TYPE_REGISTRY,
+  SUPPORTED_MIME_TYPES,
+} from '../config';
+import { formatSize } from './formatter.utils';
 import type {
   GeneralAssetType,
   IconIdentifier,
@@ -141,4 +147,39 @@ export function getMimeTypesForAssetType(
   return Array.from(MIME_TYPE_MAP.entries())
     .filter(([, config]) => config.type === assetType)
     .map(([mimeType]) => mimeType);
+}
+
+/**
+ * Validasi Assets sebelum diupload
+ * @param file
+ */
+export function validateAssets(file: File) {
+  // validasi ukuran file
+  if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+    // You can use your own notification system here
+
+    throw new Error(
+      `File size exceeds the maximum limit of ${formatSize(
+        MAX_UPLOAD_SIZE_BYTES
+      )}.`
+    );
+  }
+
+  //   validasi tipe file
+  if (
+    SUPPORTED_MIME_TYPES.length > 0 &&
+    !SUPPORTED_MIME_TYPES.includes('*/*')
+  ) {
+    const isValidType = SUPPORTED_MIME_TYPES.some((type) => {
+      if (type.endsWith('/*')) {
+        // handle wildcard, misal image/*
+        const mainType = type.split('/')[0];
+        return file.type.startsWith(mainType + '/');
+      }
+      return file.type === type;
+    });
+    if (!isValidType) {
+      throw new Error(`File type ${file.type} is not supported.`);
+    }
+  }
 }

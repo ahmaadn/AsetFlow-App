@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { AssetResponse } from '@asetflow/shared-types';
-import { formatSize } from '@asetflow/shared';
+import {
+  formatSize,
+  getIconForMimeType,
+  isImageMimeType,
+  isVideoMimeType,
+} from '@asetflow/shared';
 
 interface Props {
   asset: AssetResponse;
