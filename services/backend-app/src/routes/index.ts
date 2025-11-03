@@ -10,7 +10,7 @@ const router = Router();
 
 router.use('/auth', authRoute);
 router.use('/user', userRoute);
-router.use('/folders', assetRoute);
+router.use('/assets', assetRoute);
 router.use('/folders', folderRoute);
 router.use('/folders', uploadRoute);
 

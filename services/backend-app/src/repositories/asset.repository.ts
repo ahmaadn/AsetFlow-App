@@ -112,3 +112,73 @@ export const countByFolder = async (
     },
   });
 };
+
+/**
+ * Update asset berdasarkan ID
+ * @param id ID asset
+ * @param data Data yang akan diupdate
+ * @returns Asset yang telah diupdate
+ */
+export const update = async (
+  id: string,
+  data: Partial<AssetModel>
+): Promise<AssetModel> => {
+  return await prisma.asset.update({
+    where: { id },
+    data: {
+      originalName: data.originalName,
+      slug: data.slug,
+      updatedAt: new Date(),
+    },
+  });
+};
+
+/**
+ * Menghitung total asset berdasarkan folder
+ * @param folderId ID folder
+ * @param assetType Tipe asset (optional)
+ * @returns Total jumlah asset
+ */
+export const countByType = async (assetType?: string): Promise<number> => {
+  return await prisma.asset.count({
+    where: {
+      ...(assetType ? { assetType } : {}),
+    },
+  });
+};
+
+/**
+ * Menghapus asset berdasarkan ID
+ * @param id ID asset
+ */
+export const deleteById = async (id: string): Promise<void> => {
+  await prisma.asset.delete({
+    where: { id },
+  });
+};
+
+/**
+ * Mengambil asset berdasarkan folder dengan pagination dan filter
+ * @param options Opsi filter dan pagination
+ * @returns Daftar asset yang sesuai filter
+ */
+export const getByTypeWithPagination = async (options: {
+  limit: number;
+  offset: number;
+  assetType?: string;
+  sort_by?: string;
+  order?: 'asc' | 'desc';
+}) => {
+  const { limit, offset, assetType, sort_by, order } = options;
+
+  return await prisma.asset.findMany({
+    where: {
+      ...(assetType ? { assetType } : {}),
+    },
+    take: limit,
+    skip: offset,
+    orderBy: {
+      [sort_by || 'createdAt']: order || 'desc',
+    },
+  });
+};

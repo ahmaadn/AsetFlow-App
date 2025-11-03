@@ -27,3 +27,21 @@ export function lazyFetchAssetsApi(
     params: query,
   });
 }
+
+export function fetchAssetApi(assetId: string) {
+  const { get } = useApi();
+  return get(`/assets/${assetId}`);
+}
+
+export function deleteAssetApi(assetId: string) {
+  const { delete: del } = useApi();
+  return del(`/assets/${assetId}`);
+}
+
+export function updateAssetApi(
+  assetId: string,
+  data: { originalName?: string; slug?: string }
+) {
+  const { put } = useApi();
+  return put(`/assets/${assetId}`, data);
+}

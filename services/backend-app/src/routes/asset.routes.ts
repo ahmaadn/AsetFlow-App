@@ -1,4 +1,4 @@
-import { httpGetAssets } from '@asetflow/validators';
+import { httpUpdateAsset, httpParamsAsset } from '@asetflow/validators';
 import { Router } from 'express';
 
 import * as AssetController from '../controllers/asset.controller';
@@ -9,9 +9,9 @@ const router = Router();
 
 /**
  * @swagger
- * /v1/folders/{id}/assets:
- *   get:
- *     summary: Get all assets in a folder
+ * /v1/assets/{id}:
+ *   put:
+ *     summary: Update an asset
  *     tags: [Assets]
  *     security:
  *       - bearerAuth: []
@@ -22,7 +22,108 @@ const router = Router();
  *         schema:
  *           type: string
  *           format: uuid
- *         description: ID folder
+ *         description: ID asset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               originalName:
+ *                 type: string
+ *                 example: "Updated Image Name"
+ *               slug:
+ *                 type: string
+ *                 example: "updated-image-name"
+ *     responses:
+ *       200:
+ *         description: Asset updated successfully
+ */
+router.put(
+  '/:id',
+  protect,
+  validate(httpUpdateAsset),
+  AssetController.updateAsset
+);
+
+/**
+ * @swagger
+ * /v1/assets/{id}:
+ *   delete:
+ *     summary: Delete an asset
+ *     description: Permanently delete an asset by its ID
+ *     tags: [Assets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID of the asset to delete
+ *     responses:
+ *       204:
+ *         description: Asset deleted successfully
+ *       401:
+ *         description: Unauthorized - User not authenticated
+ *       404:
+ *         description: Asset not found
+ *       500:
+ *         description: Internal server error
+ */
+router.delete(
+  '/:id',
+  protect,
+  validate(httpParamsAsset),
+  AssetController.deleteAsset
+);
+
+/**
+ * @swagger
+ * /v1/assets/{id}:
+ *   get:
+ *     summary: Get asset by ID
+ *     description: Retrieve an asset by its ID
+ *     tags: [Assets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID of the asset to retrieve
+ *     responses:
+ *       204:
+ *         description: Asset deleted successfully
+ *       401:
+ *         description: Unauthorized - User not authenticated
+ *       404:
+ *         description: Asset not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get(
+  '/:id',
+  protect,
+  validate(httpParamsAsset),
+  AssetController.getAssetById
+);
+
+/**
+ * @swagger
+ * /v1/assets:
+ *   get:
+ *     summary: Get all assets by type
+ *     tags: [Assets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
  *       - in: query
  *         name: page
  *         schema:
@@ -55,10 +156,10 @@ const router = Router();
  *         description: A list of assets
  */
 router.get(
-  '/:id/assets',
+  '',
   protect,
-  validate(httpGetAssets),
-  AssetController.getAssetsByFolder
+  validate(httpUpdateAsset),
+  AssetController.getAssetsByType
 );
 
 export default router;

@@ -38,5 +38,16 @@ export const httpUpdateAsset = http({
   params: z.object({ id: UUIDv4 }),
 });
 
+/**
+ * Schema untuk HTTP request asset by ID
+ */
+export const httpParamsAsset = http({
+  params: z.object({ id: UUIDv4 }),
+});
+
+export type HttpUpdateAssetInput = z.infer<typeof httpUpdateAsset>;
+
+export type UpdateAssetType = z.infer<typeof updateAssetSchema>;
+
 export type GetAssetsType = z.infer<typeof getAssetsSchema>;
 export type HttpGetAssetsInput = z.infer<typeof httpGetAssets>;
