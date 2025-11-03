@@ -1,3 +1,3 @@
-<template>
-  <h1>Asset Manager</h1>
-</template>
+<script setup lang="ts">
+await navigateTo('/dashboard');
+</script>

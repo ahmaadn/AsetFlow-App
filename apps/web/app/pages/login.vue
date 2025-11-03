@@ -26,7 +26,7 @@ const { values, errors, handleSubmit } = useForm({
       onSuccess: (data) => {
         setToken(data.accessToken);
         toast.success('Login successful! Welcome back.');
-        navigateTo('/');
+        navigateTo('/dashboard');
       },
       onError: (_) => {
         toast.error('Login failed. Please try again.');
