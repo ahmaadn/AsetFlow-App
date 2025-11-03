@@ -1,7 +1,7 @@
 import z from 'zod';
 
 import { http } from '../http';
-import { folderId } from './folder';
+import { slug, UUIDv4 } from './base';
 
 /**
  * Schema untuk mendapatkan daftar asset dengan pagination dan filter
@@ -15,11 +15,27 @@ export const getAssetsSchema = z.object({
 });
 
 /**
+ * Schema untuk update asset
+ */
+export const updateAssetSchema = z.object({
+  originalName: z.string().min(1).max(255).optional(),
+  slug: slug.optional(),
+});
+
+/**
  * Schema untuk HTTP request get assets by folder
  */
 export const httpGetAssets = http({
   query: getAssetsSchema,
-  params: z.object({ id: folderId }),
+  params: z.object({ id: UUIDv4 }),
+});
+
+/**
+ * Schema untuk HTTP request update asset
+ */
+export const httpUpdateAsset = http({
+  body: updateAssetSchema,
+  params: z.object({ id: UUIDv4 }),
 });
 
 export type GetAssetsType = z.infer<typeof getAssetsSchema>;

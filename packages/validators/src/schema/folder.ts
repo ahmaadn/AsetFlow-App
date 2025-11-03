@@ -1,8 +1,7 @@
 import z from 'zod';
 
 import { http } from '../http';
-
-export const folderId = z.uuid({ version: 'v4' });
+import { slug, UUIDv4 } from './base';
 
 /**
  * Schema untuk mendapatkan daftar folder dengan pagination dan filter.
@@ -20,12 +19,7 @@ export const getFoldersSchema = z.object({
  */
 export const createFolderSchema = z.object({
   name: z.string().min(1).max(255),
-  slug: z
-    .string()
-    .min(1)
-    .max(255)
-    .regex(/^[a-zA-Z0-9-_]+$/)
-    .optional(),
+  slug: slug.optional(),
 });
 
 /**
@@ -33,12 +27,7 @@ export const createFolderSchema = z.object({
  */
 export const updateFolderSchema = z.object({
   name: z.string().min(1).max(255).optional(),
-  slug: z
-    .string()
-    .min(1)
-    .max(255)
-    .regex(/^[a-zA-Z0-9-_]+$/)
-    .optional(),
+  slug: slug.optional(),
   tags: z.array(z.uuid({ version: 'v4' })).optional(),
 });
 
@@ -53,11 +42,11 @@ export const httpFoldersQuery = http({ query: getFoldersSchema });
 export const httpCreateFolder = http({ body: createFolderSchema });
 export const httpUpdateFolder = http({
   body: updateFolderSchema,
-  params: z.object({ id: folderId }),
+  params: z.object({ id: UUIDv4 }),
 });
 
 export const httpCheckFolder = http({
-  params: z.object({ id: folderId }),
+  params: z.object({ id: UUIDv4 }),
 });
 
 export type FoldersQueryInput = z.infer<typeof httpFoldersQuery>;
