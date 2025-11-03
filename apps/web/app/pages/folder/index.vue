@@ -75,6 +75,11 @@ const refresh = async () => {
   loading.value = false;
 };
 
+const onClick = (to: string) => {
+  if (loading.value) return;
+  navigateTo(to);
+};
+
 onMounted(refresh);
 </script>
 <template>
@@ -137,7 +142,7 @@ onMounted(refresh);
         <template #cell-name="{ row }">
           <NuxtLink
             class="flex items-center gap-3 w-full"
-            :to="`/folder/${row.id}/media`"
+            @click="onClick(`/folder/${row.id}/media`)"
           >
             <Icon
               name="ri:folder-fill"
