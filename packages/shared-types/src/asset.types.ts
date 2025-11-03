@@ -12,7 +12,7 @@ export interface AssetBase {
   viewCount: number;
 }
 
-export type AssetCreate = AssetBase & {
+export type AssetCreate = Omit<AssetBase, 'viewCount'> & {
   width: number;
   height: number;
 };
