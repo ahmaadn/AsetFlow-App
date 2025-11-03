@@ -49,86 +49,83 @@ const handleSearch = () => {
 
 <template>
   <UiHeader>
-    <template #left>
-      <div class="flex items-center space-x-2">
-        <button
-          class="btn btn-ghost btn-sm btn-square"
-          title="Back"
-          @click="handleBack"
-        >
-          <Icon name="ri:arrow-left-line" class="size-5" />
-        </button>
-        <button
-          class="btn btn-ghost btn-sm btn-square"
-          title="Refresh"
-          @click="handleRefresh"
-        >
-          <Icon name="ri:restart-line" class="size-5" />
-        </button>
+    <div class="flex items-center space-x-2">
+      <button
+        class="btn btn-ghost btn-sm btn-square"
+        title="Back"
+        @click="handleBack"
+      >
+        <Icon name="ri:arrow-left-line" class="size-5" />
+      </button>
+      <button
+        class="btn btn-ghost btn-sm btn-square"
+        title="Refresh"
+        @click="handleRefresh"
+      >
+        <Icon name="ri:restart-line" class="size-5" />
+      </button>
 
-        <!-- View Mode Toggle (Desktop only) -->
+      <!-- View Mode Toggle (Desktop only) -->
 
-        <div
-          role="tablist"
-          class="hidden space-x-1 md:flex tabs tabs-box tabs-sm"
+      <div
+        role="tablist"
+        class="hidden space-x-1 md:flex tabs tabs-box tabs-sm"
+      >
+        <a
+          role="tab"
+          class="tab"
+          :class="{ 'tab-active': selectedViewMode === 'grid' }"
+          title="Grid view"
+          @click="handleViewModeChange('grid')"
         >
-          <a
-            role="tab"
-            class="tab"
-            :class="{ 'tab-active': selectedViewMode === 'grid' }"
-            title="Grid view"
-            @click="handleViewModeChange('grid')"
-          >
-            <Icon
-              name="ri:layout-grid-line"
-              class="size-5"
-              :class="selectedViewMode === 'grid' ? '' : 'opacity-50'"
-            />
-          </a>
-          <a
-            role="tab"
-            class="tab"
-            :class="{ 'tab-active': selectedViewMode === 'list' }"
-            title="List view"
-            @click="handleViewModeChange('list')"
-          >
-            <Icon
-              name="ri:list-check"
-              class="size-5"
-              :class="selectedViewMode === 'list' ? '' : 'opacity-50'"
-            />
-          </a>
-        </div>
-      </div>
-    </template>
-    <template #right>
-      <div class="flex items-center space-x-4">
-        <!-- Asset Type Filter -->
-        <select
-          v-model="selectedAssetType"
-          class="select select-bordered w-36"
-          @change="handleAssetTypeChange"
-        >
-          <option value="all">All Types</option>
-          <option value="image">Image</option>
-          <option value="video">Video</option>
-          <option value="document">Document</option>
-          <option value="audio">Audio</option>
-        </select>
-
-        <!-- Search (Disabled for now) -->
-        <label class="input input-bordered hidden w-72 md:flex">
-          <Icon name="ri:search-line" class="size-5 opacity-50" />
-          <input
-            v-model="searchQuery"
-            type="search"
-            class="grow"
-            placeholder="Search (coming soon)"
-            disabled
-            @input="handleSearch"
+          <Icon
+            name="ri:layout-grid-line"
+            class="size-5"
+            :class="selectedViewMode === 'grid' ? '' : 'opacity-50'"
           />
-        </label>
+        </a>
+        <a
+          role="tab"
+          class="tab"
+          :class="{ 'tab-active': selectedViewMode === 'list' }"
+          title="List view"
+          @click="handleViewModeChange('list')"
+        >
+          <Icon
+            name="ri:list-check"
+            class="size-5"
+            :class="selectedViewMode === 'list' ? '' : 'opacity-50'"
+          />
+        </a>
       </div>
-    </template>
+    </div>
+
+    <div class="contents md:flex items-center space-x-4">
+      <!-- Asset Type Filter -->
+      <select
+        v-model="selectedAssetType"
+        class="select select-bordered w-full md:w-36"
+        @change="handleAssetTypeChange"
+      >
+        <option value="all">All Types</option>
+        <option value="image">Image</option>
+        <option value="video">Video</option>
+        <option value="document">Document</option>
+        <option value="audio">Audio</option>
+      </select>
+
+      <!-- Search (Disabled for now) -->
+      <label class="input input-bordered w-full md:w-72 md:flex">
+        <Icon name="ri:search-line" class="size-5 opacity-50" />
+        <input
+          v-model="searchQuery"
+          type="search"
+          class="grow"
+          placeholder="Search (coming soon)"
+          disabled
+          @input="handleSearch"
+        />
+      </label>
+    </div>
   </UiHeader>
 </template>

@@ -80,44 +80,40 @@ onMounted(refresh);
 <template>
   <UiContent>
     <UiHeader>
-      <template #left>
-        <div class="flex items-center space-x-2">
-          <button
-            class="btn btn-sm btn-square btn-ghost"
+      <div class="flex items-center space-x-2">
+        <button
+          class="btn btn-sm btn-square btn-ghost"
+          :disabled="loading"
+          title="Create New Folder"
+          @click="isCreateFolder = true"
+        >
+          <Icon
+            name="ri:folder-add-line"
+            class="size-5 opacity-80 hover:opacity-100"
+          />
+        </button>
+        <button
+          class="btn btn-sm btn-square btn-ghost"
+          title="Refresh"
+          @click="refresh"
+        >
+          <Icon
+            name="ri:restart-line"
+            class="size-5 opacity-80 hover:opacity-100"
+          />
+        </button>
+      </div>
+      <div class="flex items-center space-x-4">
+        <label class="input w-full md:w-72">
+          <Icon name="ri:search-line" class="size-5 opacity-50" />
+          <input
+            type="search"
+            class="grow"
+            placeholder="Search"
             :disabled="loading"
-            title="Create New Folder"
-            @click="isCreateFolder = true"
-          >
-            <Icon
-              name="ri:folder-add-line"
-              class="size-5 opacity-80 hover:opacity-100"
-            />
-          </button>
-          <button
-            class="btn btn-sm btn-square btn-ghost"
-            title="Refresh"
-            @click="refresh"
-          >
-            <Icon
-              name="ri:restart-line"
-              class="size-5 opacity-80 hover:opacity-100"
-            />
-          </button>
-        </div>
-      </template>
-      <template #right>
-        <div class="flex items-center space-x-4">
-          <label class="input w-72">
-            <Icon name="ri:search-line" class="size-5 opacity-50" />
-            <input
-              type="search"
-              class="grow"
-              placeholder="Search"
-              :disabled="loading"
-            />
-          </label>
-        </div>
-      </template>
+          />
+        </label>
+      </div>
     </UiHeader>
     <div class="flex-1 overflow-auto p-4">
       <ui-table

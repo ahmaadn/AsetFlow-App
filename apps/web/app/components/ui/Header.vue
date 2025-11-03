@@ -1,8 +1,7 @@
 <template>
   <nav
-    class="h-16 flex items-center justify-between px-6 bg-white border-b border-base-300"
+    class="flex md:items-center md:justify-between bg-white border-b border-base-300 flex-col md:flex-row gap-y-2 py-3 px-6"
   >
-    <slot name="left" />
-    <slot name="right" />
+    <slot></slot>
   </nav>
 </template>

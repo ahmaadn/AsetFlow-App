@@ -1,7 +1,5 @@
 <template>
-  <div class="flex-1 flex relative">
-    <div class="flex-1 flex flex-col">
-      <slot />
-    </div>
+  <div class="flex-1 relative">
+    <slot />
   </div>
 </template>

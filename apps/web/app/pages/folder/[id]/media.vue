@@ -148,14 +148,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <UiContent>
+  <div class="flex-1 relative">
     <MediaHeader
       @back="backToFolder"
       @refresh="handleRefresh"
       @asset-type-change="handleAssetTypeChange"
     />
 
-    <div class="flex flex-1 flex-col overflow-hidden p-2">
+    <div class="flex flex-col overflow-hidden p-2 w-full">
       <!-- Assets Grid with Infinite Scroll -->
       <div class="relative flex-1 overflow-hidden">
         <!-- Error State -->
@@ -232,5 +232,5 @@ onUnmounted(() => {
     />
 
     <BackToTop />
-  </UiContent>
+  </div>
 </template>

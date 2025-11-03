@@ -37,14 +37,14 @@ const { values, errors, handleSubmit } = useForm({
 </script>
 
 <template>
-  <div class="flex flex-col w-full items-center max-w-md mx-auto my-16">
-    <div class="mb-8 flex flex-col items-center">
+  <div class="flex flex-col w-full items-center max-w-md mx-auto my-16 px-2">
+    <div class="mb-8 flex flex-col items-center text-center">
       <ui-logo class="size-16"></ui-logo>
       <h1 class="my-3 text-4xl font-bold">Selamat Datang Kembali</h1>
-      <p class="text-sm dark:text-gray-600">Login ke akun Asetflow Anda</p>
+      <p class="text-sm">Login ke akun Asetflow Anda</p>
     </div>
     <form
-      class="space-y-12 p-6 sm:p-8 w-full bg-base-100 shadow-lg rounded-lg border border-base-300"
+      class="space-y-12 p-6 md:p-8 w-full bg-base-100 shadow-lg rounded-lg border border-base-300"
       @submit="handleSubmit"
     >
       <div class="space-y-4">
@@ -84,7 +84,7 @@ const { values, errors, handleSubmit } = useForm({
           <button
             :disabled="loading"
             :type="loading ? 'button' : 'submit'"
-            class="btn btn-primary btn-block btn-soft border border-primary border-dashed"
+            class="btn btn-primary btn-block btn-soft border border-primary border-dashed w-full"
           >
             Sign in
           </button>
