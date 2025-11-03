@@ -189,7 +189,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Assets Grid -->
-        <div v-else class="w-full max-h-screen overflow-y-auto">
+        <div v-else class="w-full h-full overflow-auto">
           <MediaGrid v-model="selectedAsset" :assets="assets">
             <template #default="{ asset }">
               <AssetItem
