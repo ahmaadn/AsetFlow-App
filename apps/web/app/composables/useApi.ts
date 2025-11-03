@@ -136,7 +136,7 @@ export function useApiState<T extends object>(
   const status = ref<'idle' | 'pending' | 'success' | 'error' | null>(null);
 
   const config = useRuntimeConfig();
-  const baseURL = config.public.apiBase || '/api';
+  const baseURL = config.public.apiBase;
 
   // Execute fetch
   const execute = async (customOptions?: UseApiOptions<T>) => {
