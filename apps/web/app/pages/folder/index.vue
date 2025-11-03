@@ -136,11 +136,14 @@ onMounted(refresh);
 
         <template #cell-name="{ row }">
           <NuxtLink
-            class="flex items-center gap-3"
+            class="flex items-center gap-3 w-full"
             :to="`/folder/${row.id}/media`"
           >
-            <Icon name="ri:folder-fill" class="size-5 text-amber-500" />
-            <div>
+            <Icon
+              name="ri:folder-fill"
+              class="min-h-5 min-w-5 size-5 text-amber-500"
+            />
+            <div class="flex-1">
               <div class="font-medium">{{ row.name }}</div>
               <div class="text-xs text-neutral/60">{{ row.slug }}</div>
             </div>
@@ -174,7 +177,7 @@ onMounted(refresh);
         </template>
         <template #cell-assetCount="{ value }"> {{ value }} Assets </template>
         <template #cell-action="{ row }">
-          <div class="space-x-2">
+          <div class="flex flex-wrap gap-2 flex-col md:flex-row">
             <button
               class="btn btn-sm btn-square btn-warning"
               @click="openModalUpdate(row as FolderItem)"
