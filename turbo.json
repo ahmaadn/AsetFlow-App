@@ -6,7 +6,16 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
-      "env": ["DATABASE_URL", "NODE_ENV"]
+      "env": [
+        "NUXT_PUBLIC_API_BASE",
+        "DATABASE_URL",
+        "NODE_ENV",
+        "CLOUDINARY_API_SECRET",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_CLOUD_NAME",
+        "JWT_SECRET",
+        "JWT_EXPIRES_IN"
+      ]
     },
     "start": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
@@ -18,7 +27,16 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["DATABASE_URL", "NODE_ENV"]
+      "env": [
+        "NUXT_PUBLIC_API_BASE",
+        "DATABASE_URL",
+        "NODE_ENV",
+        "CLOUDINARY_API_SECRET",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_CLOUD_NAME",
+        "JWT_SECRET",
+        "JWT_EXPIRES_IN"
+      ]
     },
     "db:generate": {
       "cache": false
