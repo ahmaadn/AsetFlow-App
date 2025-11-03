@@ -5,6 +5,7 @@ type ColumnType = {
   key: string;
   label: string;
   sortable?: boolean;
+  width?: string;
 };
 
 type RowType = Record<string, unknown>;
@@ -14,11 +15,13 @@ interface Props {
   rows: RowType[];
   rowKey?: string;
   loading?: boolean;
+  emptyMessage?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   rowKey: 'id',
   loading: false,
+  emptyMessage: 'No data available.',
 });
 
 const emit = defineEmits<{
@@ -29,60 +32,88 @@ const emit = defineEmits<{
 const sortKey = ref<string | null>(null);
 const sortDir = ref<'asc' | 'desc' | null>(null);
 
-function onHeaderClick(col: { key: string; sortable?: boolean }) {
-  // cek apakah kolom dapat diurutkan
+function onHeaderClick(col: ColumnType): void {
   if (!col.sortable) return;
 
-  // jika kolom yang diklik berbeda dari kolom saat ini, atur ke kolom baru dan urutkan naik
   if (sortKey.value !== col.key) {
     sortKey.value = col.key;
     sortDir.value = 'asc';
   } else {
-    // jika kolom yang sama diklik lagi, ubah arah urutan dari: asc -> desc -> none
-    if (sortDir.value === 'asc') sortDir.value = 'desc';
-    else if (sortDir.value === 'desc') {
-      sortKey.value = null;
-      sortDir.value = null;
-    } else sortDir.value = 'asc';
+    switch (sortDir.value) {
+      case 'asc':
+        sortDir.value = 'desc';
+        break;
+      case 'desc':
+        sortKey.value = null;
+        sortDir.value = null;
+        break;
+      default:
+        sortDir.value = 'asc';
+    }
   }
 
-  // emit perubahan urutan
   emit('sort-change', sortKey.value, sortDir.value);
 }
 
 const sortedRows = computed(() => {
-  // jika tidak ada kolom yang diurutkan, kembalikan baris asli
-  if (!sortKey.value) return props.rows;
+  if (!sortKey.value || !sortDir.value) return props.rows;
 
-  // urutkan baris berdasarkan kolom dan arah yang dipilih
-  // jika kolom yang diurutkan adalah string, urutkan secara alfabetis
   const key = sortKey.value;
-  const dir = sortDir.value === 'asc' ? 1 : -1;
+  const multiplier = sortDir.value === 'asc' ? 1 : -1;
+
   return [...props.rows].sort((a, b) => {
-    const A = a[key];
-    const B = b[key];
-    if (A == null) return 1;
-    if (B == null) return -1;
+    const valueA = a[key];
+    const valueB = b[key];
 
-    // jika kolom yang diurutkan adalah angka, urutkan secara numerik
-    if (typeof A === 'number' && typeof B === 'number') return (A - B) * dir;
+    // Handle null/undefined values
+    if (valueA == null && valueB == null) return 0;
+    if (valueA == null) return 1;
+    if (valueB == null) return -1;
 
-    // default: urutkan sebagai string (case insensitive)
-    const aS = String(A).toLowerCase();
-    const bS = String(B).toLowerCase();
-    if (aS < bS) return -1 * dir;
-    if (aS > bS) return 1 * dir;
-    return 0;
+    // Numeric comparison
+    if (typeof valueA === 'number' && typeof valueB === 'number') {
+      return (valueA - valueB) * multiplier;
+    }
+
+    // Date comparison
+    if (valueA instanceof Date && valueB instanceof Date) {
+      return (valueA.getTime() - valueB.getTime()) * multiplier;
+    }
+
+    // String comparison (case-insensitive)
+    const stringA = String(valueA).toLowerCase();
+    const stringB = String(valueB).toLowerCase();
+
+    return stringA.localeCompare(stringB) * multiplier;
   });
 });
 
-function onRowClick(row: RowType) {
+function onRowClick(row: RowType): void {
   emit('row-click', row);
+}
+
+function getRowKey(row: RowType): string | number {
+  const key = row[props.rowKey];
+  return typeof key === 'string' || typeof key === 'number' ? key : String(key);
+}
+
+function getSortIcon(columnKey: string): string {
+  if (sortKey.value !== columnKey) {
+    return 'ri:arrow-up-down-line';
+  }
+  return sortDir.value === 'asc'
+    ? 'ri:arrow-up-double-line'
+    : 'ri:arrow-down-double-line';
+}
+
+function getSortIconClass(columnKey: string): string {
+  const isActive = sortKey.value === columnKey;
+  return isActive ? 'opacity-100' : 'opacity-40 group-hover:opacity-60';
 }
 </script>
 
 <template>
-  <div class="overflow-x-auto relative">
+  <div class="overflow-x-auto relative rounded-lg">
     <table class="table w-full">
       <thead>
         <slot name="first-head-row" />
@@ -90,30 +121,28 @@ function onRowClick(row: RowType) {
           <th
             v-for="col in props.columns"
             :key="col.key"
-            class="cursor-pointer select-none"
-            @click="onHeaderClick(col)"
+            :class="[
+              col.sortable ? 'cursor-pointer select-none group' : '',
+              col.width ? `w-[${col.width}]` : '',
+            ]"
+            :aria-sort="
+              sortKey === col.key
+                ? sortDir === 'asc'
+                  ? 'ascending'
+                  : 'descending'
+                : undefined
+            "
+            @click="col.sortable ? onHeaderClick(col) : undefined"
           >
-            <div class="flex items-center gap-1">
-              <span>{{ col.label }}</span>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">{{ col.label }}</span>
               <span
                 v-if="col.sortable"
-                class="text-sm flex items-center"
-                :class="{
-                  'opacity-40 hover:opacity-60': !sortDir,
-                  'opacity-60 hover:opacity-80': sortDir,
-                }"
+                class="text-sm flex items-center transition-opacity"
+                :class="getSortIconClass(col.key)"
+                aria-hidden="true"
               >
-                <span v-if="sortKey === col.key" class="contents">
-                  <Icon
-                    v-if="sortDir === 'asc'"
-                    name="ri:arrow-up-double-line"
-                  />
-                  <Icon
-                    v-else-if="sortDir === 'desc'"
-                    name="ri:arrow-down-double-line"
-                  />
-                </span>
-                <Icon v-else name="ri:arrow-up-down-line" />
+                <Icon :name="getSortIcon(col.key)" />
               </span>
             </div>
           </th>
@@ -122,14 +151,22 @@ function onRowClick(row: RowType) {
       </thead>
       <tbody>
         <slot name="first-row" />
-        <template v-if="props.rows.length === 0">
+        <template v-if="props.rows.length === 0 && !props.loading">
           <tr>
             <td :colspan="props.columns.length" class="text-center py-4">
               <slot name="no-data">
                 <div
                   class="h-32 flex items-center justify-center border border-dashed border-neutral/30 rounded-md"
                 >
-                  <p class="text-sm font-normal">No data available.</p>
+                  <div class="text-center">
+                    <Icon
+                      name="ri:inbox-line"
+                      class="size-12 mx-auto mb-2 opacity-40"
+                    />
+                    <p class="font-normal text-neutral-content/60">
+                      {{ props.emptyMessage }}
+                    </p>
+                  </div>
                 </div>
               </slot>
             </td>
@@ -138,13 +175,13 @@ function onRowClick(row: RowType) {
         <template v-else>
           <tr
             v-for="row in sortedRows"
-            :key="row[props.rowKey || 'id']"
-            class="hover:cursor-pointer hover:bg-base-300"
+            :key="getRowKey(row)"
+            class="hover:cursor-pointer hover:bg-base-300 transition-colors"
             @click="onRowClick(row)"
           >
             <td v-for="col in props.columns" :key="col.key">
               <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
-                {{ row[col.key] }}
+                {{ row[col.key] ?? '-' }}
               </slot>
             </td>
           </tr>
@@ -152,17 +189,27 @@ function onRowClick(row: RowType) {
         <slot name="last-row" />
       </tbody>
     </table>
-    <template v-if="props.loading">
-      <slot name="loading-overlay">
-        <div class="absolute inset-0 bg-neutral/10">
+    <Transition
+      enter-active-class="transition-opacity duration-200"
+      leave-active-class="transition-opacity duration-200"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="props.loading"
+        class="absolute inset-0 bg-base-100/80 backdrop-blur-sm"
+        role="status"
+        aria-live="polite"
+      >
+        <slot name="loading-overlay">
           <div
             class="flex items-center justify-center h-full font-medium gap-x-2"
           >
             <Icon name="ri:loader-5-line" class="animate-spin size-10" />
             <span>Loading...</span>
           </div>
-        </div>
-      </slot>
-    </template>
+        </slot>
+      </div>
+    </Transition>
   </div>
 </template>

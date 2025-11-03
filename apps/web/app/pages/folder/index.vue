@@ -141,7 +141,7 @@ onMounted(refresh);
 
         <template #cell-name="{ row }">
           <NuxtLink
-            class="flex items-center gap-3 w-full"
+            class="flex items-center gap-3 min-w-md"
             @click="onClick(`/folder/${row.id}/media`)"
           >
             <Icon
