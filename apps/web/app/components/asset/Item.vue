@@ -9,65 +9,49 @@ import {
 
 interface Props {
   asset: AssetResponse;
+  width?: string | number;
+  height?: string | number;
   selected?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  selected: false,
+  width: '150',
+  height: '150',
+});
+
 const target = useTemplateRef<HTMLDivElement>('target');
 const targetIsVisible = useElementVisibility(target, {
-  threshold: 0.1,
-  rootMargin: '200px',
+  rootMargin: '1200px',
 });
-const visibility = shallowRef(false);
-const imageError = shallowRef(false);
-
-watch(
-  targetIsVisible,
-  (isVisible) => {
-    if (isVisible && !visibility.value) {
-      visibility.value = true;
-    }
-  },
-  { immediate: true }
-);
 </script>
 
 <template>
   <div
     ref="target"
-    class="asset-item group cursor-pointer rounded-lg border-2 transition-all hover:shadow-lg"
-    :class="[
-      selected
-        ? 'border-primary bg-primary/5'
-        : 'border-base-300 hover:border-primary/50',
-    ]"
+    class="asset-item group cursor-pointer border-2 transition-all hover:shadow-lg border-base-300 hover:border-primary"
+    :class="{ 'border-primary': selected }"
   >
     <!-- Preview/Icon Container -->
-    <div
-      class="relative aspect-square w-full overflow-hidden rounded-t-lg bg-base-200"
-    >
+    <div class="relative aspect-square w-full overflow-hidden bg-base-200">
       <!-- Image/Video Preview -->
       <NuxtImg
         v-if="
           (isImageMimeType(asset.mimeType) ||
             isVideoMimeType(asset.mimeType)) &&
-          !imageError &&
-          visibility
+          targetIsVisible
         "
+        provider="cloudinary"
         :src="asset.url"
         :alt="asset.originalName"
         class="h-full w-full object-cover"
         loading="lazy"
-        densities="x1 x2"
         preload
-        height="300"
-        width="300"
-        quality="80"
+        :height="height"
+        :width="width"
         format="webp"
-        placeholder-class="bg-base-200"
-        @error="imageError = true"
-      >
-      </NuxtImg>
+        fit="thumbnail"
+      />
 
       <!-- Fallback Icon -->
       <div v-else class="flex h-full w-full items-center justify-center">
@@ -77,12 +61,10 @@ watch(
         />
       </div>
 
-      <!-- Selected Indicator -->
-      <div v-if="selected" class="absolute right-2 top-2 bg-primary p-1">
-        <Icon name="ri:check-line" class="h-4 w-4 text-primary-content" />
+      <div v-if="selected" class="absolute right-0 top-0 bg-primary p-1 flex">
+        <Icon name="ri:check-line" class="size-5 text-primary-content" />
       </div>
 
-      <!-- Asset Type Badge -->
       <div
         class="absolute left-2 top-2 rounded bg-black/50 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm"
       >
@@ -90,7 +72,6 @@ watch(
       </div>
     </div>
 
-    <!-- Info -->
     <div class="p-3">
       <p
         class="truncate text-sm font-medium text-base-content"

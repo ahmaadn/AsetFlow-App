@@ -29,4 +29,9 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/v1',
     },
   },
+  image: {
+    cloudinary: {
+      baseURL: 'https://res.cloudinary.com/dbaexr1vs/image/upload',
+    },
+  },
 });
