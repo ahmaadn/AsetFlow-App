@@ -14,6 +14,12 @@ export const getAssetsSchema = z.object({
   order: z.enum(['asc', 'desc']).default('desc'),
 });
 
+export const getAssetsByTypeSchema = getAssetsSchema.extend({
+  assetType: z
+    .enum(['image', 'video', 'audio', 'document', 'all'])
+    .default('all'),
+});
+
 /**
  * Schema untuk update asset
  */
@@ -28,6 +34,13 @@ export const updateAssetSchema = z.object({
 export const httpGetAssets = http({
   query: getAssetsSchema,
   params: z.object({ id: UUIDv4 }),
+});
+
+/**
+ * Schema untuk HTTP request get assets by type
+ */
+export const httpGetAssetsByType = http({
+  query: getAssetsByTypeSchema,
 });
 
 /**
@@ -50,4 +63,7 @@ export type HttpUpdateAssetInput = z.infer<typeof httpUpdateAsset>;
 export type UpdateAssetType = z.infer<typeof updateAssetSchema>;
 
 export type GetAssetsType = z.infer<typeof getAssetsSchema>;
+
+export type GetAssetsByTypeType = z.infer<typeof getAssetsByTypeSchema>;
+
 export type HttpGetAssetsInput = z.infer<typeof httpGetAssets>;

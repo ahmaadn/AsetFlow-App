@@ -1,4 +1,8 @@
-import { httpUpdateAsset, httpParamsAsset } from '@asetflow/validators';
+import {
+  httpUpdateAsset,
+  httpParamsAsset,
+  httpGetAssetsByType,
+} from '@asetflow/validators';
 import { Router } from 'express';
 
 import * as AssetController from '../controllers/asset.controller';
@@ -158,7 +162,7 @@ router.get(
 router.get(
   '',
   protect,
-  validate(httpUpdateAsset),
+  validate(httpGetAssetsByType),
   AssetController.getAssetsByType
 );
 

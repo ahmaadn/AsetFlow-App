@@ -173,7 +173,7 @@ export const getByTypeWithPagination = async (options: {
 
   return await prisma.asset.findMany({
     where: {
-      ...(assetType ? { assetType } : {}),
+      ...(assetType && assetType !== 'all' ? { assetType } : {}),
     },
     take: limit,
     skip: offset,
