@@ -27,11 +27,13 @@ definePageMeta({
 const route = useRoute();
 const router = useRouter();
 const assetStore = useAssetStore();
+const toast = useToast();
 
 const folderId = computed(() => route.params.id as string);
 const selectedAsset = ref<AssetResponse | null>(null);
 const selectedAssetType = ref<string>('all');
 const loadMoreRef = ref<HTMLElement>();
+const isModalDeleteOpen = ref(false);
 
 const assets = computed(() => assetStore.getAssetsByFolder(folderId.value));
 const pagination = computed(() => assetStore.getPagination(folderId.value));
@@ -89,6 +91,7 @@ const handleAssetTypeChange = async (type: string) => {
 // Panel handlers
 const handleClosePanel = () => {
   selectedAsset.value = null;
+  isModalDeleteOpen.value = false;
 };
 
 const handleDownload = () => {
@@ -103,24 +106,17 @@ const handleEdit = () => {
   // router.push(`/folder/${folderId.value}/asset/${selectedAsset.value.id}/edit`);
 };
 
-const handleDelete = async () => {
+const onDelete = async () => {
   if (!selectedAsset.value) return;
 
-  // TODO: Show confirmation dialog
-  const confirmed = confirm(
-    `Are you sure you want to delete "${selectedAsset.value.originalName}"?`
-  );
-
-  if (confirmed) {
-    try {
-      // TODO: Call delete API
-      console.log('Delete asset:', selectedAsset.value.id);
-      // await deleteAssetApi(selectedAsset.value.id);
-      // assetStore.removeAsset(folderId.value, selectedAsset.value.id);
-      selectedAsset.value = null;
-    } catch (err) {
-      console.error('Error deleting asset:', err);
-    }
+  try {
+    await assetStore.deleteAsset(folderId.value, selectedAsset.value.id);
+    selectedAsset.value = null;
+    isModalDeleteOpen.value = false;
+    toast.success('Asset deleted successfully');
+  } catch (err) {
+    console.error('Error deleting asset:', err);
+    toast.error('Failed to delete asset');
   }
 };
 
@@ -212,14 +208,29 @@ onUnmounted(stopIntersection);
       </div>
     </div>
 
-    <AssetPanel
+    <AppPanelAsset
       v-if="selectedAsset"
       :asset="selectedAsset"
       @close="handleClosePanel"
       @download="handleDownload"
       @edit="handleEdit"
-      @delete="handleDelete"
+      @delete="isModalDeleteOpen = true"
     />
+
+    <AppModalDelete
+      v-if="selectedAsset && isModalDeleteOpen"
+      v-model="isModalDeleteOpen"
+      :confirm-text="selectedAsset.slug"
+      @confirm="onDelete"
+      @cancel="isModalDeleteOpen = false"
+    >
+      <p>
+        Apakah Anda yakin ingin menghapus Asset
+        <span id="asset-name" class="font-semibold text-base-content/100">
+          {{ selectedAsset.originalName }}</span
+        >? Tindakan ini tidak dapat dibatalkan.
+      </p>
+    </AppModalDelete>
 
     <BackToTop />
   </div>

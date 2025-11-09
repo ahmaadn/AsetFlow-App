@@ -1,5 +1,11 @@
 import type { AssetResponse } from '@asetflow/shared-types';
-import { lazyFetchAssetsApi, type AssetQueryParams } from '~/lib/api/asset';
+import type { UpdateAssetType } from '@asetflow/validators';
+import {
+  lazyFetchAssetsApi,
+  type AssetQueryParams,
+  deleteAssetApi,
+  updateAssetApi,
+} from '~/lib/api/asset';
 
 interface AssetState {
   assets: Map<string, AssetResponse[]>; // Key: folderId
@@ -67,8 +73,6 @@ export const useAssetStore = defineStore('asset', {
       this.errors.set(folderId, null);
 
       try {
-        // Import API function
-
         // Create lazy fetch instance
         const { data, error, fetch } = lazyFetchAssetsApi(folderId, params);
 
@@ -167,6 +171,44 @@ export const useAssetStore = defineStore('asset', {
         ...pagination,
         total: pagination.total + 1,
       });
+    },
+
+    /**
+     * Update asset in store
+     */
+    async updateAsset(
+      folderId: string,
+      assetId: string,
+      data: UpdateAssetType
+    ) {
+      try {
+        const res = await updateAssetApi(assetId, data);
+        const updatedAsset = res.data as AssetResponse;
+
+        const tempCurrentAssets = this.assets.get(folderId) || [];
+        const updatedAssets = tempCurrentAssets.map((asset) =>
+          asset.id === assetId ? updatedAsset : asset
+        );
+
+        this.assets.set(folderId, updatedAssets);
+        return updatedAsset;
+      } catch (error) {
+        console.error('Failed to update asset:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Delete asset from store and API
+     */
+    async deleteAsset(folderId: string, assetId: string) {
+      try {
+        await deleteAssetApi(assetId);
+        this.removeAsset(folderId, assetId);
+      } catch (error) {
+        console.error('Failed to delete asset:', error);
+        throw error;
+      }
     },
 
     /**

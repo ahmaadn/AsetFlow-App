@@ -6,14 +6,13 @@ const folderState = useFolderStore();
 
 const isCreateFolder = ref(false);
 const selectedFolder = ref<FolderItem | null>(null);
-const modalDeleteOpen = ref(false);
-const modalEditOpen = ref(false);
-const loading = ref(false);
+const isModalDeleteOpen = ref(false);
+const isModalEditOpen = ref(false);
+const isLoading = ref(false);
 
 const columns = [
   { key: 'name', label: 'Name', sortable: true },
   { key: 'tags', label: 'Tags' },
-  { key: 'createdAt', label: 'Created', sortable: true },
   { key: 'updatedAt', label: 'Updated', sortable: true },
   { key: 'assetCount', label: 'Total Assets', sortable: true },
   { key: 'action', label: ' ', sortable: false },
@@ -41,11 +40,11 @@ const createFolder = async (name: string) => {
 
 const openModalDelete = (folder: FolderItem) => {
   selectedFolder.value = folder;
-  modalDeleteOpen.value = true;
+  isModalDeleteOpen.value = true;
 };
 
 const onDelete = async () => {
-  if (!selectedFolder.value && !modalDeleteOpen.value) return;
+  if (!selectedFolder.value && !isModalDeleteOpen.value) return;
   const { id } = selectedFolder.value as { id: string };
   await folderState.deleteFolder(id);
   selectedFolder.value = null;
@@ -53,11 +52,11 @@ const onDelete = async () => {
 
 const openModalUpdate = (folder: FolderItem) => {
   selectedFolder.value = folder;
-  modalEditOpen.value = true;
+  isModalEditOpen.value = true;
 };
 
 const onUpdate = async (newData: FolderItem) => {
-  if (!selectedFolder.value && !modalEditOpen.value) return;
+  if (!selectedFolder.value && !isModalEditOpen.value) return;
   const { id, name, slug } = newData;
   await folderState.updateFolder(id, { name, slug });
   selectedFolder.value = null;
@@ -65,19 +64,14 @@ const onUpdate = async (newData: FolderItem) => {
 
 const clear = () => {
   selectedFolder.value = null;
-  modalDeleteOpen.value = false;
-  modalEditOpen.value = false;
+  isModalDeleteOpen.value = false;
+  isModalEditOpen.value = false;
 };
 
 const refresh = async () => {
-  loading.value = true;
+  isLoading.value = true;
   await folderState.loadFolders();
-  loading.value = false;
-};
-
-const onClick = (to: string) => {
-  if (loading.value) return;
-  navigateTo(to);
+  isLoading.value = false;
 };
 
 onMounted(refresh);
@@ -88,7 +82,7 @@ onMounted(refresh);
       <div class="flex items-center space-x-2">
         <button
           class="btn btn-sm btn-square btn-ghost"
-          :disabled="loading"
+          :disabled="isLoading"
           title="Create New Folder"
           @click="isCreateFolder = true"
         >
@@ -115,7 +109,7 @@ onMounted(refresh);
             type="search"
             class="grow"
             placeholder="Search"
-            :disabled="loading"
+            :disabled="isLoading"
           />
         </label>
       </div>
@@ -124,7 +118,7 @@ onMounted(refresh);
       <ui-table
         :columns="columns"
         :rows="folderState.folders"
-        :loading="loading"
+        :loading="isLoading"
         row-key="id"
         class="w-full"
       >
@@ -142,7 +136,8 @@ onMounted(refresh);
         <template #cell-name="{ row }">
           <NuxtLink
             class="flex items-center gap-3 min-w-md"
-            @click="onClick(`/folder/${row.id}/media`)"
+            :to="`/folder/${row.id}/media`"
+            style="will-change: transform"
           >
             <Icon
               name="ri:folder-fill"
@@ -156,29 +151,11 @@ onMounted(refresh);
         </template>
         <template #cell-tags="{ value }">
           <div class="flex gap-1">
-            <span
-              v-for="tag in value"
-              :key="tag"
-              class="badge badge-sm"
-              :class="{
-                'badge-primary':
-                  tags.find((t) => t.name === tag)?.color === 'primary',
-                'badge-success':
-                  tags.find((t) => t.name === tag)?.color === 'success',
-                'badge-warning':
-                  tags.find((t) => t.name === tag)?.color === 'warning',
-              }"
-            >
-              {{ tag }}
-            </span>
             <span v-if="!value.length">No Tags</span>
           </div>
         </template>
-        <template #cell-createdAt="{ value }">
-          {{ formatDisplayDate(new Date(value)) }}
-        </template>
         <template #cell-updatedAt="{ value }">
-          {{ formatDisplayDate(new Date(value)) }}
+          {{ formatDisplayDate(value) }}
         </template>
         <template #cell-assetCount="{ value }"> {{ value }} Assets </template>
         <template #cell-action="{ row }">
@@ -200,19 +177,26 @@ onMounted(refresh);
       </ui-table>
     </div>
     <FolderModalEdit
-      v-if="selectedFolder && modalEditOpen"
-      v-model="modalEditOpen"
+      v-if="selectedFolder && isModalEditOpen"
+      v-model="isModalEditOpen"
       :folder-item="selectedFolder"
       @update="onUpdate"
       @cancel="clear"
     />
-    <FolderModalDelete
-      v-if="selectedFolder && modalDeleteOpen"
-      v-model="modalDeleteOpen"
-      :folder-name="selectedFolder.name"
+    <AppModalDelete
+      v-if="selectedFolder && isModalDeleteOpen"
+      v-model="isModalDeleteOpen"
       :confirm-text="selectedFolder.slug"
       @confirm="onDelete"
       @cancel="clear"
-    />
+    >
+      <p>
+        Apakah Anda yakin ingin menghapus folder
+        <span id="folder-name" class="font-semibold text-base-content/100">
+          {{ selectedFolder.name }}</span
+        >? Semua aset di dalamnya akan dipindahkan ke "Uncategorized". Tindakan
+        ini tidak dapat dibatalkan.
+      </p>
+    </AppModalDelete>
   </UiContent>
 </template>

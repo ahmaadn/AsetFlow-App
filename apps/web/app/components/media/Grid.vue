@@ -12,7 +12,7 @@ const { assets = [] } = defineProps<Props>();
   <div class="flex-1 overflow-y-auto rounded-lg">
     <div
       v-if="assets.length > 0"
-      class="flex flex-col md:grid gap-4 p-4 md:grid-cols-2 lg:grid-cols-3"
+      class="flex flex-col md:grid gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
     >
       <template v-for="asset in assets" :key="asset.id">
         <slot :asset="asset" />

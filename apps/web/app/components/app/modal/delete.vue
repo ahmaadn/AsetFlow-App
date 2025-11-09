@@ -1,17 +1,16 @@
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    modelValue: boolean;
-    folderName?: string;
-    confirmText?: string;
-    teleportTo?: string | HTMLElement | null;
-  }>(),
-  {
-    folderName: 'Laporan Bulanan',
-    confirmText: 'Confirm',
-    teleportTo: '#modal-container',
-  }
-);
+interface Props {
+  modelValue: boolean;
+  title?: string;
+  confirmText?: string;
+  teleportTo?: string | HTMLElement | null;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  title: 'Delete Confirmation',
+  confirmText: 'Confirm',
+  teleportTo: '#modal-container',
+});
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
@@ -25,9 +24,7 @@ const isOpen = computed({
 
 const input = ref('');
 
-const isDeleteEnabled = computed(
-  () => input.value.trim() === props.confirmText
-);
+const canDelete = computed(() => input.value.trim() === props.confirmText);
 
 function close() {
   isOpen.value = false;
@@ -40,7 +37,7 @@ function onCancel() {
 }
 
 function onDelete() {
-  if (!isDeleteEnabled.value) return;
+  if (!canDelete.value) return;
   emit('confirm');
   close();
 }
@@ -48,17 +45,9 @@ function onDelete() {
 
 <template>
   <ModalContainer v-model="isOpen" :teleport-to="props.teleportTo">
-    <ModalTitle>Hapus Folder</ModalTitle>
-
+    <ModalTitle>{{ props.title }}</ModalTitle>
     <ModalContent>
-      <p>
-        Apakah Anda yakin ingin menghapus folder
-        <span id="folder-name" class="font-semibold text-base-content/100">
-          {{ props.folderName }}</span
-        >? Semua aset di dalamnya akan dipindahkan ke "Uncategorized". Tindakan
-        ini tidak dapat dibatalkan.
-      </p>
-
+      <slot />
       <fieldset class="fieldset mt-4">
         <legend class="fieldset-legend text-base font-medium">
           Please type
@@ -76,11 +65,7 @@ function onDelete() {
       </fieldset>
       <ModalAction>
         <button class="btn" @click="onCancel">Cancel</button>
-        <button
-          class="btn btn-error"
-          :disabled="!isDeleteEnabled"
-          @click="onDelete"
-        >
+        <button class="btn btn-error" :disabled="!canDelete" @click="onDelete">
           Delete
         </button>
       </ModalAction>

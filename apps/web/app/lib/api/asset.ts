@@ -1,4 +1,5 @@
-import type { AssetListResponse } from '@asetflow/shared-types';
+import type { AssetListResponse, AssetResponse } from '@asetflow/shared-types';
+import type { UpdateAssetType } from '@asetflow/validators';
 
 export interface AssetQueryParams {
   page?: number;
@@ -30,7 +31,7 @@ export function lazyFetchAssetsApi(
 
 export function fetchAssetApi(assetId: string) {
   const { get } = useApi();
-  return get(`/assets/${assetId}`);
+  return get<AssetResponse>(`/assets/${assetId}`);
 }
 
 export function deleteAssetApi(assetId: string) {
@@ -38,10 +39,7 @@ export function deleteAssetApi(assetId: string) {
   return del(`/assets/${assetId}`);
 }
 
-export function updateAssetApi(
-  assetId: string,
-  data: { originalName?: string; slug?: string }
-) {
+export function updateAssetApi(assetId: string, data: UpdateAssetType) {
   const { put } = useApi();
-  return put(`/assets/${assetId}`, data);
+  return put<AssetResponse, UpdateAssetType>(`/assets/${assetId}`, data);
 }
