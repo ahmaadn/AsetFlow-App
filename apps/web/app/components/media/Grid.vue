@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { AssetResponse } from '@asetflow/shared-types';
 
-const { assets = [] } = defineProps<{ assets?: AssetResponse[] }>();
+interface Props {
+  assets?: AssetResponse[];
+}
+
+const { assets = [] } = defineProps<Props>();
 </script>
 
 <template>

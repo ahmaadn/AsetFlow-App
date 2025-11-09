@@ -141,10 +141,7 @@ onMounted(async () => {
   }
 });
 
-// Cleanup on unmount
-onUnmounted(() => {
-  stopIntersection();
-});
+onUnmounted(stopIntersection);
 </script>
 
 <template>
@@ -156,28 +153,24 @@ onUnmounted(() => {
     />
 
     <div class="flex flex-col overflow-hidden p-2 w-full">
-      <!-- Assets Grid with Infinite Scroll -->
       <div class="relative flex-1 overflow-hidden">
-        <!-- Error State -->
         <div
           v-if="error"
           class="flex h-full flex-col items-center justify-center p-8"
         >
           <Icon
             name="ri:error-warning-line"
-            class="mb-4 h-24 w-24 text-error/50"
+            class="mb-4 h-24 w-24 text-error"
           />
           <p class="mb-2 text-lg font-medium text-error">
             Error Loading Assets
           </p>
-          <p class="mb-4 text-sm text-base-content/60">{{ error }}</p>
           <button class="btn btn-primary btn-sm" @click="handleRefresh">
             <Icon name="ri:restart-line" class="h-4 w-4" />
             Try Again
           </button>
         </div>
 
-        <!-- Loading First Time -->
         <div
           v-else-if="isLoading && assets.length === 0"
           class="flex h-full items-center justify-center"
@@ -188,9 +181,8 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Assets Grid -->
         <div v-else class="w-full h-full overflow-auto">
-          <MediaGrid v-model="selectedAsset" :assets="assets">
+          <MediaGrid :assets="assets">
             <template #default="{ asset }">
               <AssetItem
                 :asset="asset"
@@ -202,7 +194,6 @@ onUnmounted(() => {
             </template>
           </MediaGrid>
 
-          <!-- Load More Trigger -->
           <div
             v-if="pagination.hasMore"
             ref="loadMoreRef"
@@ -211,7 +202,6 @@ onUnmounted(() => {
             <span class="loading loading-spinner loading-md text-primary" />
           </div>
 
-          <!-- End Message -->
           <div
             v-else-if="assets.length > 0"
             class="p-4 text-center text-sm text-base-content/40"
