@@ -1,15 +1,4 @@
-type AssetType = 'image' | 'video' | 'audio' | 'document';
-
-type Asset = {
-  name: string;
-  slug: string;
-  type: AssetType;
-  size: string;
-  assetUrl?: string;
-  thumbnail?: string;
-  publicUrl: string;
-  claudinaryUrl?: string;
-};
+type AssetType = 'image' | 'video' | 'audio' | 'document' | 'all';
 
 interface MenuItem {
   label: string;
@@ -25,4 +14,4 @@ interface MenuSection {
   items: MenuItem[];
 }
 
-export type { Asset, AssetType, MenuItem, MenuSection };
+export type { AssetType, MenuItem, MenuSection };

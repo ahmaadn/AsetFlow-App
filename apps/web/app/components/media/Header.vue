@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { AssetType } from '~/types';
+
 type ViewMode = 'grid' | 'list';
-type AssetType = 'all' | 'image' | 'video' | 'document' | 'audio';
 
 interface Props {
   defaultViewMode?: ViewMode;

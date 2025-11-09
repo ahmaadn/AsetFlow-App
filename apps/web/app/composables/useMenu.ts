@@ -26,7 +26,7 @@ export const useMenu = () => {
       title: 'Files',
       items: [
         { label: 'Folder', icon: 'ri:folder-line', to: '/folder' },
-        { label: 'Media Library', icon: 'ri:stack-line', to: '/media/index' },
+        { label: 'Media Library', icon: 'ri:stack-line', to: '/media/all' },
         { label: 'Documents', icon: 'ri:file-2-line', to: '/media/document' },
         { label: 'Photos', icon: 'ri:multi-image-line', to: '/media/image' },
         { label: 'Videos', icon: 'ri:video-on-line', to: '/media/video' },

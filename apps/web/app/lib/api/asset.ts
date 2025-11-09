@@ -43,3 +43,23 @@ export function updateAssetApi(assetId: string, data: UpdateAssetType) {
   const { put } = useApi();
   return put<AssetResponse, UpdateAssetType>(`/assets/${assetId}`, data);
 }
+
+/**
+ * Fetch assets by type
+ */
+export function fetchAssetsByTypeApi(query: AssetQueryParams = {}) {
+  const { get } = useApi();
+  return get<AssetListResponse>('/assets', {
+    params: query,
+  });
+}
+
+/**
+ * Lazy fetch assets by type untuk infinite scroll
+ */
+export function lazyFetchAssetsByTypeApi(query: AssetQueryParams = {}) {
+  return useLazyApi<AssetListResponse>('/assets', {
+    method: 'GET',
+    params: query,
+  });
+}
