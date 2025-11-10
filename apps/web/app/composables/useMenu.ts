@@ -2,16 +2,16 @@ import type { MenuSection } from '~/types';
 
 export const useMenu = () => {
   const defaultMenuSections: MenuSection[] = [
-    {
-      title: 'Recently',
-      items: [
-        {
-          label: 'Overview',
-          icon: 'ri:search-eye-line',
-          to: '/overview',
-        },
-      ],
-    },
+    // {
+    //   title: 'Recently',
+    //   items: [
+    //     {
+    //       label: 'Overview',
+    //       icon: 'ri:search-eye-line',
+    //       to: '/overview',
+    //     },
+    //   ],
+    // },
     {
       title: 'Dashboard',
       items: [
@@ -36,7 +36,7 @@ export const useMenu = () => {
     {
       title: 'Account',
       items: [
-        { label: 'Settings', icon: 'ri:settings-line', to: '/settings' },
+        // { label: 'Settings', icon: 'ri:settings-line', to: '/settings' },
         { label: 'Logout', icon: 'ri:logout-box-line', to: '/logout' },
       ],
     },

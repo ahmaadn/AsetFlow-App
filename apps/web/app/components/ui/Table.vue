@@ -16,12 +16,14 @@ interface Props {
   rowKey?: string;
   loading?: boolean;
   emptyMessage?: string;
+  selectedRowKey?: string | number | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   rowKey: 'id',
   loading: false,
   emptyMessage: 'No data available.',
+  selectedRowKey: null,
 });
 
 const emit = defineEmits<{
@@ -163,8 +165,8 @@ function getSortIconClass(columnKey: string): string {
                       name="ri:inbox-line"
                       class="size-12 mx-auto mb-2 opacity-40"
                     />
-                    <p class="font-normal text-neutral-content/60">
-                      {{ props.emptyMessage }}
+                    <p class="font-normal text-neutral/60">
+                      No data available.
                     </p>
                   </div>
                 </div>
@@ -177,6 +179,9 @@ function getSortIconClass(columnKey: string): string {
             v-for="row in sortedRows"
             :key="getRowKey(row)"
             class="hover:cursor-pointer hover:bg-base-300 transition-colors"
+            :class="{
+              'bg-base-200': props.selectedRowKey === getRowKey(row),
+            }"
             @click="onRowClick(row)"
           >
             <td v-for="col in props.columns" :key="col.key">

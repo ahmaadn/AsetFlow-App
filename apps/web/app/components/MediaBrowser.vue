@@ -30,6 +30,8 @@ const selectedAsset = ref<AssetResponse | null>(null);
 const loadMoreRef = ref<HTMLElement>();
 const isModalDeleteOpen = ref(false);
 
+const { getViewModeAssets, setViewModeAssets } = useSetting();
+
 // Load more when scroll to bottom
 const { stop: stopIntersection } = useIntersectionObserver(
   loadMoreRef,
@@ -72,11 +74,13 @@ onUnmounted(stopIntersection);
 
 <template>
   <div class="flex-1 relative">
-    <MediaHeader
+    <AppMediaHeader
       :default-asset-type="selectedAssetType"
+      :default-view-mode="getViewModeAssets"
       @back="emit('back')"
       @refresh="emit('refresh')"
       @asset-type-change="emit('asset-type-change', $event)"
+      @view-mode-change="setViewModeAssets"
     />
 
     <div class="flex flex-col overflow-hidden p-2 w-full">
@@ -109,7 +113,7 @@ onUnmounted(stopIntersection);
         </div>
 
         <div v-else class="w-full h-full overflow-auto">
-          <MediaGrid :assets="assets">
+          <AppMediaGrid v-if="getViewModeAssets === 'grid'" :assets="assets">
             <template #default="{ asset }">
               <AssetItem
                 :asset="asset"
@@ -119,7 +123,12 @@ onUnmounted(stopIntersection);
                 @click="toggleSelect(asset)"
               />
             </template>
-          </MediaGrid>
+          </AppMediaGrid>
+          <AppMediaList
+            v-else
+            v-model:selected="selectedAsset"
+            :assets="assets"
+          />
 
           <div v-if="hasMore" ref="loadMoreRef" class="flex justify-center p-4">
             <span class="loading loading-spinner loading-md text-primary" />

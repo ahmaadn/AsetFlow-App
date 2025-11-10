@@ -115,7 +115,7 @@ onMounted(refresh);
       </div>
     </UiHeader>
     <div class="flex-1 overflow-auto p-4">
-      <ui-table
+      <UiTable
         :columns="columns"
         :rows="folderState.folders"
         :loading="isLoading"
@@ -174,7 +174,7 @@ onMounted(refresh);
             </button>
           </div>
         </template>
-      </ui-table>
+      </UiTable>
     </div>
     <FolderModalEdit
       v-if="selectedFolder && isModalEditOpen"

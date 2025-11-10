@@ -1,4 +1,5 @@
 type AssetType = 'image' | 'video' | 'audio' | 'document' | 'all';
+type ViewMode = 'grid' | 'list';
 
 interface MenuItem {
   label: string;
@@ -14,4 +15,4 @@ interface MenuSection {
   items: MenuItem[];
 }
 
-export type { AssetType, MenuItem, MenuSection };
+export type { AssetType, MenuItem, MenuSection, ViewMode };
