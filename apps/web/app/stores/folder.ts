@@ -30,6 +30,19 @@ export const useFolderStore = defineStore('folder', {
         folder.name.toLowerCase().includes(state.searchQuery.toLowerCase())
       );
     },
+    /**
+     * Get all folders
+     */
+    getAllFolders: (state) => {
+      return state.folders;
+    },
+
+    /**
+     * Find folder by ID
+     */
+    findFolderById: (state) => (folderId: string) => {
+      return state.folders.find((folder) => folder.id === folderId);
+    },
   },
 
   actions: {
@@ -130,6 +143,20 @@ export const useFolderStore = defineStore('folder', {
     findFolderById(folderId: string): FolderItem | null {
       const folder = this.folders.find((folder) => folder.id === folderId);
       return folder || null;
+    },
+
+    /**
+     * Set folders
+     */
+    setFolders(folders: Array<FolderItem>) {
+      this.folders = folders;
+    },
+
+    /**
+     * Clear folders
+     */
+    clearFolders() {
+      this.folders = [];
     },
   },
 });

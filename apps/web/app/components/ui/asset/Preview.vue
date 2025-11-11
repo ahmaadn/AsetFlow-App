@@ -50,6 +50,12 @@ const isMediaPreview = () =>
     >
       {{ asset.assetType }}
     </div>
+    <div
+      class="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm inline-flex items-center gap-x-1"
+    >
+      <Icon name="ri:eye-fill" class="size-4" />
+      <span>{{ asset.viewCount }}</span>
+    </div>
     <slot />
   </div>
 </template>

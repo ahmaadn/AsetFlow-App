@@ -19,7 +19,9 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const assetStore = useAssetStore();
+const folderStore = useFolderStore();
 const toast = useToast();
+const { getPublicAssetUrl } = usePublicApi();
 
 const isEditMode = ref(false);
 const isUpdating = ref(false);
@@ -83,6 +85,15 @@ const onNameInput = () => {
     editForm.value.slug = generateSlug(editForm.value.originalName);
   }
 };
+
+const currentFolder = computed(() => {
+  return folderStore.findFolderById(props.asset.folderId);
+});
+
+const publicAssetUrl = computed(() => {
+  if (!currentFolder.value) return '';
+  return getPublicAssetUrl(currentFolder.value.slug, props.asset.slug);
+});
 </script>
 
 <template>
@@ -160,6 +171,7 @@ const onNameInput = () => {
                 </UiInfoRow>
 
                 <UiInfoRow label="MIME Type"> {{ asset.mimeType }} </UiInfoRow>
+                <UiInfoRow label="Views"> {{ asset.viewCount }} </UiInfoRow>
               </dl>
             </div>
 
@@ -174,7 +186,6 @@ const onNameInput = () => {
                 </UiInfoRow>
               </dl>
             </div>
-
             <div class="space-y-3">
               <ClipboardInput
                 id="asset-url"
@@ -182,9 +193,10 @@ const onNameInput = () => {
                 :value="asset.url"
               />
               <ClipboardInput
-                id="public-id"
-                title="Public ID"
-                :value="asset.publicId"
+                v-if="publicAssetUrl"
+                id="public-api-url"
+                title="Public API URL"
+                :value="publicAssetUrl"
               />
             </div>
           </div>
