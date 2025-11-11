@@ -1,0 +1,31 @@
+{
+  "name": "@asetflow/logger",
+  "version": "1.0.0",
+  "description": "Logger package for Express services",
+  "author": "Your Name",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --dts --clean",
+    "dev": "tsup src/index.ts --format cjs --dts --clean --watch"
+  },
+  "keywords": [
+    "logger",
+    "logging",
+    "typescript",
+    "express",
+    "winston"
+  ],
+  "dependencies": {
+    "winston": "^3.18.3",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  }
+}

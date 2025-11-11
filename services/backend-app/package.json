@@ -14,6 +14,7 @@
   "packageManager": "pnpm@10.17.1",
   "dependencies": {
     "@asetflow/database": "workspace:*",
+    "@asetflow/logger": "workspace:*",
     "@asetflow/shared": "workspace:*",
     "@asetflow/validators": "workspace:*",
     "bcrypt": "^6.0.0",

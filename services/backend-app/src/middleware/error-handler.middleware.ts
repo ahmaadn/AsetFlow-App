@@ -14,14 +14,19 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  // Catat pesan error
-  logger.error(err.message);
-  logger.error(err.stack || '');
+  // Catat pesan error menggunakan logger package
+  logger.error(err.message, {
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+  });
 
   // Tangani error yang sudah berupa ApiError
   if (err instanceof ApiError) {
-    logger.error(`Handling ApiError with status code ${err.statusCode}`);
-    logger.error(`ApiError details: ${JSON.stringify(err.toJSON())}`);
+    logger.error('Handling ApiError', {
+      statusCode: err.statusCode,
+      details: err.toJSON(),
+    });
     return res.status(err.statusCode).json(err.toJSON());
   }
 
@@ -36,8 +41,10 @@ export const errorHandler = (
   // Pengaman untuk error Prisma yang tidak ditangani di service
   // Ini adalah error yang "tidak terduga" dari sisi bisnis
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    // Memberikan respons generik karena kita tidak mengharapkannya
-    logger.warn(`Unhandled Prisma Error Code: ${err.code}`, { meta: err.meta });
+    logger.warn('Unhandled Prisma Error', {
+      code: err.code,
+      meta: err.meta,
+    });
     return res.status(400).json({
       message: 'A database error occurred.',
       errorCode: ErrorCode.API_ERROR,
