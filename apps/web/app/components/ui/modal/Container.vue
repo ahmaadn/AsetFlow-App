@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {
-  modelValue: boolean;
+  modelValue?: boolean;
   teleportTo?: string | HTMLElement | null;
   zIndex?: number | string;
 }
@@ -8,6 +8,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   teleportTo: 'body',
   zIndex: 50,
+  modelValue: false,
 });
 
 const emit = defineEmits<{
@@ -30,7 +31,7 @@ function close() {
   <!-- Teleport ke body (default) untuk menghindari masalah z-index/overflow -->
   <Teleport v-if="isOpen && props.teleportTo" :to="props.teleportTo">
     <div class="fixed inset-0" :style="{ zIndex: String(props.zIndex) }">
-      <div class="absolute inset-0 bg-neutral/30" @click="close" />
+      <div class="absolute inset-0" @click="close" />
       <div class="modal modal-open pointer-events-none">
         <div
           class="modal-box pointer-events-auto shadow"

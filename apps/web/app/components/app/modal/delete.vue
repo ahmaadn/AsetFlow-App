@@ -44,9 +44,9 @@ function onDelete() {
 </script>
 
 <template>
-  <ModalContainer v-model="isOpen" :teleport-to="props.teleportTo">
-    <ModalTitle>{{ props.title }}</ModalTitle>
-    <ModalContent>
+  <UiModalContainer v-model="isOpen" :teleport-to="props.teleportTo">
+    <UiModalTitle>{{ props.title }}</UiModalTitle>
+    <UiModalContent>
       <slot />
       <fieldset class="fieldset mt-4">
         <legend class="fieldset-legend text-base font-medium">
@@ -63,12 +63,12 @@ function onDelete() {
           placeholder="ketik di sini"
         />
       </fieldset>
-      <ModalAction>
+      <UiModalAction>
         <button class="btn" @click="onCancel">Cancel</button>
         <button class="btn btn-error" :disabled="!canDelete" @click="onDelete">
           Delete
         </button>
-      </ModalAction>
-    </ModalContent>
-  </ModalContainer>
+      </UiModalAction>
+    </UiModalContent>
+  </UiModalContainer>
 </template>

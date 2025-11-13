@@ -1,5 +1,5 @@
 <template>
-  <div class="container p-4">
+  <div class="p-4 w-full">
     <stat-group class="w-full bg-base-200">
       <stat-item
         icon="ri:book-shelf-line"

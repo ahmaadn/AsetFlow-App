@@ -14,8 +14,6 @@ const pageTitle = computed(() => {
     :menu-sections="menuSections"
   >
     <app-navbar drawer-id="dashboard-drawer" :title="pageTitle" />
-    <div>
-      <slot />
-    </div>
+    <slot />
   </app-sidebar>
 </template>
