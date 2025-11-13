@@ -36,7 +36,7 @@ const handleAddClick = () => {
     </div>
     <div class="flex-1 h-full">
       <div class="flex items-center h-10">
-        <p class="px-4 font-bold text-xl">{{ props.title }}</p>
+        <p class="px-4 font-bold md:text-xl text-lg">{{ props.title }}</p>
       </div>
     </div>
     <div class="flex-none">

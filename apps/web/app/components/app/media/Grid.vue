@@ -6,6 +6,17 @@ interface Props {
 }
 
 const { assets = [] } = defineProps<Props>();
+const route = useRoute();
+const folderId = ref(route.params.id);
+
+const onClickUpload = () => {
+  const url = '/media/add';
+  if (folderId.value) {
+    navigateTo(url + '?folderId=' + folderId.value);
+    return;
+  }
+  navigateTo('/media/add');
+};
 </script>
 
 <template>
@@ -19,16 +30,19 @@ const { assets = [] } = defineProps<Props>();
       </template>
     </div>
 
-    <!-- Empty State -->
-    <div v-else class="flex h-full flex-col items-center justify-center p-8">
-      <Icon
-        name="ri:folder-open-line"
-        class="mb-4 h-24 w-24 text-base-content/20"
-      />
-      <p class="text-lg font-medium text-base-content/60">No Assets Found</p>
-      <p class="text-sm text-base-content/40">
-        This folder is empty. Upload some assets to get started.
-      </p>
-    </div>
+    <UiEmptyState
+      v-else
+      size="md"
+      title="No Assets Found"
+      description="This folder is empty. Upload some assets to get started."
+      icon="ri:folder-open-line"
+      :actions="[
+        {
+          text: 'Upload Assets',
+          variant: 'primary',
+          onClick: onClickUpload,
+        },
+      ]"
+    ></UiEmptyState>
   </div>
 </template>

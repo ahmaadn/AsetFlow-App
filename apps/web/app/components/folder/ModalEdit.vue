@@ -51,10 +51,9 @@ function onCancel() {
 </script>
 
 <template>
-  <ModalContainer v-model="isOpen" :teleport-to="props.teleportTo">
-    <ModalTitle>Edit Folder</ModalTitle>
-
-    <ModalContent>
+  <UiModalContainer v-model="isOpen" :teleport-to="props.teleportTo">
+    <UiModalTitle>Edit Folder</UiModalTitle>
+    <UiModalContent>
       <p>
         Perbaharui folder
         <span class="font-semibold text-base-content/100">{{
@@ -85,11 +84,11 @@ function onCancel() {
           />
           <p v-if="errors.slug" class="label text-error">{{ errors.slug }}</p>
         </fieldset>
-        <ModalAction>
+        <UiModalAction>
           <button class="btn" type="reset" @click="onCancel">Cancel</button>
           <button class="btn btn-warning" type="submit">Update</button>
-        </ModalAction>
+        </UiModalAction>
       </form>
-    </ModalContent>
-  </ModalContainer>
+    </UiModalContent>
+  </UiModalContainer>
 </template>

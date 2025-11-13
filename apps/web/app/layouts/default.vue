@@ -21,8 +21,6 @@ const logout = async () => {
     @logout="logout"
   >
     <app-navbar drawer-id="dashboard-drawer" :title="pageTitle" />
-    <div>
-      <slot />
-    </div>
+    <slot />
   </app-sidebar>
 </template>

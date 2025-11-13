@@ -65,7 +65,7 @@ watch(files, (newFiles) => handleFileDrop(newFiles));
     }"
   >
     <div class="flex flex-col items-center justify-center space-y-4">
-      <Icon name="ri:upload-cloud-2-line" class="h-12 w-12 text-primary" />
+      <Icon name="ri:file-upload-line" class="h-12 w-12 text-primary" />
       <p class="text-neutral/60 text-center">
         <span class="font-semibold text-primary">Klik untuk memilih file</span>
         atau seret dan letakkan di sini

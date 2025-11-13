@@ -70,9 +70,10 @@ export function useAuth() {
   return {
     tokenCookie,
     authUser,
+    isAuthenticated,
+
     init,
     logout,
-    isAuthenticated,
     setToken,
     clearToken,
   };
