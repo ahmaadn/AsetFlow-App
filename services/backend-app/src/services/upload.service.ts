@@ -6,6 +6,7 @@ import {
 } from '@asetflow/shared';
 import { AssetResponse } from '@asetflow/shared-types';
 
+import { CLOUDINARY_ROOT_FOLDER } from '../configs/cloudinary.config';
 import * as AssetRepository from '../repositories/asset.repository';
 import * as FolderRepository from '../repositories/folder.repository';
 import { NotFoundError } from '../utils/api-error';
@@ -26,18 +27,24 @@ export const uploadAset = async (
     });
   }
 
+  const timeUpload = new Date().getTime();
+
   // buat slug jika tidak ada
   // Gunakan format: nama-file-tanpa-ekstensi-timestamp
   if (!slug) {
-    slug = generateSlug(filename + '-' + new Date().getTime());
+    slug = generateSlug(filename + '-' + timeUpload);
   }
 
-  // Upload file ke Cloudinary
+  // buat random public id
+  const randomPublicId = Math.random().toString(36).substring(2, 15);
+
+  // Upload file ke Cloudinary dengan memasukkannya ke dalam folder-id,
+  // folder-id di pilih karena id tidak dapat berubah
   const result = await uploadToCloudinary(
     file.buffer,
     filename,
-    `asetflow/${folder.slug}`,
-    slug
+    `${CLOUDINARY_ROOT_FOLDER}/${folder.id}`,
+    `${randomPublicId}-${timeUpload}`
   );
 
   // simpan

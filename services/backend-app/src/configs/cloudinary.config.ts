@@ -7,4 +7,8 @@ cloudinary.config({
   secure: true,
 });
 
+// CONFIGURASI
+const CLOUDINARY_ROOT_FOLDER = process.env.CLOUDINARY_ROOT_FOLDER || 'asetflow';
+
+export { CLOUDINARY_ROOT_FOLDER, cloudinary };
 export default cloudinary;
