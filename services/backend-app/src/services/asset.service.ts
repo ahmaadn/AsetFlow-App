@@ -1,8 +1,10 @@
 import {
   AssetCreate,
   AssetResponse,
+  MetadataAsset,
   PaginationResult,
 } from '@asetflow/shared-types';
+import { GetAssetsByTypeType, GetAssetsType } from '@asetflow/validators';
 
 import * as AssetRepository from '../repositories/asset.repository';
 import { ConflictError, NotFoundError } from '../utils/api-error';
@@ -25,21 +27,19 @@ export const createAset = async (data: AssetCreate) => {
  */
 export const getAssetsByFolder = async (
   folderId: string,
-  queryParams: {
-    page?: number;
-    per_page?: number;
-    assetType?: string;
-    sort_by?: string;
-    order?: 'asc' | 'desc';
-  }
+  queryParams: Partial<GetAssetsType>
 ): Promise<PaginationResult<AssetResponse>> => {
   const {
     page = 1,
     per_page = 20,
-    assetType,
+    assetType = 'all',
     sort_by = 'createdAt',
     order = 'desc',
   } = queryParams;
+
+  logger.info(
+    `Fetching assets from folder '${folderId}' with params: page=${page}, per_page=${per_page}, assetType=${assetType}, sort_by=${sort_by}, order=${order}`
+  );
 
   const assets = await AssetRepository.getByFolderWithPagination({
     folderId,
@@ -60,16 +60,14 @@ export const getAssetsByFolder = async (
       folderId: asset.folderId,
       ownerId: asset.ownerId,
       publicId: asset.publicId,
-      originalName: asset.originalName,
+      name: asset.name,
       slug: asset.slug,
-      size: asset.size,
+      size: Number(asset.size),
       mimeType: asset.mimeType,
-      assetType: asset.assetType,
       url: asset.url,
       format: asset.format,
-      width: asset.width ?? 0,
-      height: asset.height ?? 0,
       viewCount: asset.viewCount,
+      metadata: asset.metadata as unknown as MetadataAsset,
       createdAt: asset.createdAt.toISOString(),
       updatedAt: asset.updatedAt.toISOString(),
     })),
@@ -85,17 +83,13 @@ export const getAssetsByFolder = async (
  * @param queryParams Parameter query untuk pagination dan filter
  * @returns Daftar asset dengan pagination
  */
-export const getAssetsByType = async (queryParams: {
-  page?: number;
-  per_page?: number;
-  assetType?: string;
-  sort_by?: string;
-  order?: 'asc' | 'desc';
-}): Promise<PaginationResult<AssetResponse>> => {
+export const getAssetsByType = async (
+  queryParams: Partial<GetAssetsByTypeType>
+): Promise<PaginationResult<AssetResponse>> => {
   const {
     page = 1,
     per_page = 20,
-    assetType,
+    assetType = 'all',
     sort_by = 'createdAt',
     order = 'desc',
   } = queryParams;
@@ -118,15 +112,13 @@ export const getAssetsByType = async (queryParams: {
       folderId: asset.folderId,
       ownerId: asset.ownerId,
       publicId: asset.publicId,
-      originalName: asset.originalName,
+      name: asset.name,
       slug: asset.slug,
-      size: asset.size,
+      size: Number(asset.size),
       mimeType: asset.mimeType,
-      assetType: asset.assetType,
       url: asset.url,
       format: asset.format,
-      width: asset.width ?? 0,
-      height: asset.height ?? 0,
+      metadata: asset.metadata as unknown as MetadataAsset,
       viewCount: asset.viewCount,
       createdAt: asset.createdAt.toISOString(),
       updatedAt: asset.updatedAt.toISOString(),
@@ -170,15 +162,13 @@ export const updateAsset = async (
     folderId: updatedAsset.folderId,
     ownerId: updatedAsset.ownerId,
     publicId: updatedAsset.publicId,
-    originalName: updatedAsset.originalName,
+    name: updatedAsset.name,
     slug: updatedAsset.slug,
-    size: updatedAsset.size,
+    size: Number(updatedAsset.size),
     mimeType: updatedAsset.mimeType,
-    assetType: updatedAsset.assetType,
     url: updatedAsset.url,
     format: updatedAsset.format,
-    width: updatedAsset.width ?? 0,
-    height: updatedAsset.height ?? 0,
+    metadata: updatedAsset.metadata as unknown as MetadataAsset,
     viewCount: updatedAsset.viewCount,
     createdAt: updatedAsset.createdAt.toISOString(),
     updatedAt: updatedAsset.updatedAt.toISOString(),
@@ -201,15 +191,13 @@ export const getAssetById = async (assetId: string): Promise<AssetResponse> => {
     folderId: asset.folderId,
     ownerId: asset.ownerId,
     publicId: asset.publicId,
-    originalName: asset.originalName,
+    name: asset.name,
     slug: asset.slug,
-    size: asset.size,
+    size: Number(asset.size),
     mimeType: asset.mimeType,
-    assetType: asset.assetType,
     url: asset.url,
     format: asset.format,
-    width: asset.width ?? 0,
-    height: asset.height ?? 0,
+    metadata: asset.metadata as unknown as MetadataAsset,
     viewCount: asset.viewCount,
     createdAt: asset.createdAt.toISOString(),
     updatedAt: asset.updatedAt.toISOString(),

@@ -1,7 +1,7 @@
+import { GetAssetsByTypeType, GetAssetsType } from '@asetflow/validators';
 import { NextFunction, Request, Response } from 'express';
 
 import * as asetService from '../services/asset.service';
-import { QueryParams } from '../types/globals';
 import { UnauthorizedError } from '../utils/api-error';
 
 /**
@@ -19,7 +19,7 @@ export const getAssetsByFolder = async (
     }
 
     const { id: folderId } = req.params;
-    const queryParams = req.query as QueryParams;
+    const queryParams = req.query as Partial<GetAssetsType>;
 
     const result = await asetService.getAssetsByFolder(folderId, queryParams);
     res.status(200).json(result);
@@ -109,7 +109,7 @@ export const getAssetsByType = async (
       throw new UnauthorizedError({ message: 'User not authenticated' });
     }
 
-    const queryParams = req.query as QueryParams;
+    const queryParams = req.query as Partial<GetAssetsByTypeType>;
 
     const result = await asetService.getAssetsByType(queryParams);
     res.status(200).json(result);

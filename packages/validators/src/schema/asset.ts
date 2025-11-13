@@ -7,9 +7,12 @@ import { slug, UUIDv4 } from './base';
  * Schema untuk mendapatkan daftar asset dengan pagination dan filter
  */
 export const getAssetsSchema = z.object({
-  page: z.coerce.number().min(1).default(1).nullable(),
+  page: z.coerce.number().min(1).default(1),
   per_page: z.coerce.number().min(1).max(100).default(20),
-  assetType: z.string().optional(),
+  assetType: z
+    .enum(['image', 'video', 'audio', 'document', 'all'])
+    .optional()
+    .default('all'),
   sort_by: z.enum(['createdAt', 'originalName', 'size']).default('createdAt'),
   order: z.enum(['asc', 'desc']).default('desc'),
 });

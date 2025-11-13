@@ -1,3 +1,5 @@
+import { getAssetTypeFromMime } from '@asetflow/shared';
+import { MetadataAsset } from '@asetflow/shared-types';
 import { UploadApiOptions, UploadApiResponse } from 'cloudinary';
 
 import { InternalServerError } from './api-error';
@@ -57,4 +59,44 @@ export const uploadToCloudinary = (
 
     uploadStream.end(fileBuffer);
   });
+};
+
+/**
+ * Mengekstrak metadata dari response Cloudinary berdasarkan tipe MIME
+ * @param mimeType Tipe MIME dari file
+ * @param result Response dari Cloudinary setelah upload
+ * @returns MetadataAsset
+ */
+export const extactMetadataFromCloudinary = (
+  mimeType: string,
+  result: UploadApiResponse
+): MetadataAsset => {
+  const typeAsset = getAssetTypeFromMime(mimeType);
+
+  const metadata: Record<string, unknown> = {
+    resource_type: result.resource_type,
+    version: result.version,
+  };
+
+  if (typeAsset === 'image') {
+    metadata.width = result.width || null;
+    metadata.height = result.height || null;
+  } else if (typeAsset === 'video') {
+    metadata.width = result.width;
+    metadata.height = result.height;
+    metadata.duration = result.duration;
+    metadata.bit_rate = result.bit_rate;
+    metadata.frame_rate = result.frame_rate;
+  } else if (typeAsset === 'audio') {
+    metadata.duration = result.duration;
+    metadata.bit_rate = result.bit_rate;
+  } else if (typeAsset === 'document') {
+    // Untuk dokumen, Cloudinary tidak menyediakan metadata khusus
+    // Namun, kita bisa menambahkan halaman jika tersedia
+    if (result.pages) {
+      metadata.pages = result.pages;
+    }
+  }
+
+  return metadata as unknown as MetadataAsset;
 };

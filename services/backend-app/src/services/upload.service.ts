@@ -1,16 +1,16 @@
 import { UserModel } from '@asetflow/database';
-import {
-  generateSlug,
-  getAssetTypeFromMime,
-  getExtension,
-} from '@asetflow/shared';
-import { AssetResponse } from '@asetflow/shared-types';
+import { logger } from '@asetflow/logger';
+import { generateSlug, getExtension } from '@asetflow/shared';
+import { AssetResponse, MetadataAsset } from '@asetflow/shared-types';
 
 import { CLOUDINARY_ROOT_FOLDER } from '../configs/cloudinary.config';
 import * as AssetRepository from '../repositories/asset.repository';
 import * as FolderRepository from '../repositories/folder.repository';
 import { NotFoundError } from '../utils/api-error';
-import { uploadToCloudinary } from '../utils/cloudinary';
+import {
+  extactMetadataFromCloudinary,
+  uploadToCloudinary,
+} from '../utils/cloudinary';
 
 export const uploadAset = async (
   folderId: string,
@@ -47,38 +47,44 @@ export const uploadAset = async (
     `${randomPublicId}-${timeUpload}`
   );
 
+  logger.info(
+    `File uploaded to Cloudinary with public_id: ${result.public_id}`
+  );
+  logger.info('Result Response from Cloudinary:');
+  console.log(result);
+
+  const metadata = extactMetadataFromCloudinary(file.mimetype, result);
+
   // simpan
   const asset = await AssetRepository.create({
     folderId: folder.id,
     ownerId: user.id,
     publicId: result.public_id,
-    originalName: filename,
+    name: filename,
     slug: slug,
-    size: file.size.toString(),
+    size: file.size,
     mimeType: file.mimetype,
-    assetType: getAssetTypeFromMime(file.mimetype),
     url: result.secure_url,
     format: result.format || getExtension(filename),
-    width: result.width || 0, //
-    height: result.height || 0,
+    metadata: metadata,
   });
+
+  logger.info(`Asset record created with ID: ${asset.id}`);
 
   return {
     id: asset.id,
     folderId: asset.folderId,
     ownerId: asset.ownerId,
     publicId: asset.publicId,
-    originalName: asset.originalName,
+    name: asset.name,
     slug: asset.slug,
-    size: asset.size,
+    size: Number(asset.size),
     mimeType: asset.mimeType,
-    assetType: asset.assetType,
     url: asset.url,
     format: asset.format,
     viewCount: asset.viewCount,
-    width: asset.width,
-    height: asset.height,
     createdAt: asset.createdAt.toISOString(),
     updatedAt: asset.updatedAt.toISOString(),
+    metadata: asset.metadata as unknown as MetadataAsset,
   };
 };
