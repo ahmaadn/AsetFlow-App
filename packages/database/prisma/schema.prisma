@@ -55,34 +55,31 @@ model Folder {
 model FolderTag {
   folderId String @map("folder_id")
   tagId    String @map("tag_id")
-
-  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
-  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([folderId, tagId])
   @@map("folder_tags")
 }
 
 model Asset {
-  id           String     @id @default(uuid())
-  folderId     String     @map("folder_id")
-  ownerId      Int        @map("owner_id")
-  publicId     String     @map("public_id")
-  originalName String     @map("original_name")
-  slug         String     @map("slug")
-  size         String     @map("size")
-  mimeType     String     @map("mime_type")
-  assetType    String     @map("asset_type")
-  url          String     @map("url")
-  format       String     @map("format")
-  viewCount    Int        @default(0) @map("view_count")
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
-  width        Int        @map("width")
-  height       Int        @map("height")
-  folder       Folder     @relation(fields: [folderId], references: [id], onDelete: Cascade)
-  owner        User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  tags         AssetTag[]
+  id        String     @id @default(uuid())
+  folderId  String     @map("folder_id")
+  ownerId   Int        @map("owner_id")
+  publicId  String     @map("public_id")
+  name      String     @map("name")
+  slug      String     @map("slug")
+  size      BigInt     @map("size")
+  mimeType  String     @map("mime_type")
+  url       String     @map("url")
+  format    String     @map("format")
+  viewCount Int        @default(0) @map("view_count")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  metadata  Json?      @map("metadata")
+  folder    Folder     @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  owner     User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tags      AssetTag[]
 
   @@map("assets")
 }

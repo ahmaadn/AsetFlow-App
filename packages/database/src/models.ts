@@ -24,21 +24,25 @@ export interface FolderModel {
   updatedAt: Date;
 }
 
+export interface MetadataAsset {
+  width?: number | null;
+  height?: number | null;
+}
+
 export interface AssetModel {
   id: string;
   folderId: string;
   ownerId: number;
   publicId: string;
-  originalName: string;
+  name: string;
   slug: string;
-  size: string;
+  size: bigint;
   mimeType: string;
-  assetType: string;
+
   url: string;
   format: string;
   viewCount: number;
   createdAt: Date;
   updatedAt: Date;
-  width: number;
-  height: number;
+  metadata: MetadataAsset;
 }
