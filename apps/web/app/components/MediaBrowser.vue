@@ -69,6 +69,12 @@ function toggleSelect(asset: AssetResponse) {
     selectedAsset.value && selectedAsset.value.id === asset.id ? null : asset;
 }
 
+function onUpdateAsset(updatedAsset: AssetResponse) {
+  if (selectedAsset.value && selectedAsset.value.id === updatedAsset.id) {
+    selectedAsset.value = updatedAsset;
+  }
+}
+
 onUnmounted(stopIntersection);
 </script>
 
@@ -151,6 +157,7 @@ onUnmounted(stopIntersection);
       @download="handleDownload"
       @edit="handleEdit"
       @delete="isModalDeleteOpen = true"
+      @update="onUpdateAsset"
     />
 
     <AppModalDelete
