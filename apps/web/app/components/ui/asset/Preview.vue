@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { AssetResponse } from '@asetflow/shared-types';
 import {
+  getAssetTypeFromMime,
   getIconForMimeType,
   isImageMimeType,
-  isVideoMimeType,
 } from '@asetflow/shared';
 
 interface Props {
@@ -16,10 +16,6 @@ const props = withDefaults(defineProps<Props>(), {
   aspect: 'video',
   iconViewMode: false,
 });
-
-const isMediaPreview = () =>
-  isImageMimeType(props.asset.mimeType) ||
-  isVideoMimeType(props.asset.mimeType);
 </script>
 
 <template>
@@ -30,10 +26,13 @@ const isMediaPreview = () =>
       'aspect-video': props.aspect === 'video',
     }"
   >
-    <slot v-if="isMediaPreview() && !props.iconViewMode" name="media-preview">
+    <slot
+      v-if="isImageMimeType(props.asset.mimeType) && !props.iconViewMode"
+      name="media-preview"
+    >
       <NuxtImg
         :src="asset.url"
-        :alt="asset.originalName"
+        :alt="asset.name"
         class="h-full w-full object-contain"
       />
     </slot>
@@ -48,7 +47,7 @@ const isMediaPreview = () =>
     <div
       class="absolute left-2 top-2 rounded bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm"
     >
-      {{ asset.assetType }}
+      {{ getAssetTypeFromMime(asset.mimeType) }}
     </div>
     <div
       class="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm inline-flex items-center gap-x-1"

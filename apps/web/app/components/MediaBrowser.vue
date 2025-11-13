@@ -163,7 +163,7 @@ onUnmounted(stopIntersection);
       <p>
         Apakah Anda yakin ingin menghapus Asset
         <span class="font-semibold text-base-content/100">
-          {{ selectedAsset.originalName }}</span
+          {{ selectedAsset.name }}</span
         >? Tindakan ini tidak dapat dibatalkan.
       </p>
     </AppModalDelete>

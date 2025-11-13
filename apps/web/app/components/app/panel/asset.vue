@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { AssetResponse } from '@asetflow/shared-types';
 import type { UpdateAssetType } from '@asetflow/validators';
-import { formatDisplayDate, formatSize, generateSlug } from '@asetflow/shared';
+import {
+  formatDisplayDate,
+  formatSize,
+  generateSlug,
+  getAssetTypeFromMime,
+} from '@asetflow/shared';
 
 interface Props {
   asset: AssetResponse;
@@ -26,7 +31,7 @@ const { getPublicAssetUrl } = usePublicApi();
 const isEditMode = ref(false);
 const isUpdating = ref(false);
 const editForm = ref<UpdateAssetType>({
-  originalName: props.asset.originalName,
+  name: props.asset.name,
   slug: props.asset.slug,
 });
 
@@ -40,7 +45,7 @@ const handleDownload = () => {
 const handleEdit = () => {
   isEditMode.value = true;
   editForm.value = {
-    originalName: props.asset.originalName,
+    name: props.asset.name,
     slug: props.asset.slug,
   };
 };
@@ -50,13 +55,13 @@ const handleDelete = () => emit('delete');
 const handleCancelEdit = () => {
   isEditMode.value = false;
   editForm.value = {
-    originalName: props.asset.originalName,
+    name: props.asset.name,
     slug: props.asset.slug,
   };
 };
 
 const handleSaveEdit = async () => {
-  if (!editForm.value.originalName?.trim() || !editForm.value.slug?.trim()) {
+  if (!editForm.value.name?.trim() || !editForm.value.slug?.trim()) {
     toast.error('Name and slug are required');
     return;
   }
@@ -81,8 +86,8 @@ const handleSaveEdit = async () => {
 };
 
 const onNameInput = () => {
-  if (editForm.value.originalName) {
-    editForm.value.slug = generateSlug(editForm.value.originalName);
+  if (editForm.value.name) {
+    editForm.value.slug = generateSlug(editForm.value.name);
   }
 };
 
@@ -131,14 +136,14 @@ const publicAssetUrl = computed(() => {
                 <UiInfoRow label="Name">
                   <input
                     v-if="isEditMode"
-                    v-model="editForm.originalName"
+                    v-model="editForm.name"
                     type="text"
                     class="input input-bordered input-sm w-full"
                     placeholder="Asset name"
                     @input="onNameInput"
                   />
                   <span v-else class="break-all">
-                    {{ asset.originalName }}
+                    {{ asset.name }}
                   </span>
                 </UiInfoRow>
 
@@ -156,22 +161,28 @@ const publicAssetUrl = computed(() => {
                 </UiInfoRow>
 
                 <UiInfoRow label="Asset Type">
-                  {{ asset.assetType }}
+                  {{ getAssetTypeFromMime(asset.mimeType) }}
                 </UiInfoRow>
 
                 <UiInfoRow label="Size">
                   {{ formatSize(asset.size) }}
                 </UiInfoRow>
 
-                <UiInfoRow
-                  v-if="asset.width && asset.height"
-                  label="Dimensions"
-                >
-                  {{ asset.width }} × {{ asset.height }}
-                </UiInfoRow>
-
                 <UiInfoRow label="MIME Type"> {{ asset.mimeType }} </UiInfoRow>
                 <UiInfoRow label="Views"> {{ asset.viewCount }} </UiInfoRow>
+              </dl>
+            </div>
+
+            <div v-if="asset.metadata" class="space-y-2">
+              <UiInfoTitle>Metadata</UiInfoTitle>
+              <dl class="space-y-2 text-sm">
+                <UiInfoRow
+                  v-for="(value, key) in asset.metadata"
+                  :key="key"
+                  :label="key"
+                >
+                  {{ value }}
+                </UiInfoRow>
               </dl>
             </div>
 

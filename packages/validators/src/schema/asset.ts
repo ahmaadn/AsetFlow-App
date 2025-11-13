@@ -27,7 +27,7 @@ export const getAssetsByTypeSchema = getAssetsSchema.extend({
  * Schema untuk update asset
  */
 export const updateAssetSchema = z.object({
-  originalName: z.string().min(1).max(255).optional(),
+  name: z.string().min(1).max(255).optional(),
   slug: slug.optional(),
 });
 

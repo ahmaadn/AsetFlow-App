@@ -4,7 +4,11 @@ import {
   MetadataAsset,
   PaginationResult,
 } from '@asetflow/shared-types';
-import { GetAssetsByTypeType, GetAssetsType } from '@asetflow/validators';
+import {
+  GetAssetsByTypeType,
+  GetAssetsType,
+  UpdateAssetType,
+} from '@asetflow/validators';
 
 import * as AssetRepository from '../repositories/asset.repository';
 import { ConflictError, NotFoundError } from '../utils/api-error';
@@ -137,7 +141,7 @@ export const getAssetsByType = async (
  */
 export const updateAsset = async (
   assetId: string,
-  data: { originalName?: string; slug?: string }
+  data: UpdateAssetType
 ): Promise<AssetResponse> => {
   const existingAsset = await AssetRepository.findById(assetId);
   if (!existingAsset) {
