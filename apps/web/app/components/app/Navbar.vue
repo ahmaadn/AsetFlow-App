@@ -26,7 +26,7 @@ const handleAddClick = () => {
 
 <template>
   <div class="navbar bg-base-100 shadow-sm z-10">
-    <div class="flex-none md:hidden">
+    <div class="flex-none lg:hidden">
       <label
         :for="props.drawerId"
         class="btn btn-square btn-ghost drawer-button lg:hidden"

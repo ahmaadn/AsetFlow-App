@@ -3,12 +3,16 @@ import type {
   PaginationResult,
   FolderDetailResponse,
 } from '@asetflow/shared-types';
-import { CreateFolderType, UpdateFolderType } from '@asetflow/validators';
+import {
+  CreateFolderType,
+  GetFolderType,
+  UpdateFolderType,
+} from '@asetflow/validators';
 
 import * as FolderRepository from '../repositories/folder.repository';
-import { QueryParams } from '../types/globals';
 import { BadRequestError, NotFoundError } from '../utils/api-error';
 import { ErrorCode } from '../utils/error-code';
+import logger from '../utils/logger';
 
 /**
  * Mendapatkan semua folder milik user
@@ -24,8 +28,12 @@ export const getAllFolders = async (
     search = '',
     sort_by = 'createdAt',
     order = 'desc',
-  }: QueryParams
+  }: Partial<GetFolderType>
 ): Promise<PaginationResult<FolderDetailResponse>> => {
+  logger.info(
+    `Fetching folders for user ID: ${user.id}, Page: ${page}, Per Page: ${per_page}, Search: "${search}", Sort By: ${sort_by}, Order: ${order}`
+  );
+
   // Mengambil folder dari repository
   const folders = await FolderRepository.getByFilter({
     where: {
