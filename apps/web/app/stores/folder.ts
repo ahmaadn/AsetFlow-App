@@ -158,5 +158,11 @@ export const useFolderStore = defineStore('folder', {
     clearFolders() {
       this.folders = [];
     },
+
+    clear() {
+      this.clearFolders();
+      this.isLoading = false;
+      this.searchQuery = '';
+    },
   },
 });

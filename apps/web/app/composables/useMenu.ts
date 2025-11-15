@@ -1,6 +1,7 @@
 import type { MenuSection } from '~/types';
 
 export const useMenu = () => {
+  const auth = useAuth();
   const defaultMenuSections: MenuSection[] = [
     // {
     //   title: 'Recently',
@@ -37,7 +38,11 @@ export const useMenu = () => {
       title: 'Account',
       items: [
         // { label: 'Settings', icon: 'ri:settings-line', to: '/settings' },
-        { label: 'Logout', icon: 'ri:logout-box-line', to: '/logout' },
+        {
+          label: 'Logout',
+          icon: 'ri:logout-box-line',
+          action: () => auth.logout(),
+        },
       ],
     },
   ];

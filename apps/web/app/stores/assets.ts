@@ -153,7 +153,7 @@ export const useAssetStore = defineStore('asset', {
     /**
      * Clear all assets
      */
-    clearAllAssets() {
+    clear() {
       this.assets.clear();
       this.pagination.clear();
       this.isLoading.clear();

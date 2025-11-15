@@ -255,6 +255,18 @@ export const useUploadQueue = () => {
     queue.value = [];
   };
 
+  const cancelAllUploadTasks = () => {
+    queue.value.forEach((item) => {
+      if (item.status === 'uploading' && item.abortController) {
+        item.abortController.abort();
+      }
+      item.status = 'cancelled';
+      item.error = 'Cancelled by user';
+    });
+
+    clearAll();
+  };
+
   return {
     queue,
     isUploading,
@@ -267,5 +279,6 @@ export const useUploadQueue = () => {
     startUpload,
     clearCompleted,
     clearAll,
+    cancelAllUploadTasks,
   };
 };
