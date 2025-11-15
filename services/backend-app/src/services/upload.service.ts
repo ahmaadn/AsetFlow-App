@@ -8,7 +8,7 @@ import * as AssetRepository from '../repositories/asset.repository';
 import * as FolderRepository from '../repositories/folder.repository';
 import { NotFoundError } from '../utils/api-error';
 import {
-  extactMetadataFromCloudinary,
+  extractMetadataFromCloudinary,
   uploadToCloudinary,
 } from '../utils/cloudinary';
 
@@ -51,9 +51,9 @@ export const uploadAset = async (
     `File uploaded to Cloudinary with public_id: ${result.public_id}`
   );
   logger.info('Result Response from Cloudinary:');
-  console.log(result);
+  logger.info(JSON.stringify(result, null, 2));
 
-  const metadata = extactMetadataFromCloudinary(file.mimetype, result);
+  const metadata = extractMetadataFromCloudinary(file.mimetype, result);
 
   // simpan
   const asset = await AssetRepository.create({

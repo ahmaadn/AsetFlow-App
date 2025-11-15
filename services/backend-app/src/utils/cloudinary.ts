@@ -67,7 +67,7 @@ export const uploadToCloudinary = (
  * @param result Response dari Cloudinary setelah upload
  * @returns MetadataAsset
  */
-export const extactMetadataFromCloudinary = (
+export const extractMetadataFromCloudinary = (
   mimeType: string,
   result: UploadApiResponse
 ): MetadataAsset => {
