@@ -13,7 +13,7 @@ export const getAssetsSchema = z.object({
     .enum(['image', 'video', 'audio', 'document', 'all'])
     .optional()
     .default('all'),
-  sort_by: z.enum(['createdAt', 'originalName', 'size']).default('createdAt'),
+  sort_by: z.enum(['createdAt', 'name', 'size']).default('createdAt'),
   order: z.enum(['asc', 'desc']).default('desc'),
 });
 
