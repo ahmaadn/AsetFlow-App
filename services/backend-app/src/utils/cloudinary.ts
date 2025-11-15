@@ -82,8 +82,8 @@ export const extractMetadataFromCloudinary = (
     metadata.width = result.width || null;
     metadata.height = result.height || null;
   } else if (typeAsset === 'video') {
-    metadata.width = result.width;
-    metadata.height = result.height;
+    metadata.width = result.width || null;
+    metadata.height = result.height || null;
     metadata.duration = result.duration;
     metadata.bit_rate = result.bit_rate;
     metadata.frame_rate = result.frame_rate;
