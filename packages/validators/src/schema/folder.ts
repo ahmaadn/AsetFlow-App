@@ -7,7 +7,7 @@ import { slug, UUIDv4 } from './base';
  * Schema untuk mendapatkan daftar folder dengan pagination dan filter.
  */
 export const getFoldersSchema = z.object({
-  page: z.coerce.number().min(1).default(1).nullable(),
+  page: z.coerce.number().min(1).default(1),
   per_page: z.coerce.number().min(1).max(100).default(20),
   search: z.string().optional().default(''),
   sort_by: z.enum(['createdAt', 'name']).default('createdAt'),

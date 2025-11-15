@@ -37,7 +37,7 @@ const targetIsVisible = useElementVisibility(target, {
         <NuxtImg
           provider="cloudinary"
           :src="props.asset.url"
-          :alt="props.asset.originalName"
+          :alt="props.asset.name"
           class="h-full w-full object-cover"
           loading="lazy"
           preload
@@ -60,9 +60,9 @@ const targetIsVisible = useElementVisibility(target, {
     <div class="p-3">
       <p
         class="truncate text-sm font-medium text-base-content"
-        :title="props.asset.originalName"
+        :title="props.asset.name"
       >
-        {{ props.asset.originalName }}
+        {{ props.asset.name }}
       </p>
       <p class="text-xs text-base-content/60">
         {{ formatSize(props.asset.size) }}

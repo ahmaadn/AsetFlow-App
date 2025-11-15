@@ -1,7 +1,7 @@
+import { GetFolderType } from '@asetflow/validators';
 import { NextFunction, Request, Response } from 'express';
 
 import * as folderService from '../services/folder.service';
-import { QueryParams } from '../types/globals';
 import { UnauthorizedError } from '../utils/api-error';
 
 /**
@@ -17,8 +17,7 @@ export const getAllFolder = async (
     if (!user) {
       throw new UnauthorizedError({ message: 'User not authenticated' });
     }
-    const queryParams = req.query as QueryParams;
-
+    const queryParams = req.query as Partial<GetFolderType>;
     const result = await folderService.getAllFolders(user, queryParams);
     res.status(200).json(result);
   } catch (error) {

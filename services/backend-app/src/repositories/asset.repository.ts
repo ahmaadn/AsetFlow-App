@@ -1,5 +1,8 @@
-import { AssetModel, prisma } from '@asetflow/database';
+import { AssetModel, Prisma, prisma } from '@asetflow/database';
+import { GeneralAssetType } from '@asetflow/shared';
 import { AssetCreate } from '@asetflow/shared-types';
+
+import { buildAssetTypeFilter } from '../utils/query-helper';
 
 /**
  * Membuat aset baru
@@ -12,16 +15,14 @@ export const create = async (data: AssetCreate): Promise<AssetModel> => {
       folderId: data.folderId,
       ownerId: data.ownerId,
       publicId: data.publicId,
-      originalName: data.originalName,
+      name: data.name,
       slug: data.slug,
       size: data.size,
       mimeType: data.mimeType,
-      assetType: data.assetType,
       url: data.url,
       format: data.format,
       viewCount: 0,
-      width: data.width,
-      height: data.height,
+      metadata: (data.metadata || {}) as Prisma.InputJsonValue,
     },
   });
 };
@@ -76,7 +77,7 @@ export const getByFolderWithPagination = async (options: {
   folderId: string;
   limit: number;
   offset: number;
-  assetType?: string;
+  assetType?: GeneralAssetType | 'all';
   sort_by?: string;
   order?: 'asc' | 'desc';
 }) => {
@@ -85,7 +86,7 @@ export const getByFolderWithPagination = async (options: {
   return await prisma.asset.findMany({
     where: {
       folderId,
-      ...(assetType ? { assetType } : {}),
+      ...buildAssetTypeFilter(assetType),
     },
     take: limit,
     skip: offset,
@@ -103,12 +104,12 @@ export const getByFolderWithPagination = async (options: {
  */
 export const countByFolder = async (
   folderId: string,
-  assetType?: string
+  assetType?: GeneralAssetType | 'all'
 ): Promise<number> => {
   return await prisma.asset.count({
     where: {
       folderId,
-      ...(assetType ? { assetType } : {}),
+      ...buildAssetTypeFilter(assetType),
     },
   });
 };
@@ -126,7 +127,7 @@ export const update = async (
   return await prisma.asset.update({
     where: { id },
     data: {
-      originalName: data.originalName,
+      name: data.name,
       slug: data.slug,
       updatedAt: new Date(),
     },
@@ -134,15 +135,16 @@ export const update = async (
 };
 
 /**
- * Menghitung total asset berdasarkan folder
- * @param folderId ID folder
+ * Menghitung total asset berdasarkan tipe
  * @param assetType Tipe asset (optional)
  * @returns Total jumlah asset
  */
-export const countByType = async (assetType?: string): Promise<number> => {
+export const countByType = async (
+  assetType?: GeneralAssetType | 'all'
+): Promise<number> => {
   return await prisma.asset.count({
     where: {
-      ...(assetType ? { assetType } : {}),
+      ...buildAssetTypeFilter(assetType),
     },
   });
 };
@@ -165,7 +167,7 @@ export const deleteById = async (id: string): Promise<void> => {
 export const getByTypeWithPagination = async (options: {
   limit: number;
   offset: number;
-  assetType?: string;
+  assetType: GeneralAssetType | 'all';
   sort_by?: string;
   order?: 'asc' | 'desc';
 }) => {
@@ -173,7 +175,7 @@ export const getByTypeWithPagination = async (options: {
 
   return await prisma.asset.findMany({
     where: {
-      ...(assetType && assetType !== 'all' ? { assetType } : {}),
+      ...buildAssetTypeFilter(assetType),
     },
     take: limit,
     skip: offset,

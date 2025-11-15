@@ -69,3 +69,15 @@ export const formatSize = (bytes: number | string, decimals = 2): string => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 };
+
+/**
+ * Mengubah string kunci yang dapat dibaca menjadi format judul.
+ * @param key string kunci yang dapat dibaca
+ * @returns string dalam format judul
+ */
+export const formatKeyAsTitle = (key: string): string => {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};

@@ -227,7 +227,7 @@ router.head(
  *         name: sort_by
  *         schema:
  *           type: string
- *           enum: [createdAt, originalName, size]
+ *           enum: [createdAt, name, size]
  *         description: Field to sort by
  *       - in: query
  *         name: order

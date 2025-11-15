@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 export interface UserModel {
   id: number;
   name: string;
@@ -29,16 +31,15 @@ export interface AssetModel {
   folderId: string;
   ownerId: number;
   publicId: string;
-  originalName: string;
+  name: string;
   slug: string;
-  size: string;
+  size: bigint;
   mimeType: string;
-  assetType: string;
+
   url: string;
   format: string;
   viewCount: number;
   createdAt: Date;
   updatedAt: Date;
-  width: number;
-  height: number;
+  metadata: Prisma.JsonValue;
 }
