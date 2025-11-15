@@ -31,11 +31,13 @@
       "persistent": true,
       "env": [
         "NUXT_PUBLIC_API_BASE",
+        "NUXT_PUBLIC_API_PUBLIC_BASE",
         "DATABASE_URL",
         "NODE_ENV",
         "CLOUDINARY_API_SECRET",
         "CLOUDINARY_API_KEY",
         "CLOUDINARY_CLOUD_NAME",
+        "CLOUDINARY_ROOT_FOLDER",
         "JWT_SECRET",
         "JWT_EXPIRES_IN"
       ]
