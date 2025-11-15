@@ -75,7 +75,7 @@ export const formatSize = (bytes: number | string, decimals = 2): string => {
  * @param key string kunci yang dapat dibaca
  * @returns string dalam format judul
  */
-export const readableKeyToTitle = (key: string): string => {
+export const formatKeyAsTitle = (key: string): string => {
   return key
     .replace(/_/g, ' ')
     .replace(/-/g, ' ')
