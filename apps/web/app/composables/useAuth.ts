@@ -39,9 +39,27 @@ export function useAuth() {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     tokenCookie.value = null;
     authUser.value = null;
+
+    // Cleanup datastore yang lainnya
+    const { clear: clearFolder } = useFolderStore();
+    clearFolder();
+
+    const { clear: clearAsset } = useAssetStore();
+    clearAsset();
+
+    const { clear: clearStagingFiles } = useStaggingFilesStore();
+    clearStagingFiles();
+
+    const { closeAll } = useModal();
+    closeAll();
+
+    const { cancelAllUploadTasks } = useUploadQueue();
+    cancelAllUploadTasks();
+
+    await navigateTo('/login');
   };
 
   const setToken = (newToken: string | null) => {

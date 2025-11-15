@@ -10,16 +10,13 @@ const props = withDefaults(defineProps<Props>(), {
   id: 'app-sidebar',
 });
 
-const emit = defineEmits<{
-  (e: 'item-click', item: MenuItem): void;
-  (e: 'logout'): void;
-}>();
-
 const route = useRoute();
 
 const activeMenuItem = computed((): MenuItem | null => {
   for (const section of props.menuSections) {
-    const activeItem = section.items.find((item) => isActiveLink(item.to));
+    const activeItem = section.items.find(
+      (item) => item.to && isActiveLink(item.to)
+    );
     if (activeItem) return activeItem;
   }
   return null;
@@ -42,19 +39,15 @@ const isActiveLink = (itemTo: string): boolean => {
 };
 
 const handleItemClick = (item: MenuItem) => {
-  // Handle logout khusus
-  if (item.to === '/logout') {
-    emit('logout');
-    return;
+  if (item.action && typeof item.action === 'function') {
+    item.action();
   }
-
-  emit('item-click', item);
 };
 
 const getLinkClass = (item: MenuItem) => {
   return {
     'text-primary bg-base-200 hover:bg-base-300 border-l-4 border-primary':
-      isActiveLink(item.to),
+      item.to && isActiveLink(item.to),
     'opacity-50 cursor-not-allowed': item.disabled,
   };
 };
@@ -127,7 +120,9 @@ const getLinkClass = (item: MenuItem) => {
                   v-else
                   :to="item.to"
                   :class="getLinkClass(item)"
-                  :aria-current="isActiveLink(item.to) ? 'page' : undefined"
+                  :aria-current="
+                    item.to && isActiveLink(item.to) ? 'page' : undefined
+                  "
                   :tabindex="item.disabled ? -1 : 0"
                   @click="handleItemClick(item)"
                 >

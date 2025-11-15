@@ -6,10 +6,12 @@ type ViewMode = 'grid' | 'list';
 interface MenuItem {
   label: string;
   icon: string;
-  to: string;
+  to?: string;
   badge?: string | number;
   disabled?: boolean;
   external?: boolean;
+
+  action?: () => void;
 }
 
 interface MenuSection {
