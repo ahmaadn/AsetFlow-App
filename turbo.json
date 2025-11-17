@@ -5,7 +5,7 @@
     "build": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"],
+      "outputs": ["dist/**", ".output/**"],
       "env": [
         "NUXT_PUBLIC_API_BASE",
         "NUXT_PUBLIC_API_PUBLIC_BASE",
