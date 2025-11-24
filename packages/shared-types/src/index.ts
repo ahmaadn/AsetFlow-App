@@ -3,3 +3,5 @@ export * from './tag.types';
 export * from './pagination.types';
 export * from './auth.types';
 export * from './asset.types';
+export * from './user.types';
+export * from './statistics.types';

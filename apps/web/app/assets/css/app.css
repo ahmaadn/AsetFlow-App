@@ -58,3 +58,14 @@ body {
 .main-content {
   @apply relative overflow-auto max-h-screen;
 }
+
+
+
+.donut-chart, .bar-chart {
+  --vis-tooltip-background-color: var(--color-base-100);
+  --vis-tooltip-border-color: var(--color-base-300);
+  --vis-tooltip-text-color: var(--color-base-content);
+  --vis-tooltip-shadow-color: rgba(172, 179, 184, 0.35);
+  --vis-tooltip-backdrop-filter: none;
+  --vis-tooltip-padding: 4px;
+}
