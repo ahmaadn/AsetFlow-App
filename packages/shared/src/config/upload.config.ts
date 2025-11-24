@@ -7,7 +7,7 @@ import type {
 /**
  * Maksimum ukuran unggahan berkas.
  */
-export const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+export const MAX_UPLOAD_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
 
 /**
  * Maksimum jumlah unggahan berkas yang dapat dilakukan secara bersamaan.
