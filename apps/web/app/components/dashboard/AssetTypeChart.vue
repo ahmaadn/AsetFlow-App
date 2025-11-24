@@ -83,14 +83,11 @@ const triggers = {
         <p class="text-sm text-base-content/60">No data available</p>
       </div>
 
-      <div
-        v-else
-        class="flex flex-col md:flex-row items-center gap-6 py-4 pointer-events-none"
-      >
+      <div v-else class="flex flex-col md:flex-row items-center gap-6 py-4">
         <!-- Donut Chart -->
 
         <ClientOnly>
-          <div class="flex-shrink-0 w-48 h-48 pointer-events-auto">
+          <div class="flex-shrink-0 w-48 h-48">
             <VisSingleContainer
               :data="chartData"
               :height="200"
