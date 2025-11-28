@@ -2,11 +2,12 @@ import { httpUpload } from '@asetflow/validators';
 import { Router } from 'express';
 
 import * as UploadController from '../controllers/upload.controller';
-import { protect } from '../middleware/auth.middleware';
+import { betterAuthProtect } from '../middleware/auth.middleware';
 import { uploadMiddleware } from '../middleware/muler.middleware';
 import { validate } from '../middleware/validation.middleware';
 
 const router = Router();
+router.use(betterAuthProtect);
 
 /**
  * @swagger
@@ -59,7 +60,6 @@ const router = Router();
  */
 router.post(
   '/:id/upload',
-  protect,
   uploadMiddleware.single('file'),
   validate(httpUpload),
   UploadController.handleFileUpload

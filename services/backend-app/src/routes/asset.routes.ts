@@ -6,10 +6,12 @@ import {
 import { Router } from 'express';
 
 import * as AssetController from '../controllers/asset.controller';
-import { protect } from '../middleware/auth.middleware';
+import { betterAuthProtect } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validation.middleware';
 
 const router = Router();
+
+router.use(betterAuthProtect);
 
 /**
  * @swagger
@@ -44,12 +46,7 @@ const router = Router();
  *       200:
  *         description: Asset updated successfully
  */
-router.put(
-  '/:id',
-  protect,
-  validate(httpUpdateAsset),
-  AssetController.updateAsset
-);
+router.put('/:id', validate(httpUpdateAsset), AssetController.updateAsset);
 
 /**
  * @swagger
@@ -78,12 +75,7 @@ router.put(
  *       500:
  *         description: Internal server error
  */
-router.delete(
-  '/:id',
-  protect,
-  validate(httpParamsAsset),
-  AssetController.deleteAsset
-);
+router.delete('/:id', validate(httpParamsAsset), AssetController.deleteAsset);
 
 /**
  * @swagger
@@ -112,12 +104,7 @@ router.delete(
  *       500:
  *         description: Internal server error
  */
-router.get(
-  '/:id',
-  protect,
-  validate(httpParamsAsset),
-  AssetController.getAssetById
-);
+router.get('/:id', validate(httpParamsAsset), AssetController.getAssetById);
 
 /**
  * @swagger
@@ -159,11 +146,6 @@ router.get(
  *       200:
  *         description: A list of assets
  */
-router.get(
-  '',
-  protect,
-  validate(httpGetAssetsByType),
-  AssetController.getAssetsByType
-);
+router.get('', validate(httpGetAssetsByType), AssetController.getAssetsByType);
 
 export default router;

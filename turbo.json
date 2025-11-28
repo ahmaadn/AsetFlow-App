@@ -16,7 +16,9 @@
         "CLOUDINARY_CLOUD_NAME",
         "CLOUDINARY_ROOT_FOLDER",
         "JWT_SECRET",
-        "JWT_EXPIRES_IN"
+        "JWT_EXPIRES_IN",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL"
       ]
     },
     "start": {
@@ -39,7 +41,9 @@
         "CLOUDINARY_CLOUD_NAME",
         "CLOUDINARY_ROOT_FOLDER",
         "JWT_SECRET",
-        "JWT_EXPIRES_IN"
+        "JWT_EXPIRES_IN",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL"
       ]
     },
     "db:generate": {

@@ -1,3 +1,4 @@
+import { toNodeHandler } from 'better-auth/node';
 import cors from 'cors';
 import express, { Response } from 'express';
 
@@ -5,13 +6,15 @@ import { errorHandler } from './middleware/error-handler.middleware';
 import { requestLogger } from './middleware/request-logger.middleware';
 import routes from './routes';
 import { setupSwaggerDocs } from './swagger';
+import { auth } from './utils/auth';
 import { ErrorCode } from './utils/error-code';
 
 export const app = express();
 
 // Middleware
-app.use(express.json());
 app.use(cors());
+app.all('/v1/auth/{*any}', toNodeHandler(auth));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(requestLogger);

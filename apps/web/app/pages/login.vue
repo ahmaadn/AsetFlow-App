@@ -24,10 +24,10 @@ const { values, errors, handleSubmit } = useForm({
         email: values.email,
         password: values.password,
       },
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         setToken(data.accessToken);
         toast.success('Login successful! Welcome back.');
-        navigateTo('/dashboard');
+        await navigateTo('/dashboard');
       },
       onError: (_) => {
         toast.error('Login failed. Please check your credentials.');

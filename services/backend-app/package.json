@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "cross-env NODE_ENV=production node dist/server.js"
+    "start": "cross-env NODE_ENV=production node dist/server.js",
+    "auth-schema": "npx @better-auth/cli@latest generate --output ./../../packages/database/prisma/auth-schema.prisma"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
     "@asetflow/shared": "workspace:*",
     "@asetflow/validators": "workspace:*",
     "bcrypt": "^6.0.0",
+    "better-auth": "^1.4.3",
     "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
