@@ -12,7 +12,7 @@ import {
  * Get all dashboard statistics in one call
  */
 export const getDashboardStatistics = async (
-  userId: number
+  userId: string
 ): Promise<DashboardStatistics> => {
   const [
     totalAssets,

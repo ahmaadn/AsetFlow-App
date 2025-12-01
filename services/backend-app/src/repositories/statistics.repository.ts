@@ -3,7 +3,7 @@ import { prisma } from '@asetflow/database';
 /**
  * Count total assets for a user
  */
-export const countUserAssets = async (userId: number): Promise<number> => {
+export const countUserAssets = async (userId: string): Promise<number> => {
   return await prisma.asset.count({
     where: { ownerId: userId },
   });
@@ -12,7 +12,7 @@ export const countUserAssets = async (userId: number): Promise<number> => {
 /**
  * Count total folders for a user
  */
-export const countUserFolders = async (userId: number): Promise<number> => {
+export const countUserFolders = async (userId: string): Promise<number> => {
   return await prisma.folder.count({
     where: { ownerId: userId },
   });
@@ -28,7 +28,7 @@ export const countTotalUsers = async (): Promise<number> => {
 /**
  * Calculate total storage used by a user
  */
-export const calculateUserStorage = async (userId: number): Promise<bigint> => {
+export const calculateUserStorage = async (userId: string): Promise<bigint> => {
   const result = await prisma.asset.aggregate({
     where: { ownerId: userId },
     _sum: {
@@ -42,7 +42,7 @@ export const calculateUserStorage = async (userId: number): Promise<bigint> => {
 /**
  * Get recent files for a user
  */
-export const findRecentFiles = async (userId: number, limit: number = 5) => {
+export const findRecentFiles = async (userId: string, limit: number = 5) => {
   return await prisma.asset.findMany({
     where: { ownerId: userId },
     take: limit,
@@ -61,7 +61,7 @@ export const findRecentFiles = async (userId: number, limit: number = 5) => {
 /**
  * Get asset count grouped by mime type for a user
  */
-export const findUserAssetMimeTypes = async (userId: number) => {
+export const findUserAssetMimeTypes = async (userId: string) => {
   return await prisma.asset.groupBy({
     by: ['mimeType'],
     where: { ownerId: userId },
@@ -75,7 +75,7 @@ export const findUserAssetMimeTypes = async (userId: number) => {
  * Get assets created within a date range for a user
  */
 export const findAssetsInDateRange = async (
-  userId: number,
+  userId: string,
   startDate: Date
 ) => {
   return await prisma.asset.findMany({
@@ -97,7 +97,7 @@ export const findAssetsInDateRange = async (
 /**
  * Calculate total views across all assets for a user
  */
-export const calculateTotalViews = async (userId: number): Promise<number> => {
+export const calculateTotalViews = async (userId: string): Promise<number> => {
   const result = await prisma.asset.aggregate({
     where: { ownerId: userId },
     _sum: {

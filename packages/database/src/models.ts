@@ -30,7 +30,7 @@ export interface TagModel {
 
 export interface FolderModel {
   id: string;
-  ownerId: number;
+  ownerId: string;
   name: string;
   slug: string;
   createdAt: Date;
@@ -40,7 +40,7 @@ export interface FolderModel {
 export interface AssetModel {
   id: string;
   folderId: string;
-  ownerId: number;
+  ownerId: string;
   publicId: string;
   name: string;
   slug: string;

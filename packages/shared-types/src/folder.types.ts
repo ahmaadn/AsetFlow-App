@@ -2,7 +2,7 @@ import { SimpleTag } from './tag.types';
 
 type BaseFolder = {
   id: string;
-  ownerId: number;
+  ownerId: string;
   name: string;
   slug: string;
   createdAt: string;
