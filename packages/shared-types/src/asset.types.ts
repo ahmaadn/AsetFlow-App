@@ -37,7 +37,7 @@ export type MetadataAsset =
 
 export interface AssetBase {
   folderId: string;
-  ownerId: number;
+  ownerId: string;
   publicId: string;
   name: string;
   slug: string;

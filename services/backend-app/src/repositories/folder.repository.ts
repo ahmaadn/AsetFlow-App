@@ -15,7 +15,7 @@ export const getAll = async (): Promise<FolderModel[]> => {
  * @returns Folder yang sesuai filter
  */
 export const getByFilter = async (options: {
-  where: { ownerId: number; name?: { $like: string } };
+  where: { ownerId: string; name?: { $like: string } };
   limit: number;
   offset: number;
   sort_by?: string;
@@ -48,7 +48,7 @@ export const getByFilter = async (options: {
  */
 export const create = async (data: {
   name: string;
-  ownerId: number;
+  ownerId: string;
   slug: string;
 }): Promise<FolderModel> => {
   return await prisma.folder.create({
