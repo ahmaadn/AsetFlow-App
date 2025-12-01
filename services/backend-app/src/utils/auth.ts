@@ -11,4 +11,5 @@ export const auth = betterAuth({
     disableSignUp: true,
   },
   basePath: '/v1/auth',
+  trustedOrigins: [process.env.CORS_ORIGIN || 'http://localhost:3000'],
 });

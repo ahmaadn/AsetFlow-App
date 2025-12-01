@@ -14,8 +14,8 @@ const isLoading = ref(true);
 
 // Get user name from auth
 const userName = computed(() => {
-  if (auth.authUser.value?.email) {
-    return auth.authUser.value.email.split('@')[0];
+  if (auth.user.value?.email) {
+    return auth.user.value.email.split('@')[0];
   }
   return 'User';
 });

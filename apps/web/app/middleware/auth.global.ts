@@ -1,28 +1,92 @@
-const publicRoutes = ['/login', '/404'];
+import type { RouteLocationNormalizedGeneric } from 'vue-router';
 
-export default defineNuxtRouteMiddleware((to, from) => {
-  const auth = useAuth();
+/**
+ * Public routes that don't require authentication.
+ * These routes are accessible to both authenticated and unauthenticated users.
+ */
+const PUBLIC_ROUTES: string[] = [
+  '/login',
+  '/register',
+  '/404',
+  '/500',
+] as const;
 
-  // Jika pengguna sudah login dan mencoba mengakses halaman '/login' lagi,
-  // arahkan mereka kembali ke halaman sebelumnya atau ke dashboard.
-  if (to.path === '/login' && auth.isAuthenticated.value) {
-    const previous =
-      from?.fullPath && from.fullPath !== to.fullPath
-        ? from.fullPath
-        : '/dashboard';
-    return navigateTo(previous);
+/**
+ * Authentication routes that authenticated users shouldn't access.
+ * These routes are only for unauthenticated users.
+ */
+const AUTH_ROUTES: string[] = ['/login', '/register'] as const;
+
+/**
+ * Default redirect path for authenticated users.
+ */
+const DEFAULT_AUTHENTICATED_REDIRECT: string = '/dashboard';
+
+/**
+ * Determines the best redirect path for authenticated users trying to access auth pages.
+ *
+ * @param from - The route user came from
+ * @returns {string} The redirect path
+ */
+function getAuthenticatedRedirectPath(
+  from: RouteLocationNormalizedGeneric
+): string {
+  // If user came from a valid non-auth route, redirect back there
+  if (
+    from?.fullPath &&
+    from.fullPath !== '/login' &&
+    from.fullPath !== '/register' &&
+    !PUBLIC_ROUTES.includes(from.fullPath)
+  ) {
+    return from.fullPath;
   }
 
-  // Jika pengguna belum login dan mencoba mengakses halaman yang bukan publik,
-  // biarkan mereka mengakses halaman publik.
-  if (matches(publicRoutes, to.path)) {
-    return;
-  }
+  // Otherwise redirect to dashboard
+  return DEFAULT_AUTHENTICATED_REDIRECT;
+}
 
-  // Jika pengguna belum login dan mencoba mengakses halaman yang bukan publik,
-  // arahkan mereka ke halaman login.
-  if (!auth.isAuthenticated.value) {
-    auth.logout();
+/**
+ * Global authentication middleware.
+ *
+ * Handles route protection and redirects based on authentication state:
+ * - Redirects authenticated users away from auth pages (login/register)
+ * - Allows access to public routes for everyone
+ * - Redirects unauthenticated users to login for protected routes
+ *
+ * @param to - Target route
+ * @param from - Current route
+ *
+ * @example
+ * This middleware runs automatically on all route changes.
+ * No manual setup required.
+ */
+export default defineNuxtRouteMiddleware(async (to, from) => {
+  const { isAuthenticated, fetchSession } = useAuth();
+
+  await fetchSession();
+
+  try {
+    if (isAuthenticated.value) {
+      if (AUTH_ROUTES.includes(to.path)) {
+        const redirectPath = getAuthenticatedRedirectPath(from);
+        return navigateTo(redirectPath);
+      }
+
+      return;
+    }
+
+    // Allow access to public routes
+    if (PUBLIC_ROUTES.includes(to.path)) {
+      return;
+    }
+
+    // Redirect unauthenticated users to login for protected routes
+    return navigateTo('/login');
+  } catch (error) {
+    console.error(
+      `Authentication middleware failed during session fetch or auth check for route "${to.path}".`,
+      error
+    );
     return navigateTo('/login');
   }
 });

@@ -200,19 +200,12 @@ export function useLazyApi<T extends object>(
 ) {
   const config = useRuntimeConfig();
   const baseURL = config.public.apiBase || '/api';
-  const auth = useAuth();
-
   const { onSuccess, onError, method, body, ...fetchOptions } = options || {};
-  const headers: Record<string, string> = {};
-  // Jika ada token, tambahkan ke header Authorization
-  if (auth.isAuthenticated.value && auth.tokenCookie.value) {
-    headers['Authorization'] = `Bearer ${auth.tokenCookie.value}`;
-  }
+
   const { data, error, status, execute, refresh } = useLazyFetch<T>(url, {
     baseURL,
     immediate: false,
     ...fetchOptions,
-    headers,
   });
 
   const loading = computed(() => status.value === 'pending');
