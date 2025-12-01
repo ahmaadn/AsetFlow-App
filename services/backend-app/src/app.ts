@@ -11,8 +11,18 @@ import { ErrorCode } from './utils/error-code';
 
 export const app = express();
 
-// Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie'],
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
+  })
+);
+
 app.all('/v1/auth/{*any}', toNodeHandler(auth));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

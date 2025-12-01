@@ -41,7 +41,7 @@ export const useMenu = () => {
         {
           label: 'Logout',
           icon: 'ri:logout-box-line',
-          action: () => auth.logout(),
+          action: () => auth.handleSignOut(),
         },
       ],
     },
