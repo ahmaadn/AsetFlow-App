@@ -14,7 +14,7 @@ export const app = express();
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     exposedHeaders: ['Set-Cookie'],

@@ -1,21 +1,13 @@
 <script setup lang="ts">
-import { checkFolderIdApi } from '~/lib/api/folder';
 import type { AssetType } from '~/types';
 
 definePageMeta({
   title: 'Media Library',
   async validate(route) {
-    const auth = useAuth();
-    if (!auth.isAuthenticated.value) return false;
-
-    const folderStore = useFolderStore();
-    const existingFolder = folderStore.findFolderById(
-      route.params.id as string
-    );
-    if (existingFolder) return true;
+    const { folder } = useApi();
 
     try {
-      await checkFolderIdApi(route.params.id as string);
+      await folder.checkFolder(route.params.id as string);
       return true;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {

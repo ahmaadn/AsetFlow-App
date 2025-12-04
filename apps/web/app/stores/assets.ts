@@ -1,12 +1,6 @@
 import type { AssetResponse } from '@asetflow/shared-types';
 import type { UpdateAssetType } from '@asetflow/validators';
-import {
-  lazyFetchAssetsApi,
-  lazyFetchAssetsByTypeApi,
-  type AssetQueryParams,
-  deleteAssetApi,
-  updateAssetApi,
-} from '~/lib/api/asset';
+import type { AssetQueryParams } from '~/lib/services/modules/asset';
 
 interface AssetState {
   assets: Map<string, AssetResponse[]>; // Key: folderId or 'type-{assetType}'
@@ -74,37 +68,24 @@ export const useAssetStore = defineStore('asset', {
       this.errors.set(folderId, null);
 
       try {
-        // Create lazy fetch instance
-        const { data, error, fetch } = lazyFetchAssetsApi(folderId, params);
+        const { asset } = useApi();
+        const data = await asset.getAssetsByFolder(folderId, params);
 
-        // Execute fetch
-        await fetch();
-
-        if (error.value) {
-          const errorMessage =
-            error.value instanceof Error
-              ? error.value.message
-              : 'Failed to load assets';
-          this.errors.set(folderId, errorMessage);
-          console.error('Error fetching assets:', error.value);
-          return;
-        }
-
-        if (data.value) {
+        if (data) {
           const currentAssets = this.assets.get(folderId) || [];
 
           // Append or replace assets
           this.assets.set(
             folderId,
-            append ? [...currentAssets, ...data.value.items] : data.value.items
+            append ? [...currentAssets, ...data.items] : data.items
           );
 
           // Update pagination info
           this.pagination.set(folderId, {
-            total: data.value.total,
-            page: data.value.page,
-            per_page: data.value.per_page,
-            hasMore: data.value.items.length === data.value.per_page,
+            total: data.total,
+            page: data.page,
+            per_page: data.per_page,
+            hasMore: data.items.length === data.per_page,
           });
         }
       } catch (error) {
@@ -183,8 +164,8 @@ export const useAssetStore = defineStore('asset', {
       data: UpdateAssetType
     ) {
       try {
-        const res = await updateAssetApi(assetId, data);
-        const updatedAsset = res.data as AssetResponse;
+        const { asset } = useApi();
+        const updatedAsset = await asset.updateAsset(assetId, data);
 
         const tempCurrentAssets = this.assets.get(folderId) || [];
         const updatedAssets = tempCurrentAssets.map((asset) =>
@@ -204,7 +185,8 @@ export const useAssetStore = defineStore('asset', {
      */
     async deleteAsset(folderId: string, assetId: string) {
       try {
-        await deleteAssetApi(assetId);
+        const { asset } = useApi();
+        await asset.deleteAsset(assetId);
         this.removeAsset(folderId, assetId);
       } catch (error) {
         console.error('Failed to delete asset:', error);
@@ -253,32 +235,22 @@ export const useAssetStore = defineStore('asset', {
           assetType: assetType === 'all' ? undefined : assetType,
         };
 
-        const { data, error, fetch } = lazyFetchAssetsByTypeApi(queryParams);
-        await fetch();
+        const { asset } = useApi();
+        const data = await asset.getAssetsByType(queryParams, {});
 
-        if (error.value) {
-          const errorMessage =
-            error.value instanceof Error
-              ? error.value.message
-              : 'Failed to load assets';
-          this.errors.set(key, errorMessage);
-          console.error('Error fetching assets by type:', error.value);
-          return;
-        }
-
-        if (data.value) {
+        if (data) {
           const currentAssets = this.assets.get(key) || [];
 
           this.assets.set(
             key,
-            append ? [...currentAssets, ...data.value.items] : data.value.items
+            append ? [...currentAssets, ...data.items] : data.items
           );
 
           this.pagination.set(key, {
-            total: data.value.total,
-            page: data.value.page,
-            per_page: data.value.per_page,
-            hasMore: data.value.items.length === data.value.per_page,
+            total: data.total,
+            page: data.page,
+            per_page: data.per_page,
+            hasMore: data.items.length === data.per_page,
           });
         }
       } catch (error) {
