@@ -1,12 +1,6 @@
 import type { FolderItem } from '@asetflow/shared-types';
-import {
-  createFolderApi,
-  deleteFolderApi,
-  fetchFoldersApi,
-  updateFolderApi,
-} from '~/lib/api/folder';
+import type { CreateFolderType, UpdateFolderType } from '@asetflow/validators';
 import { FetchError } from 'ofetch';
-import type { UpdateFolderType } from '@asetflow/validators';
 
 interface FolderState {
   folders: FolderItem[];
@@ -49,13 +43,12 @@ export const useFolderStore = defineStore('folder', {
     async loadFolders() {
       this.isLoading = true;
       try {
-        const { data, error } = await fetchFoldersApi({
+        const { folder } = useApi();
+        const data = await folder.getFolders({
           search: this.searchQuery,
         });
         if (data) {
           this.folders = data.items;
-        } else if (error) {
-          console.error('Error fetching folders:', error);
         }
       } catch (error) {
         console.error('Failed to load folders:', error);
@@ -67,16 +60,19 @@ export const useFolderStore = defineStore('folder', {
     async createFolder(name: string, slug?: string) {
       this.isLoading = true;
       const toast = useToast();
+      const { folder } = useApi();
 
       if (!slug || slug === '') {
         slug = name.toLowerCase().replace(/\s+/g, '-');
       }
 
-      toast.promise(createFolderApi({ name, slug }), {
+      const folderData: CreateFolderType = { name, slug };
+
+      toast.promise(folder.createFolder(folderData), {
         loading: 'Creating folder...',
         onSuccess: (data) => {
-          if (data.data) {
-            this.folders.push(data.data);
+          if (data) {
+            this.folders.push(data);
           }
           return `Folder "${name}" created successfully!`;
         },
@@ -93,16 +89,17 @@ export const useFolderStore = defineStore('folder', {
     async updateFolder(folderId: string, data: UpdateFolderType) {
       this.isLoading = true;
       const toast = useToast();
+      const { folder } = useApi();
 
-      toast.promise(updateFolderApi(folderId, data), {
+      toast.promise(folder.updateFolder(folderId, data), {
         loading: 'Updating folder...',
-        onSuccess: (res) => {
-          if (res.data) {
+        onSuccess: (updatedFolder) => {
+          if (updatedFolder) {
             const index = this.folders.findIndex(
               (folder) => folder.id === folderId
             );
             if (index !== -1) {
-              this.folders[index] = res.data;
+              this.folders[index] = updatedFolder;
             }
           }
           return `Folder updated successfully!`;
@@ -120,8 +117,9 @@ export const useFolderStore = defineStore('folder', {
     async deleteFolder(folderId: string) {
       this.isLoading = true;
       const toast = useToast();
+      const { folder } = useApi();
 
-      toast.promise(deleteFolderApi(folderId), {
+      toast.promise(folder.deleteFolder(folderId), {
         loading: 'Deleting folder...',
         onSuccess: () => {
           const tempFolders = this.folders.filter(
