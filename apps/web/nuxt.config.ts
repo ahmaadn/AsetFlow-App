@@ -32,7 +32,11 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/',
       publicApiBase:
         process.env.NUXT_PUBLIC_API_PUBLIC_BASE || 'http://localhost:8003/',
-      authUrl: process.env.NUXT_PUBLIC_AUTH_URL || 'http://localhost:8000',
+      authUrl:
+        process.env.NUXT_PUBLIC_AUTH_URL ||
+        process.env.NUXT_PUBLIC_API_BASE ||
+        'http://localhost:8000',
+      providerAuth: process.env.NUXT_PUBLIC_PROVIDER_AUTH || '',
     },
   },
   image: {
