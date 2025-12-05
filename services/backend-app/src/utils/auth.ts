@@ -10,6 +10,7 @@ export const auth = betterAuth({
   trustedOrigins: [process.env.CORS_ORIGIN || 'http://localhost:3000'],
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false,
   },
   socialProviders: {
     ...(process.env.GOOGLE_CLIENT_ID &&
