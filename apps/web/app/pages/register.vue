@@ -31,7 +31,7 @@ const { values, errors, handleSubmit } = useForm({
         },
         callbackURL: `${window.location.origin}/login`,
       });
-      toast.success('Registration successful!');
+      toast.success('Registration successful! Please sign in to continue.');
       await navigateTo('/login');
     } catch (error) {
       console.error('Registration error:', error);

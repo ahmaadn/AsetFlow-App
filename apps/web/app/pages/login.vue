@@ -70,10 +70,13 @@ const loginFeatures = [
 
 onMounted(async () => {
   if (route.query.error) {
-    let errorMessage = 'An unknown error occurred during login.';
-    if (route.query.error === 'google_signin_failed') {
-      errorMessage = 'Google sign-in failed. Please try again.';
-    }
+    const errorMessages: Record<string, string> = {
+      google_signin_failed: 'Google sign-in failed. Please try again.',
+      // Add more error codes and messages here as needed
+    };
+    const errorMessage =
+      errorMessages[route.query.error as string] ||
+      'An unknown error occurred during login.';
     toast.error(errorMessage);
   }
 });
