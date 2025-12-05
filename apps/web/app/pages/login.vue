@@ -5,9 +5,14 @@ definePageMeta({
   layout: 'auth',
 });
 
-const { login } = useAuth();
+const { authClient } = useAuth();
 const toast = useToast();
 const isLoading = ref(false);
+const config = useRuntimeConfig();
+const route = useRoute();
+const providerAuth = computed(() => {
+  return config.public.providerAuth.split(',');
+});
 
 const { values, errors, handleSubmit } = useForm({
   initialValues: {
@@ -17,20 +22,33 @@ const { values, errors, handleSubmit } = useForm({
   validationSchema: loginSchema,
   onSubmit: async (values) => {
     if (isLoading.value) return;
-
     isLoading.value = true;
-    try {
-      await login(values);
-      toast.success('Login successful! Welcome back.');
-      await navigateTo('/dashboard');
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error('Login failed. Please check your credentials.');
-    } finally {
-      isLoading.value = false;
-    }
+    await authClient.signIn.email(values, {
+      onSuccess: () => {
+        toast.success('Login successful! Welcome back.');
+        navigateTo('/dashboard');
+      },
+      onError: (error) => {
+        console.error('Login error:', error);
+        toast.error('Login failed. Please check your credentials.');
+      },
+    });
+    isLoading.value = false;
   },
 });
+
+const handleGoogleLogin = () => {
+  if (!providerAuth.value.includes('google')) return;
+
+  // Initiate Google OAuth sign-in with callback and error URLs
+  // in this case, we dont need to request sign up, we want to sign in only
+  authClient.signIn.social({
+    provider: 'google',
+    callbackURL: `${window.location.origin}/dashboard`,
+    errorCallbackURL: `${window.location.origin}/login?error=google_signin_failed`,
+    requestSignUp: false,
+  });
+};
 
 const loginFeatures = [
   {
@@ -49,6 +67,19 @@ const loginFeatures = [
     description: 'Quick search and instant previews for all your files',
   },
 ];
+
+onMounted(async () => {
+  if (route.query.error) {
+    const errorMessages: Record<string, string> = {
+      google_signin_failed: 'Google sign-in failed. Please try again.',
+      // Add more error codes and messages here as needed
+    };
+    const errorMessage =
+      errorMessages[route.query.error as string] ||
+      'An unknown error occurred during login.';
+    toast.error(errorMessage);
+  }
+});
 </script>
 
 <template>
@@ -89,11 +120,17 @@ const loginFeatures = [
           />
 
           <!--TODO : WIP Auth bisa menggunakan google -->
-          <button type="button" class="btn w-full bg-white text-black">
+          <button
+            v-if="providerAuth.includes('google')"
+            type="button"
+            class="btn w-full bg-white text-black"
+            @click="handleGoogleLogin"
+          >
             <Icon name="logos:google-icon" class="size-5" />
             Login with Google
           </button>
           <button
+            v-if="providerAuth.includes('github')"
             type="button"
             class="btn w-full bg-black text-white border-black"
           >

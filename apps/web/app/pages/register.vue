@@ -5,7 +5,7 @@ definePageMeta({
   layout: 'auth',
 });
 
-const { register } = useAuth();
+const { authClient } = useAuth();
 const toast = useToast();
 const isLoading = ref(false);
 
@@ -22,9 +22,17 @@ const { values, errors, handleSubmit } = useForm({
 
     isLoading.value = true;
     try {
-      await register(values);
-      toast.success('Registration successful! Welcome to AsetFlow.');
-      await navigateTo('/dashboard');
+      await authClient.signUp.email({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        fetchOptions: {
+          cache: 'no-cache',
+        },
+        callbackURL: `${window.location.origin}/login`,
+      });
+      toast.success('Registration successful! Please sign in to continue.');
+      await navigateTo('/login');
     } catch (error) {
       console.error('Registration error:', error);
       toast.error('Registration failed. Please try again.');
