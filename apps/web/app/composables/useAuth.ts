@@ -106,6 +106,7 @@ export function useAuth() {
     session.value = null;
     user.value = null;
     await client.signOut();
+    await navigateTo('/login');
   };
 
   return {
