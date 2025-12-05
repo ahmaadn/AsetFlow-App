@@ -5,7 +5,7 @@ definePageMeta({
   layout: 'auth',
 });
 
-const { authClient } = useAuth();
+const { client } = useAuth();
 const toast = useToast();
 const isLoading = ref(false);
 
@@ -22,7 +22,7 @@ const { values, errors, handleSubmit } = useForm({
 
     isLoading.value = true;
     try {
-      await authClient.signUp.email({
+      await client.signUp.email({
         name: values.name,
         email: values.email,
         password: values.password,

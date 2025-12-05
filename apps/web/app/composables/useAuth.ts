@@ -52,7 +52,7 @@ export function useAuth() {
   const config = useRuntimeConfig();
   // TODO IMPORTANT: On server side, forward incoming request headers (cookies) to auth client
   const headers = import.meta.server ? useRequestHeaders() : undefined;
-  const authClient = createAuthClient({
+  const client = createAuthClient({
     baseURL: config.public.authUrl,
     basePath: '/v1/auth',
     fetchOptions: {
@@ -75,7 +75,7 @@ export function useAuth() {
     if (sessionFetching.value) return;
 
     sessionFetching.value = true;
-    const { data } = await authClient.getSession();
+    const { data } = await client.getSession();
     session.value = data?.session || null;
 
     const userDefault = {
@@ -95,7 +95,7 @@ export function useAuth() {
   };
 
   if (import.meta.client) {
-    authClient.$store.listen('$sessionSignal', async (signal) => {
+    client.$store.listen('$sessionSignal', async (signal) => {
       if (!signal) return;
       await fetchSession();
     });
@@ -105,11 +105,11 @@ export function useAuth() {
     clearApplicationStores();
     session.value = null;
     user.value = null;
-    await authClient.signOut();
+    await client.signOut();
   };
 
   return {
-    authClient,
+    client,
     session,
     fetchSession,
     handleSignOut,

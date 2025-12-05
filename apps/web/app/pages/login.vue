@@ -5,7 +5,7 @@ definePageMeta({
   layout: 'auth',
 });
 
-const { authClient } = useAuth();
+const { client } = useAuth();
 const toast = useToast();
 const isLoading = ref(false);
 const config = useRuntimeConfig();
@@ -23,7 +23,7 @@ const { values, errors, handleSubmit } = useForm({
   onSubmit: async (values) => {
     if (isLoading.value) return;
     isLoading.value = true;
-    await authClient.signIn.email(values, {
+    await client.signIn.email(values, {
       onSuccess: () => {
         toast.success('Login successful! Welcome back.');
         navigateTo('/dashboard');
@@ -42,7 +42,7 @@ const handleGoogleLogin = () => {
 
   // Initiate Google OAuth sign-in with callback and error URLs
   // in this case, we dont need to request sign up, we want to sign in only
-  authClient.signIn.social({
+  client.signIn.social({
     provider: 'google',
     callbackURL: `${window.location.origin}/dashboard`,
     errorCallbackURL: `${window.location.origin}/login?error=google_signin_failed`,
