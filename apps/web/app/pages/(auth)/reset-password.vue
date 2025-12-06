@@ -8,6 +8,7 @@ definePageMeta({
 const route = useRoute();
 const toast = useToast();
 const isLoading = ref(false);
+const { client } = useAuth();
 const token = route.query.token as string;
 
 // Redirect to forgot password if no token
@@ -44,31 +45,26 @@ const { values, errors, handleSubmit } = useForm({
   onSubmit: async (values) => {
     if (isLoading.value) return;
 
-    isLoading.value = true;
-    try {
-      // TODO: Implement reset password logic with Better Auth
-      // await authClient.resetPassword({
-      //   token,
-      //   password: values.password
-      // });
-
-      toast.success(
-        'Password has been successfully reset! You can now login with your new password.'
-      );
-      console.log('Password reset for token:', token);
-
-      // Redirect to login page after successful reset
-      setTimeout(() => {
-        navigateTo('/login');
-      }, 2000);
-    } catch (error) {
-      console.error('Reset password error:', error);
-      toast.error(
-        'Failed to reset password. The link may be expired or invalid.'
-      );
-    } finally {
-      isLoading.value = false;
-    }
+    await client.resetPassword({
+      newPassword: values.password,
+      token,
+      fetchOptions: {
+        onSuccess: () => {
+          toast.success(
+            'Password has been successfully reset! You can now login with your new password.'
+          );
+          navigateTo('/login');
+          isLoading.value = false;
+        },
+        onError: (error) => {
+          console.error('Reset password error:', error);
+          toast.error(
+            'Failed to reset password. The link may be expired or invalid.'
+          );
+          isLoading.value = false;
+        },
+      },
+    });
   },
 });
 

@@ -2,6 +2,8 @@ import { prisma } from '@asetflow/database';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
+import { emailService } from '../services/email';
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
@@ -11,6 +13,19 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    sendResetPassword: async ({ user, url }) => {
+      await emailService.sendForgotPasswordEmail(user.email, {
+        userName: user.name || 'User',
+        resetUrl: url,
+        expirationTime: '1 hour',
+      });
+    },
+    onPasswordReset: async ({ user }) => {
+      await emailService.sendWelcomeEmail(user.email, {
+        userName: user.name || 'User',
+        userEmail: user.email,
+      });
+    },
   },
   socialProviders: {
     ...(process.env.GOOGLE_CLIENT_ID &&
