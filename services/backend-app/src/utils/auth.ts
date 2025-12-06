@@ -21,12 +21,6 @@ export const auth = betterAuth({
         expirationTime: '1 hour',
       });
     },
-    onPasswordReset: async ({ user }) => {
-      await emailService.sendWelcomeEmail(user.email, {
-        userName: user.name || 'User',
-        userEmail: user.email,
-      });
-    },
   },
   socialProviders: {
     ...(process.env.GOOGLE_CLIENT_ID &&
