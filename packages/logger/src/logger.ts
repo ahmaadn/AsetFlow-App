@@ -2,7 +2,7 @@ import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
 import { DEFAULT_LOGGER_CONFIG } from './config/logger.config';
-import type { LoggerConfig, LogMetadata } from './types/logger.types';
+import type { LoggerConfig } from './types/logger.types';
 
 class Logger {
   private logger: winston.Logger;
@@ -73,23 +73,23 @@ class Logger {
     });
   }
 
-  public error(message: string, meta?: LogMetadata): void {
+  public error(message: string, ...meta: unknown[]): void {
     this.logger.error(message, meta);
   }
 
-  public warn(message: string, meta?: LogMetadata): void {
+  public warn(message: string, ...meta: unknown[]): void {
     this.logger.warn(message, meta);
   }
 
-  public info(message: string, meta?: LogMetadata): void {
+  public info(message: string, ...meta: unknown[]): void {
     this.logger.info(message, meta);
   }
 
-  public http(message: string, meta?: LogMetadata): void {
+  public http(message: string, ...meta: unknown[]): void {
     this.logger.http(message, meta);
   }
 
-  public debug(message: string, meta?: LogMetadata): void {
+  public debug(message: string, ...meta: unknown[]): void {
     this.logger.debug(message, meta);
   }
 

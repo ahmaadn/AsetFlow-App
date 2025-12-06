@@ -1,98 +1,120 @@
+import type { User } from '@asetflow/shared-types';
+import { createAuthClient } from 'better-auth/vue';
+import type {
+  InferSessionFromClient,
+  BetterAuthClientOptions,
+} from 'better-auth/client';
+
 /**
- * Composable untuk mengelola autentikasi pengguna.
- * Menggunakan cookie untuk menyimpan token autentikasi.
+ * Clears all application stores when user logs out.
+ * Follows separation of concerns by isolating cleanup logic.
+ *
+ * @private
+ */
+function clearApplicationStores(): void {
+  const { clear: clearFolder } = useFolderStore();
+  const { clear: clearAsset } = useAssetStore();
+  const { clear: clearStagingFiles } = useStaggingFilesStore();
+  const { closeAll: closeModals } = useModal();
+  const { cancelAllUploadTasks } = useUploadQueue();
+
+  try {
+    clearFolder();
+  } catch (error) {
+    console.warn('Failed to clear folder store:', error);
+  }
+  try {
+    clearAsset();
+  } catch (error) {
+    console.warn('Failed to clear asset store:', error);
+  }
+  try {
+    clearStagingFiles();
+  } catch (error) {
+    console.warn('Failed to clear staging files store:', error);
+  }
+  try {
+    closeModals();
+  } catch (error) {
+    console.warn('Failed to close modals:', error);
+  }
+  try {
+    cancelAllUploadTasks();
+  } catch (error) {
+    console.warn('Failed to cancel upload tasks:', error);
+  }
+}
+
+/**
+ * Main authentication composable providing reactive auth state and methods.
  */
 export function useAuth() {
-  const tokenCookie = useCookie<string | null>('auth-token', {
-    maxAge: 60 * 60 * 24 * 7, // 7 hari
-    secure: true,
+  const config = useRuntimeConfig();
+  // TODO IMPORTANT: On server side, forward incoming request headers (cookies) to auth client
+  const headers = import.meta.server ? useRequestHeaders() : undefined;
+  const client = createAuthClient({
+    baseURL: config.public.authUrl,
+    basePath: '/v1/auth',
+    fetchOptions: {
+      headers,
+    },
   });
 
-  const authUser = useState<{ sub: string; email: string } | null>(
-    'auth_user',
-    () => null
-  );
+  const session =
+    useState<InferSessionFromClient<BetterAuthClientOptions> | null>(
+      'auth:session',
+      () => null
+    );
+  const user = useState<User | null>('auth:user', () => null);
 
-  const isAuthenticated = computed(() => {
-    return !!tokenCookie.value && isTokenValid(tokenCookie.value);
-  });
+  const sessionFetching = import.meta.server
+    ? ref(false)
+    : useState<boolean>('auth:session-fetched', () => false);
 
-  const init = async () => {
-    const cookieToken = tokenCookie.value;
-    if (!cookieToken) {
-      return;
-    }
+  const fetchSession = async () => {
+    if (sessionFetching.value) return;
 
-    const payload = decodeToken(cookieToken) as PayloadWithEmail | null;
-    if (!payload) {
-      return;
-    }
+    sessionFetching.value = true;
+    const { data } = await client.getSession();
+    session.value = data?.session || null;
 
-    // cek valid payload
-    if (!isValidPayload(payload)) {
-      return;
-    }
+    const userDefault = {
+      id: null,
+      createdAt: null,
+      updatedAt: null,
+      email: null,
+      emailVerified: null,
+      name: null,
+      image: null,
+    };
 
-    if (payload.sub && payload.email) {
-      // Simpan payload ke state reaktif
-      authUser.value = { sub: payload.sub, email: payload.email };
-    }
+    user.value = data?.user ? Object.assign({}, userDefault, data.user) : null;
+
+    sessionFetching.value = false;
+    return data;
   };
 
-  const logout = async () => {
-    tokenCookie.value = null;
-    authUser.value = null;
+  if (import.meta.client) {
+    client.$store.listen('$sessionSignal', async (signal) => {
+      if (!signal) return;
+      await fetchSession();
+    });
+  }
 
-    // Cleanup datastore yang lainnya
-    const { clear: clearFolder } = useFolderStore();
-    clearFolder();
-
-    const { clear: clearAsset } = useAssetStore();
-    clearAsset();
-
-    const { clear: clearStagingFiles } = useStaggingFilesStore();
-    clearStagingFiles();
-
-    const { closeAll } = useModal();
-    closeAll();
-
-    const { cancelAllUploadTasks } = useUploadQueue();
-    cancelAllUploadTasks();
-
+  const handleSignOut = async () => {
+    clearApplicationStores();
+    session.value = null;
+    user.value = null;
+    await client.signOut();
     await navigateTo('/login');
   };
 
-  const setToken = (newToken: string | null) => {
-    const payload = decodeToken(newToken || '') as PayloadWithEmail | null;
-    if (!payload) {
-      return;
-    }
-
-    // cek valid payload
-    if (!isValidPayload(payload)) {
-      return;
-    }
-
-    if (payload.sub && payload.email) {
-      // Simpan payload ke state reaktif
-      authUser.value = { sub: payload.sub, email: payload.email };
-    }
-
-    tokenCookie.value = newToken;
-  };
-
-  const clearToken = () => {
-    tokenCookie.value = null;
-  };
-
   return {
-    tokenCookie,
-    authUser,
-    isAuthenticated,
-
-    init,
-    logout,
-    setToken,
-    clearToken,
+    client,
+    session,
+    fetchSession,
+    handleSignOut,
+    user,
+    isAuthenticated: computed(() => !!session.value),
   };
 }

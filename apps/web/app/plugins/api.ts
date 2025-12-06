@@ -1,16 +1,28 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export default defineNuxtPlugin((nuxtApp) => {
-  // Panggil 'useAuthStore' dan berikan instance Pinia ($pinia) dari nuxtApp.
-  const authStore = useAuth();
+  const config = useRuntimeConfig();
 
   const api = $fetch.create({
-    baseURL: nuxtApp.$config.public.apiBase,
+    baseURL: import.meta.server
+      ? config.apiBaseServer || 'http://localhost:8000'
+      : config.public.apiBase || 'http://localhost:8000',
+    credentials: 'include',
+
     onRequest({ options }) {
-      if (authStore.tokenCookie.value) {
-        // note that this relies on ofetch >= 1.4.0 - you may need to refresh your lockfile
-        options.headers.set(
-          'Authorization',
-          `Bearer ${authStore.tokenCookie.value}`
-        );
+      if (import.meta.server) {
+        const headers = useRequestHeaders(['cookie']);
+        options.headers = {
+          ...options.headers,
+          ...headers,
+        };
+      }
+    },
+    onResponseError({ request, response }) {
+      if (response.status === 401) {
+        // Redirect ke login jika unauthorized
+        if (import.meta.client) {
+          navigateTo('/login');
+        }
       }
     },
   });

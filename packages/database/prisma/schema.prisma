@@ -14,17 +14,71 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique @map("email") @db.VarChar(255)
-  name         String    @map("name") @db.VarChar(255)
-  passwordHash String    @map("password_hash")
-  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
-  folders      Folder[]
-  assets       Asset[]
+  id            String   @id
+  name          String   @map("name")
+  email         String   @unique @map("email")
+  emailVerified Boolean  @default(false) @map("email_verified")
+  image         String?  @map("image")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Auth relations
+  sessions Session[]
+  accounts Account[]
+
+  // Application relations
+  folders Folder[]
+  assets  Asset[]
 
   @@map("users")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  token     String   @map("token")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?   @map("scope")
+  password              String?   @map("password")
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String   @map("identifier")
+  value      String   @map("value")
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([identifier])
+  @@map("verifications")
 }
 
 model Tag {
@@ -40,7 +94,7 @@ model Tag {
 
 model Folder {
   id        String      @id @default(uuid())
-  ownerId   Int         @map("owner_id")
+  ownerId   String      @map("owner_id")
   name      String      @map("name") @db.VarChar(255)
   slug      String      @unique @map("slug") @db.VarChar(255)
   createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -65,7 +119,7 @@ model FolderTag {
 model Asset {
   id        String     @id @default(uuid())
   folderId  String     @map("folder_id")
-  ownerId   Int        @map("owner_id")
+  ownerId   String     @map("owner_id")
   publicId  String     @map("public_id")
   name      String     @map("name")
   slug      String     @map("slug")

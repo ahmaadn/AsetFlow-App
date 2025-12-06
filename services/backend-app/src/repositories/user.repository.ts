@@ -18,18 +18,3 @@ export const findByEmail = async (email: string): Promise<UserModel | null> => {
     where: { email },
   });
 };
-
-/**
- * Membuat pengguna baru.
- * @param data Data pengguna baru.
- * @returns Pengguna yang dibuat.
- */
-export const createUser = (data: {
-  email: string;
-  name: string;
-  passwordHash: string;
-}) => {
-  return prisma.user.create({
-    data,
-  });
-};

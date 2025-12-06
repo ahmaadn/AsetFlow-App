@@ -1,9 +1,10 @@
 import { Router } from 'express';
 
 import * as userController from '../controllers/user.controller';
-import { protect } from '../middleware/auth.middleware';
+import { betterAuthProtect } from '../middleware/auth.middleware';
 
 const router = Router();
+router.use(betterAuthProtect);
 
 /**
  * @swagger
@@ -23,6 +24,6 @@ const router = Router();
  *       404:
  *         description: User not found
  */
-router.get('/me', protect, userController.getUserProfile);
+router.get('/me', userController.getUserProfile);
 
 export default router;

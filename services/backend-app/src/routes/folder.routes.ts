@@ -9,10 +9,11 @@ import { Router } from 'express';
 
 import * as AssetController from '../controllers/asset.controller';
 import * as FolderController from '../controllers/folder.controller';
-import { protect } from '../middleware/auth.middleware';
+import { betterAuthProtect } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validation.middleware';
 
 const router = Router();
+router.use(betterAuthProtect);
 
 /**
  * @swagger
@@ -54,12 +55,7 @@ const router = Router();
  *       200:
  *         description: A list of folders
  */
-router.get(
-  '/',
-  protect,
-  validate(httpFoldersQuery),
-  FolderController.getAllFolder
-);
+router.get('/', validate(httpFoldersQuery), FolderController.getAllFolder);
 
 /**
  * @swagger
@@ -89,12 +85,7 @@ router.get(
  *      201:
  *        description: Folder created successfully
  */
-router.post(
-  '/',
-  protect,
-  validate(httpCreateFolder),
-  FolderController.createFolder
-);
+router.post('/', validate(httpCreateFolder), FolderController.createFolder);
 
 /**
  * @swagger
@@ -131,12 +122,7 @@ router.post(
  *      201:
  *        description: Folder updated successfully
  */
-router.put(
-  '/:id',
-  protect,
-  validate(httpUpdateFolder),
-  FolderController.updateFolder
-);
+router.put('/:id', validate(httpUpdateFolder), FolderController.updateFolder);
 
 /**
  * @swagger
@@ -157,12 +143,7 @@ router.put(
  *      204:
  *        description: Folder deleted successfully
  */
-router.delete(
-  '/:id',
-  protect,
-  validate(httpCheckFolder),
-  FolderController.deleteFolder
-);
+router.delete('/:id', validate(httpCheckFolder), FolderController.deleteFolder);
 
 /**
  * @swagger
@@ -187,7 +168,6 @@ router.delete(
  */
 router.head(
   '/check/:id',
-  protect,
   validate(httpCheckFolder),
   FolderController.checkFolderExists
 );
@@ -241,7 +221,6 @@ router.head(
  */
 router.get(
   '/:id/assets',
-  protect,
   validate(httpGetAssets),
   AssetController.getAssetsByFolder
 );

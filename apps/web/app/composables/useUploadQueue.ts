@@ -19,7 +19,8 @@ export interface UploadQueueItem extends UploadItem {
 export const useUploadQueue = () => {
   const queue = useState<Array<UploadQueueItem>>('uploadQueue', () => []);
   const config = useRuntimeConfig();
-  const baseURL = (config.public.apiBase || '/api') as string;
+  const BASE_URL = config.public.apiBase as string;
+  const VERSION = '/v1';
 
   const isUploading = computed(() =>
     queue.value.some((item) => item.status === 'uploading')
@@ -112,6 +113,7 @@ export const useUploadQueue = () => {
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
 
       item.abortController = {
         abort: () => xhr.abort(),
@@ -155,13 +157,7 @@ export const useUploadQueue = () => {
         reject(new Error('Upload cancelled'));
       });
 
-      xhr.open('POST', `${baseURL}${item.apiEndpoint}`);
-
-      const token = useAuth().tokenCookie.value;
-      if (token) {
-        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-      }
-
+      xhr.open('POST', `${BASE_URL}${VERSION}${item.apiEndpoint}`);
       xhr.send(formData);
     });
   };
