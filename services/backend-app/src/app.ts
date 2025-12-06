@@ -22,12 +22,11 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-
+app.use(requestLogger);
 app.all('/v1/auth/{*any}', toNodeHandler(auth));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use(requestLogger);
 
 setupSwaggerDocs(app);
 

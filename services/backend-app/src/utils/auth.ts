@@ -2,6 +2,7 @@ import { prisma } from '@asetflow/database';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
+import { logger } from '../configs/logger.config';
 import { emailService } from '../services/email';
 
 export const auth = betterAuth({
@@ -37,5 +38,11 @@ export const auth = betterAuth({
           disableSignUp: true,
         },
       }),
+  },
+  logger: {
+    log: (level, message, ...args) => {
+      const logMethod = logger[level] || logger.info;
+      logMethod(message, args);
+    },
   },
 });
