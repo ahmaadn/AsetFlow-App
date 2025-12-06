@@ -7,6 +7,8 @@ import type { RouteLocationNormalizedGeneric } from 'vue-router';
 const PUBLIC_ROUTES: string[] = [
   '/login',
   '/register',
+  '/forgot-password',
+  '/reset-password',
   '/404',
   '/500',
 ] as const;

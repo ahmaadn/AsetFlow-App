@@ -26,9 +26,6 @@ const { values, errors, handleSubmit } = useForm({
         name: values.name,
         email: values.email,
         password: values.password,
-        fetchOptions: {
-          cache: 'no-cache',
-        },
         callbackURL: `${window.location.origin}/login`,
       });
       toast.success('Registration successful! Please sign in to continue.');

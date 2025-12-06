@@ -112,6 +112,12 @@ onMounted(async () => {
             autocomplete="current-password"
           />
 
+          <div class="text-right">
+            <NuxtLink to="/forgot-password" class="text-sm link link-primary">
+              Forgot your password?
+            </NuxtLink>
+          </div>
+
           <UiSubmitButton
             :loading="isLoading"
             loading-text="Signing in..."
