@@ -7,20 +7,18 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".output/**"],
       "env": [
-        "NUXT_PUBLIC_API_BASE",
-        "NUXT_PUBLIC_API_PUBLIC_BASE",
-        "NUXT_PUBLIC_AUTH_URL",
+        "NUXT_PUBLIC_*",
         "DATABASE_URL",
         "NODE_ENV",
-        "CLOUDINARY_API_SECRET",
-        "CLOUDINARY_API_KEY",
-        "CLOUDINARY_CLOUD_NAME",
-        "CLOUDINARY_ROOT_FOLDER",
-        "JWT_SECRET",
-        "JWT_EXPIRES_IN",
-        "BETTER_AUTH_SECRET",
-        "BETTER_AUTH_URL",
-        "CORS_ORIGIN"
+        "CORS_ORIGIN",
+        "CLOUDINARY_*",
+        "BETTER_AUTH_*",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "MAIL_SERVICE_PROVIDER",
+        "GOOGLE_APP_MAIL",
+        "GOOGLE_APP_PASSWORD",
+        "SMTP_*"
       ]
     },
     "start": {
@@ -34,20 +32,18 @@
       "cache": false,
       "persistent": true,
       "env": [
-        "NUXT_PUBLIC_API_BASE",
-        "NUXT_PUBLIC_API_PUBLIC_BASE",
-        "NUXT_PUBLIC_AUTH_URL",
+        "NUXT_PUBLIC_*",
         "DATABASE_URL",
         "NODE_ENV",
-        "CLOUDINARY_API_SECRET",
-        "CLOUDINARY_API_KEY",
-        "CLOUDINARY_CLOUD_NAME",
-        "CLOUDINARY_ROOT_FOLDER",
-        "JWT_SECRET",
-        "JWT_EXPIRES_IN",
-        "BETTER_AUTH_SECRET",
-        "BETTER_AUTH_URL",
-        "CORS_ORIGIN"
+        "CORS_ORIGIN",
+        "CLOUDINARY_*",
+        "BETTER_AUTH_*",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "MAIL_SERVICE_PROVIDER",
+        "GOOGLE_APP_MAIL",
+        "GOOGLE_APP_PASSWORD",
+        "SMTP_*"
       ]
     },
     "db:generate": {
