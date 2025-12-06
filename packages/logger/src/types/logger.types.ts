@@ -10,7 +10,3 @@ export interface LoggerConfig {
   maxFiles?: string;
   maxSize?: string;
 }
-
-export interface LogMetadata {
-  [key: string]: unknown;
-}

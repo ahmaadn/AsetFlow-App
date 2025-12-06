@@ -36,7 +36,7 @@ export const auth = betterAuth({
   logger: {
     log: (level, message, ...args) => {
       const logMethod = logger[level] || logger.info;
-      logMethod(message, args);
+      logMethod(message, ...args);
     },
   },
 });
