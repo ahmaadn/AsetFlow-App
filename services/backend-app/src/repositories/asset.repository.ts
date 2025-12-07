@@ -2,7 +2,7 @@ import { AssetModel, type Prisma, prisma } from '@asetflow/database';
 import { GeneralAssetType } from '@asetflow/shared';
 import { AssetCreate } from '@asetflow/shared-types';
 
-import { buildAssetTypeFilter } from '../utils/query-helper';
+import { buildAssetTypeFilter } from '../utils/query-helper.js';
 
 /**
  * Membuat aset baru

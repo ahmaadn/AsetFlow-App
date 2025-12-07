@@ -7,10 +7,10 @@ import {
 } from '@asetflow/validators';
 import { Router } from 'express';
 
-import * as AssetController from '../controllers/asset.controller';
-import * as FolderController from '../controllers/folder.controller';
-import { betterAuthProtect } from '../middleware/auth.middleware';
-import { validate } from '../middleware/validation.middleware';
+import * as AssetController from '../controllers/asset.controller.js';
+import * as FolderController from '../controllers/folder.controller.js';
+import { betterAuthProtect } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validation.middleware.js';
 
 const router: Router = Router();
 router.use(betterAuthProtect);

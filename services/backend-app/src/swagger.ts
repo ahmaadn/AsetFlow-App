@@ -2,7 +2,7 @@ import { Express } from 'express';
 import swaggerJSDoc, { Options, SwaggerDefinition } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
-import { ErrorCode } from './utils/error-code';
+import { ErrorCode } from './utils/error-code.js';
 
 // Swagger definition
 const swaggerDefinition: SwaggerDefinition = {

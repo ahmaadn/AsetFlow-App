@@ -2,8 +2,8 @@ import { getAssetTypeFromMime } from '@asetflow/shared';
 import { MetadataAsset } from '@asetflow/shared-types';
 import { UploadApiOptions, UploadApiResponse } from 'cloudinary';
 
-import { InternalServerError } from './api-error';
-import cloudinary from '../configs/cloudinary.config';
+import { InternalServerError } from './api-error.js';
+import cloudinary from '../configs/cloudinary.config.js';
 
 /**
  * Meng-upload file (dari buffer) ke Cloudinary

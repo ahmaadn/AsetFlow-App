@@ -1,7 +1,7 @@
 import { logger } from '@asetflow/logger';
 
-import * as AssetRepository from '../repositories/asset.repository';
-import * as FolderRepository from '../repositories/folder.repository';
+import * as AssetRepository from '../repositories/asset.repository.js';
+import * as FolderRepository from '../repositories/folder.repository.js';
 
 /**
  * Get asset by folder slug and asset slug

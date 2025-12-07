@@ -2,7 +2,8 @@
   "extends": "@asetflow/typescript-config/express.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "noEmit": true
   },
   "include": [
     "src"

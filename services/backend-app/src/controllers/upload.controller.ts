@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import * as UploadService from '../services/upload.service';
-import { UnauthorizedError } from '../utils/api-error';
-import logger from '../utils/logger';
+import * as UploadService from '../services/upload.service.js';
+import { UnauthorizedError } from '../utils/api-error.js';
+import logger from '../utils/logger.js';
 
 export const handleFileUpload = async (
   req: Request,
