@@ -1,16 +1,16 @@
-import { UserModel } from '@asetflow/database';
+import { type UserModel } from '@asetflow/database';
 import { logger } from '@asetflow/logger';
 import { generateSlug, getExtension } from '@asetflow/shared';
-import { AssetResponse, MetadataAsset } from '@asetflow/shared-types';
+import type { AssetResponse, MetadataAsset } from '@asetflow/shared-types';
 
-import { CLOUDINARY_ROOT_FOLDER } from '../configs/cloudinary.config';
-import * as AssetRepository from '../repositories/asset.repository';
-import * as FolderRepository from '../repositories/folder.repository';
-import { NotFoundError } from '../utils/api-error';
+import { CLOUDINARY_ROOT_FOLDER } from '../configs/cloudinary.config.js';
+import * as AssetRepository from '../repositories/asset.repository.js';
+import * as FolderRepository from '../repositories/folder.repository.js';
+import { NotFoundError } from '../utils/api-error.js';
 import {
   extractMetadataFromCloudinary,
   uploadToCloudinary,
-} from '../utils/cloudinary';
+} from '../utils/cloudinary.js';
 
 export const uploadAset = async (
   folderId: string,

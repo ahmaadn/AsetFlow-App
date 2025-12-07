@@ -1,4 +1,4 @@
-import { BaseLayout } from '../layouts/base.layout';
+import { BaseLayout } from '../layouts/base.layout.js';
 
 /**
  * Interface for forgot password email data

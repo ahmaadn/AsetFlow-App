@@ -14,7 +14,13 @@ export const formatZodErrors = (zodError: ZodError) => {
     if (issue.code === 'unrecognized_keys') {
       // Untuk error "unrecognized_keys", 'path'-nya kosong.
       // Kuncinya ada di 'issue.keys[0]'
-      key = issue.keys[0];
+      const unrecognizedKey = issue.keys[0];
+      if (unrecognizedKey) {
+        key = unrecognizedKey;
+      } else {
+        // Fallback jika keys kosong
+        key = 'unknown_field';
+      }
     } else {
       // Untuk error lain, kita gunakan 'path'
       // path: ["username"] -> "username"

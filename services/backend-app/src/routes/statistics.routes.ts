@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import * as statisticsController from '../controllers/statistics.controller';
-import { betterAuthProtect } from '../middleware/auth.middleware';
+import * as statisticsController from '../controllers/statistics.controller.js';
+import { betterAuthProtect } from '../middleware/auth.middleware.js';
 
-const router = Router();
+const router: Router = Router();
 
 // All routes require authentication
 router.use(betterAuthProtect);

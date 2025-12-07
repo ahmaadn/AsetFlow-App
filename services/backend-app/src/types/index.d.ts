@@ -3,21 +3,13 @@ declare namespace Express {
   // Menambahkan properti 'user' ke dalam interface Request
   export interface Request {
     user?: {
-      // id: number;
-      // name: string;
-      // email: string;
-      // passwordHash: string;
-      // createdAt: Date;
-      // updatedAt: Date;
-      // deletedAt: Date | null;
-
+      name: string;
       id: string;
-      createdAt: Date;
-      updatedAt: Date;
       email: string;
       emailVerified: boolean;
-      name: string;
-      image?: string | null | undefined | undefined;
+      image: string | null;
+      createdAt: Date;
+      updatedAt: Date;
     };
 
     session?: {

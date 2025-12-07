@@ -1,4 +1,4 @@
-import { FolderModel, prisma } from '@asetflow/database';
+import { type FolderModel, prisma } from '@asetflow/database';
 
 /**
  * Mencari folder berdasarkan slug

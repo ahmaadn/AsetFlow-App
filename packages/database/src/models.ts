@@ -1,56 +1,21 @@
-import { Prisma } from '@prisma/client';
+import type {
+  Asset,
+  Account,
+  AssetTag,
+  Folder,
+  FolderTag,
+  Tag,
+  Session,
+  User,
+  Verification,
+} from '@prisma/client';
 
-export interface UserModel {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  email: string;
-  emailVerified: boolean;
-  name: string;
-  image?: string | null;
-}
-
-export interface SessionModel {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: string;
-  expiresAt: Date;
-  token: string;
-  ipAddress?: string | null;
-  userAgent?: string | null;
-}
-
-export interface TagModel {
-  id: string;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface FolderModel {
-  id: string;
-  ownerId: string;
-  name: string;
-  slug: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface AssetModel {
-  id: string;
-  folderId: string;
-  ownerId: string;
-  publicId: string;
-  name: string;
-  slug: string;
-  size: bigint;
-  mimeType: string;
-
-  url: string;
-  format: string;
-  viewCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-  metadata: Prisma.JsonValue;
-}
+export type UserModel = User;
+export type SessionModel = Session;
+export type TagModel = Tag;
+export type FolderModel = Folder;
+export type AssetModel = Asset;
+export type FolderTagModel = FolderTag;
+export type AssetTagModel = AssetTag;
+export type AccountModel = Account;
+export type VerificationModel = Verification;

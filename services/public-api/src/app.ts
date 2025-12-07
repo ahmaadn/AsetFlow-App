@@ -1,12 +1,12 @@
 import { prisma } from '@asetflow/database';
 import { logger } from '@asetflow/logger';
 import cors from 'cors';
-import express from 'express';
+import express, { type Express } from 'express';
 
-import routes from './routes';
-import { setupSwaggerDocs } from './swagger';
+import routes from './routes/index.js';
+import { setupSwaggerDocs } from './swagger.js';
 
-export const app = express();
+export const app: Express = express();
 
 // Middleware
 app.use(express.json());
@@ -14,7 +14,7 @@ app.use(cors());
 setupSwaggerDocs(app);
 
 // Request logging
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   logger.http(`${req.method} ${req.path}`, {
     query: req.query,
     ip: req.ip,
@@ -26,12 +26,12 @@ app.use((req, res, next) => {
 app.use('/v1', routes);
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'public-api' });
 });
 
 // 404 handler
-app.use((req, res) => {
+app.use((_req, res) => {
   res.status(404).json({
     error: 'Not Found',
     message: 'The requested resource does not exist',

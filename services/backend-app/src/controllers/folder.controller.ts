@@ -1,8 +1,8 @@
 import { GetFolderType } from '@asetflow/validators';
 import { NextFunction, Request, Response } from 'express';
 
-import * as folderService from '../services/folder.service';
-import { UnauthorizedError } from '../utils/api-error';
+import * as folderService from '../services/folder.service.js';
+import { UnauthorizedError } from '../utils/api-error.js';
 
 /**
  * Mengambil semua folder.
@@ -58,7 +58,7 @@ export const updateFolder = async (
     if (!user) {
       throw new UnauthorizedError({ message: 'User not authenticated' });
     }
-    const folderId = req.params.id;
+    const folderId = req.params.id as string;
     const result = await folderService.updateFolder(folderId, req.body);
     res.status(200).json(result);
   } catch (error) {
@@ -79,7 +79,7 @@ export const deleteFolder = async (
     if (!user) {
       throw new UnauthorizedError({ message: 'User not authenticated' });
     }
-    const folderId = req.params.id;
+    const folderId = req.params.id as string;
     await folderService.deleteFolder(folderId);
     res.status(204).send();
   } catch (error) {
@@ -100,7 +100,7 @@ export const checkFolderExists = async (
     if (!user) {
       throw new UnauthorizedError({ message: 'User not authenticated' });
     }
-    const folderId = req.params.id;
+    const folderId = req.params.id as string;
     const exists = await folderService.checkFolder(folderId);
     if (exists) {
       res.status(200).send();

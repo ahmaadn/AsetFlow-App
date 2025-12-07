@@ -3,18 +3,18 @@ import nodemailer, { Transporter, SendMailOptions } from 'nodemailer';
 
 import {
   ForgotPasswordTemplate,
-  ForgotPasswordEmailData,
+  type ForgotPasswordEmailData,
   WelcomeTemplate,
-  WelcomeEmailData,
+  type WelcomeEmailData,
   EmailVerificationTemplate,
-  EmailVerificationData,
-} from './templates';
+  type EmailVerificationData,
+} from './templates/index.js';
 import {
   EmailConfigManager,
   EmailConfig,
   GoogleEmailConfig,
   SMTPEmailConfig,
-} from '../../configs/email.config';
+} from '../../configs/email.config.js';
 
 /**
  * Email sending result interface
@@ -335,5 +335,17 @@ export class EmailService {
   }
 }
 
-export const emailService = new EmailService();
-export { ForgotPasswordEmailData, WelcomeEmailData, EmailVerificationData };
+/**
+ * Create a new EmailService instance
+ * Should be called after environment variables are loaded
+ * @returns New EmailService instance
+ */
+export function createEmailService(): EmailService {
+  return new EmailService();
+}
+
+export type {
+  ForgotPasswordEmailData,
+  WelcomeEmailData,
+  EmailVerificationData,
+};

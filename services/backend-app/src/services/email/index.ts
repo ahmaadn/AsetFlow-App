@@ -1,8 +1,8 @@
-export { EmailService, emailService } from './email.service';
+export { EmailService, createEmailService } from './email.service.js';
 
-export { BaseLayout } from './layouts/base.layout';
+export { BaseLayout } from './layouts/base.layout.js';
 
-export * from './templates';
+export * from './templates/index.js';
 
 export type {
   EmailData,
@@ -10,4 +10,4 @@ export type {
   ForgotPasswordEmailData,
   WelcomeEmailData,
   EmailVerificationData,
-} from './email.service';
+} from './email.service.js';

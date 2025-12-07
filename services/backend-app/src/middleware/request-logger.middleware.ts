@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 
 /**
  * Middleware untuk mencatat setiap permintaan yang masuk.
  */
 export const requestLogger = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   logger.info(`${req.method} ${req.url} - ${req.ip}`);

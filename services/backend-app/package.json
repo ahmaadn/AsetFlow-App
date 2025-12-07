@@ -5,8 +5,8 @@
   "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
+    "dev": "cross-env NODE_ENV=development node --import=tsx --watch src/server.ts",
+    "build": "tsup",
     "start": "cross-env NODE_ENV=production node dist/server.js",
     "auth-schema": "npx @better-auth/cli@latest generate --output ./../../packages/database/prisma/auth-schema.prisma"
   },
@@ -28,11 +28,13 @@
     "nodemailer": "^7.0.11",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "tsup": "^8.5.0",
     "winston": "^3.18.3",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@asetflow/shared-types": "workspace:*",
+    "@asetflow/typescript-config": "workspace:*",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/multer": "^2.0.0",
@@ -40,7 +42,7 @@
     "@types/nodemailer": "^7.0.4",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }

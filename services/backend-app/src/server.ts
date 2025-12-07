@@ -1,6 +1,11 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 import dotenv from 'dotenv';
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log(`[CONFIG] NODE_ENV saat ini: ${process.env.NODE_ENV}`);
 
@@ -25,8 +30,8 @@ console.log(`[CONFIG] Port dimuat: ${process.env.PORT}`);
 const PORT = process.env.PORT || 3000;
 
 // Import app setelah mengatur dotenv
-import { app } from './app';
-import logger from './utils/logger';
+import { app } from './app.js';
+import logger from './utils/logger.js';
 
 if (process.env.NODE_ENV === 'development') {
   app.listen(PORT, () => {

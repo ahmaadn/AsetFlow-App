@@ -1,9 +1,9 @@
 import { Prisma } from '@asetflow/database';
 import { NextFunction, Request, Response } from 'express';
 
-import { ApiError } from '../utils/api-error';
-import { ErrorCode } from '../utils/error-code';
-import logger from '../utils/logger';
+import { ApiError } from '../utils/api-error.js';
+import { ErrorCode } from '../utils/error-code.js';
+import logger from '../utils/logger.js';
 
 /**
  * Middleware untuk menangani error secara global.
@@ -12,7 +12,7 @@ export const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   // Catat pesan error menggunakan logger package
   logger.error(err.message, {
@@ -73,5 +73,10 @@ export const errorHandler = (
       errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
     });
   }
-  next();
+
+  // Fallback untuk kasus yang tidak terduga
+  return res.status(500).json({
+    message: 'Internal Server Error',
+    errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+  });
 };

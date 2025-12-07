@@ -1,4 +1,4 @@
-import { AssetModel, prisma } from '@asetflow/database';
+import { type AssetModel, prisma } from '@asetflow/database';
 
 /**
  * Mencari asset berdasarkan folder ID dan slug

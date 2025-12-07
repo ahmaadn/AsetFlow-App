@@ -1,18 +1,18 @@
-import { UserModel } from '@asetflow/database';
+import { type UserModel } from '@asetflow/database';
 import type {
   PaginationResult,
   FolderDetailResponse,
 } from '@asetflow/shared-types';
-import {
+import type {
   CreateFolderType,
   GetFolderType,
   UpdateFolderType,
 } from '@asetflow/validators';
 
-import * as FolderRepository from '../repositories/folder.repository';
-import { BadRequestError, NotFoundError } from '../utils/api-error';
-import { ErrorCode } from '../utils/error-code';
-import logger from '../utils/logger';
+import * as FolderRepository from '../repositories/folder.repository.js';
+import { BadRequestError, NotFoundError } from '../utils/api-error.js';
+import { ErrorCode } from '../utils/error-code.js';
+import logger from '../utils/logger.js';
 
 /**
  * Mendapatkan semua folder milik user

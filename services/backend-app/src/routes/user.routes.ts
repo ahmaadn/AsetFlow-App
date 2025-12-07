@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import * as userController from '../controllers/user.controller';
-import { betterAuthProtect } from '../middleware/auth.middleware';
+import * as userController from '../controllers/user.controller.js';
+import { betterAuthProtect } from '../middleware/auth.middleware.js';
 
-const router = Router();
+const router: Router = Router();
 router.use(betterAuthProtect);
 
 /**

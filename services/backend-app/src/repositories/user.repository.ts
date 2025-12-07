@@ -1,4 +1,4 @@
-import { prisma, UserModel } from '@asetflow/database';
+import { prisma, type UserModel } from '@asetflow/database';
 
 /**
  * Mengambil semua pengguna.

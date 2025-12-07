@@ -1,15 +1,15 @@
 import { formatZodErrors } from '@asetflow/validators';
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import z, { ZodError } from 'zod';
 
-import { BadRequestError } from '../utils/api-error';
+import { BadRequestError } from '../utils/api-error.js';
 /**
  * Validasi data request menggunakan schema Zod.
  * @param schema  Schema Zod untuk validasi.
  * @returns   Middleware Express untuk validasi.
  */
 export const validate = (schema: z.ZodSchema) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       await schema.parseAsync({
         body: req.body,

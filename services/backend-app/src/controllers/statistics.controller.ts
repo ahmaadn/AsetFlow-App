@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
-import * as statisticsService from '../services/statistics.service';
-import { UnauthorizedError } from '../utils/api-error';
+import * as statisticsService from '../services/statistics.service.js';
+import { UnauthorizedError } from '../utils/api-error.js';
 
 /**
  * Get all dashboard statistics in one endpoint

@@ -1,4 +1,4 @@
-import { ErrorCode } from './error-code';
+import { ErrorCode } from './error-code.js';
 
 /**
  * Detail tambahan untuk error API.

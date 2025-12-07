@@ -1,12 +1,12 @@
 import { httpUpload } from '@asetflow/validators';
 import { Router } from 'express';
 
-import * as UploadController from '../controllers/upload.controller';
-import { betterAuthProtect } from '../middleware/auth.middleware';
-import { uploadMiddleware } from '../middleware/muler.middleware';
-import { validate } from '../middleware/validation.middleware';
+import * as UploadController from '../controllers/upload.controller.js';
+import { betterAuthProtect } from '../middleware/auth.middleware.js';
+import { uploadMiddleware } from '../middleware/muler.middleware.js';
+import { validate } from '../middleware/validation.middleware.js';
 
-const router = Router();
+const router: Router = Router();
 router.use(betterAuthProtect);
 
 /**

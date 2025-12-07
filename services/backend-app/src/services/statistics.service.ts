@@ -1,12 +1,12 @@
 import { formatSize } from '@asetflow/shared';
-import { DashboardStatistics, RecentFile } from '@asetflow/shared-types';
+import type { DashboardStatistics, RecentFile } from '@asetflow/shared-types';
 
-import * as statisticsRepository from '../repositories/statistics.repository';
+import * as statisticsRepository from '../repositories/statistics.repository.js';
 import {
   calculateAssetTypeDistribution,
   calculateRecentUploadActivity,
   getStartDate,
-} from '../utils/statistics.helper';
+} from '../utils/statistics.helper.js';
 
 /**
  * Get all dashboard statistics in one call

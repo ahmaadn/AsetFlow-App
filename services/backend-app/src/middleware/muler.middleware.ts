@@ -2,10 +2,10 @@ import { MAX_UPLOAD_SIZE_BYTES, SUPPORTED_MIME_TYPES } from '@asetflow/shared';
 import { Request } from 'express';
 import multer, { FileFilterCallback } from 'multer';
 
-import { BadRequestError } from '../utils/api-error';
+import { BadRequestError } from '../utils/api-error.js';
 
 const fileFilter = (
-  req: Request,
+  _req: Request,
   file: Express.Multer.File,
   cb: FileFilterCallback
 ) => {
