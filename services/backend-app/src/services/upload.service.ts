@@ -10,7 +10,7 @@ import { NotFoundError } from '../utils/api-error.js';
 import {
   extractMetadataFromCloudinary,
   uploadToCloudinary,
-} from '../utils/cloudinary';
+} from '../utils/cloudinary.js';
 
 export const uploadAset = async (
   folderId: string,
