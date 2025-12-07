@@ -75,5 +75,8 @@ export const errorHandler = (
   }
 
   // Fallback untuk kasus yang tidak terduga
-  return next();
+  return res.status(500).json({
+    message: 'Internal Server Error',
+    errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+  });
 };
