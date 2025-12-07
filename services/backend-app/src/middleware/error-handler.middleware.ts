@@ -73,5 +73,7 @@ export const errorHandler = (
       errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
     });
   }
-  next();
+
+  // Fallback untuk kasus yang tidak terduga
+  return next();
 };
