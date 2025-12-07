@@ -30,8 +30,8 @@ console.log(`[CONFIG] Port dimuat: ${process.env.PORT}`);
 const PORT = process.env.PORT || 3000;
 
 // Import app setelah mengatur dotenv
-import { app } from './app';
-import logger from './utils/logger';
+import { app } from './app.js';
+import logger from './utils/logger.js';
 
 if (process.env.NODE_ENV === 'development') {
   app.listen(PORT, () => {

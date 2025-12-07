@@ -1,8 +1,8 @@
 import { GetFolderType } from '@asetflow/validators';
 import { NextFunction, Request, Response } from 'express';
 
-import * as folderService from '../services/folder.service';
-import { UnauthorizedError } from '../utils/api-error';
+import * as folderService from '../services/folder.service.js';
+import { UnauthorizedError } from '../utils/api-error.js';
 
 /**
  * Mengambil semua folder.

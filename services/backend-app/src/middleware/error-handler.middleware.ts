@@ -1,9 +1,9 @@
 import { Prisma } from '@asetflow/database';
 import { NextFunction, Request, Response } from 'express';
 
-import { ApiError } from '../utils/api-error';
-import { ErrorCode } from '../utils/error-code';
-import logger from '../utils/logger';
+import { ApiError } from '../utils/api-error.js';
+import { ErrorCode } from '../utils/error-code.js';
+import logger from '../utils/logger.js';
 
 /**
  * Middleware untuk menangani error secara global.

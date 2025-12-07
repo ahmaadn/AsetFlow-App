@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import * as AssetService from '../services/asset.service';
+import * as AssetService from '../services/asset.service.js';
 
 /**
  * Redirect to asset URL (Cloudinary)

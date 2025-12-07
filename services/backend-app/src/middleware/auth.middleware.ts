@@ -2,8 +2,8 @@ import type { UserModel } from '@asetflow/database';
 import { fromNodeHeaders } from 'better-auth/node';
 import { Request, Response, NextFunction } from 'express';
 
-import { UnauthorizedError } from '../utils/api-error';
-import { auth } from '../utils/auth';
+import { UnauthorizedError } from '../utils/api-error.js';
+import { auth } from '../utils/auth.js';
 
 export const betterAuthProtect = async (
   req: Request,

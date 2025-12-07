@@ -1,8 +1,8 @@
 import { GetAssetsByTypeType, GetAssetsType } from '@asetflow/validators';
 import { NextFunction, Request, Response } from 'express';
 
-import * as asetService from '../services/asset.service';
-import { UnauthorizedError } from '../utils/api-error';
+import * as asetService from '../services/asset.service.js';
+import { UnauthorizedError } from '../utils/api-error.js';
 
 /**
  * Mengambil daftar asset berdasarkan folder

@@ -3,8 +3,8 @@ import { logger } from '@asetflow/logger';
 import cors from 'cors';
 import express, { type Express } from 'express';
 
-import routes from './routes';
-import { setupSwaggerDocs } from './swagger';
+import routes from './routes/index.js';
+import { setupSwaggerDocs } from './swagger.js';
 
 export const app: Express = express();
 

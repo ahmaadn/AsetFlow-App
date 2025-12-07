@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
-import assetRoute from './asset.routes';
-import folderRoute from './folder.routes';
-import statisticsRoute from './statistics.routes';
-import uploadRoute from './upload.routes';
-import userRoute from './user.routes';
+import assetRoute from './asset.routes.js';
+import folderRoute from './folder.routes.js';
+import statisticsRoute from './statistics.routes.js';
+import uploadRoute from './upload.routes.js';
+import userRoute from './user.routes.js';
 
 const router: Router = Router();
 

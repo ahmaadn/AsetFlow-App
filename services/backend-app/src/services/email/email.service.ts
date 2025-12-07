@@ -8,13 +8,13 @@ import {
   type WelcomeEmailData,
   EmailVerificationTemplate,
   type EmailVerificationData,
-} from './templates';
+} from './templates/index.js';
 import {
   EmailConfigManager,
   EmailConfig,
   GoogleEmailConfig,
   SMTPEmailConfig,
-} from '../../configs/email.config';
+} from '../../configs/email.config.js';
 
 /**
  * Email sending result interface

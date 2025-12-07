@@ -2,8 +2,8 @@ import { prisma } from '@asetflow/database';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
-import { logger } from '../configs/logger.config';
-import { createEmailService } from '../services/email';
+import { logger } from '../configs/logger.config.js';
+import { createEmailService } from '../services/email/email.service.js';
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
