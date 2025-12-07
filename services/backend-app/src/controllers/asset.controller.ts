@@ -21,7 +21,10 @@ export const getAssetsByFolder = async (
     const { id: folderId } = req.params;
     const queryParams = req.query as Partial<GetAssetsType>;
 
-    const result = await asetService.getAssetsByFolder(folderId, queryParams);
+    const result = await asetService.getAssetsByFolder(
+      folderId as string,
+      queryParams
+    );
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -45,7 +48,7 @@ export const updateAsset = async (
     const { id: assetId } = req.params;
     const updateData = req.body;
 
-    const result = await asetService.updateAsset(assetId, updateData);
+    const result = await asetService.updateAsset(assetId as string, updateData);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -68,7 +71,7 @@ export const deleteAsset = async (
 
     const { id: assetId } = req.params;
 
-    await asetService.deleteAsset(assetId);
+    await asetService.deleteAsset(assetId as string);
     res.status(204).send();
   } catch (error) {
     next(error);
@@ -91,7 +94,7 @@ export const getAssetById = async (
 
     const { id: assetId } = req.params;
 
-    const result = await asetService.getAssetById(assetId);
+    const result = await asetService.getAssetById(assetId as string);
     res.status(200).json(result);
   } catch (error) {
     next(error);

@@ -1,5 +1,5 @@
 import { formatSize } from '@asetflow/shared';
-import { DashboardStatistics, RecentFile } from '@asetflow/shared-types';
+import type { DashboardStatistics, RecentFile } from '@asetflow/shared-types';
 
 import * as statisticsRepository from '../repositories/statistics.repository';
 import {

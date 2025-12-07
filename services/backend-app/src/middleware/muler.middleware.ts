@@ -5,7 +5,7 @@ import multer, { FileFilterCallback } from 'multer';
 import { BadRequestError } from '../utils/api-error';
 
 const fileFilter = (
-  req: Request,
+  _req: Request,
   file: Express.Multer.File,
   cb: FileFilterCallback
 ) => {

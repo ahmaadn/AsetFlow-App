@@ -1,6 +1,6 @@
 import { toNodeHandler } from 'better-auth/node';
 import cors from 'cors';
-import express, { Response } from 'express';
+import express, { type Response, Express } from 'express';
 
 import { errorHandler } from './middleware/error-handler.middleware';
 import { requestLogger } from './middleware/request-logger.middleware';
@@ -9,7 +9,7 @@ import { setupSwaggerDocs } from './swagger';
 import { auth } from './utils/auth';
 import { ErrorCode } from './utils/error-code';
 
-export const app = express();
+export const app: Express = express();
 
 app.use(
   cors({

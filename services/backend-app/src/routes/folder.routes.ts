@@ -12,7 +12,7 @@ import * as FolderController from '../controllers/folder.controller';
 import { betterAuthProtect } from '../middleware/auth.middleware';
 import { validate } from '../middleware/validation.middleware';
 
-const router = Router();
+const router: Router = Router();
 router.use(betterAuthProtect);
 
 /**

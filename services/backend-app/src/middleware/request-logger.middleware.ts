@@ -7,7 +7,7 @@ import logger from '../utils/logger';
  */
 export const requestLogger = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   logger.info(`${req.method} ${req.url} - ${req.ip}`);

@@ -1,3 +1,4 @@
+import type { UserModel } from '@asetflow/database';
 import { fromNodeHeaders } from 'better-auth/node';
 import { Request, Response, NextFunction } from 'express';
 
@@ -48,7 +49,7 @@ export const betterAuthProtect = async (
       );
     }
 
-    req.user = session.user;
+    req.user = session.user as UserModel;
     req.session = session.session;
     next();
   } catch (error) {

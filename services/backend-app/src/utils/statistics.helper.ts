@@ -52,8 +52,11 @@ export function calculateAssetTypeDistribution(
   let remainderPoints = 100 - flooredSum;
   temp.sort((a, b) => b.remainder - a.remainder);
   for (let i = 0; i < temp.length; i++) {
-    temp[i].percentage = temp[i].floored + (remainderPoints > 0 ? 1 : 0);
-    if (remainderPoints > 0) remainderPoints--;
+    const item = temp[i];
+    if (item) {
+      item.percentage = item.floored + (remainderPoints > 0 ? 1 : 0);
+      if (remainderPoints > 0) remainderPoints--;
+    }
   }
 
   // Restore original order (by count descending)
@@ -83,13 +86,13 @@ export function calculateRecentUploadActivity(
   for (let dayOffset = 0; dayOffset < days; dayOffset++) {
     const date = new Date(startDate);
     date.setDate(date.getDate() + dayOffset);
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = date.toISOString().split('T')[0] as string;
     dateMap.set(dateStr, 0);
   }
 
   // Count uploads per day
   assets.forEach((asset) => {
-    const dateStr = asset.createdAt.toISOString().split('T')[0];
+    const dateStr = asset.createdAt.toISOString().split('T')[0] as string;
     dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
   });
 

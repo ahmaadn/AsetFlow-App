@@ -1,9 +1,9 @@
-import { UserModel } from '@asetflow/database';
+import { type UserModel } from '@asetflow/database';
 import type {
   PaginationResult,
   FolderDetailResponse,
 } from '@asetflow/shared-types';
-import {
+import type {
   CreateFolderType,
   GetFolderType,
   UpdateFolderType,

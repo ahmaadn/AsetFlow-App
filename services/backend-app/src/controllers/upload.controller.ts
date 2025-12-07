@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import * as UploadService from '../services/upload.service';
 import { UnauthorizedError } from '../utils/api-error';
@@ -32,7 +32,7 @@ export const handleFileUpload = async (
     }
 
     const result = await UploadService.uploadAset(
-      folderId,
+      folderId as string,
       user,
       req.file,
       filename,
@@ -41,6 +41,6 @@ export const handleFileUpload = async (
 
     res.status(201).json(result);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };

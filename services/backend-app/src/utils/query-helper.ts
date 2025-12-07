@@ -1,4 +1,7 @@
-import { GeneralAssetType, getMimeTypesForAssetType } from '@asetflow/shared';
+import {
+  type GeneralAssetType,
+  getMimeTypesForAssetType,
+} from '@asetflow/shared';
 
 // Helper untuk filter berdasarkan asset type
 export const buildAssetTypeFilter = (assetType?: GeneralAssetType | 'all') => {

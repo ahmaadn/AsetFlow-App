@@ -1,4 +1,4 @@
-import { AssetModel, Prisma, prisma } from '@asetflow/database';
+import { AssetModel, type Prisma, prisma } from '@asetflow/database';
 import { GeneralAssetType } from '@asetflow/shared';
 import { AssetCreate } from '@asetflow/shared-types';
 

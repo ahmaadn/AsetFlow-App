@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import * as statisticsService from '../services/statistics.service';
 import { UnauthorizedError } from '../utils/api-error';

@@ -1,7 +1,7 @@
-import { UserModel } from '@asetflow/database';
+import { type UserModel } from '@asetflow/database';
 import { logger } from '@asetflow/logger';
 import { generateSlug, getExtension } from '@asetflow/shared';
-import { AssetResponse, MetadataAsset } from '@asetflow/shared-types';
+import type { AssetResponse, MetadataAsset } from '@asetflow/shared-types';
 
 import { CLOUDINARY_ROOT_FOLDER } from '../configs/cloudinary.config';
 import * as AssetRepository from '../repositories/asset.repository';
