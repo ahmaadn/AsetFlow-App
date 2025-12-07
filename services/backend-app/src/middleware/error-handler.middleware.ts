@@ -12,7 +12,7 @@ export const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   // Catat pesan error menggunakan logger package
   logger.error(err.message, {
