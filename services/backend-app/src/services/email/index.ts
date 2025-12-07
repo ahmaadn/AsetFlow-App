@@ -1,4 +1,4 @@
-export { EmailService, emailService } from './email.service';
+export { EmailService, createEmailService } from './email.service';
 
 export { BaseLayout } from './layouts/base.layout';
 

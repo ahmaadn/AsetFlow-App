@@ -4,14 +4,23 @@
   "description": "Logger package for Express services",
   "author": "Your Name",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs --dts --clean",
-    "dev": "tsup src/index.ts --format cjs --dts --clean --watch"
+    "build": "tsup",
+    "dev": "tsup --watch"
   },
   "keywords": [
     "logger",
@@ -25,6 +34,7 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
+    "@asetflow/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3"
   }

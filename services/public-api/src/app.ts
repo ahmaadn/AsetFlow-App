@@ -1,12 +1,12 @@
 import { prisma } from '@asetflow/database';
 import { logger } from '@asetflow/logger';
 import cors from 'cors';
-import express from 'express';
+import express, { type Express } from 'express';
 
 import routes from './routes';
 import { setupSwaggerDocs } from './swagger';
 
-export const app = express();
+export const app: Express = express();
 
 // Middleware
 app.use(express.json());

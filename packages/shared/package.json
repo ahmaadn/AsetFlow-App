@@ -17,8 +17,8 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --clean --watch"
+    "build": "tsup",
+    "dev": "tsup --watch"
   },
   "keywords": [
     "utility",
@@ -32,6 +32,7 @@
     "dayjs": "^1.11.18"
   },
   "devDependencies": {
+    "@asetflow/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3"
   }

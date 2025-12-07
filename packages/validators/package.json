@@ -2,8 +2,8 @@
   "name": "@asetflow/validators",
   "version": "1.0.0",
   "description": "Validator package for Nuxt (ESM) and Express (CJS)",
-  "author": "Your Name",
-  "license": "ISC",
+  "author": "Ahmad Nur Sahid",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -19,10 +19,11 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --clean --watch"
+    "build": "tsup ",
+    "dev": "tsup  --watch"
   },
   "devDependencies": {
+    "@asetflow/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
     "zod": "^4.1.12"

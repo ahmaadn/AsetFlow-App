@@ -3,7 +3,7 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
 import { logger } from '../configs/logger.config';
-import { emailService } from '../services/email';
+import { createEmailService } from '../services/email';
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -15,6 +15,7 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     sendResetPassword: async ({ user, url }) => {
+      const emailService = createEmailService();
       await emailService.sendForgotPasswordEmail(user.email, {
         userName: user.name || 'User',
         resetUrl: url,

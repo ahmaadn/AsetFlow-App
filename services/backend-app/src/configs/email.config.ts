@@ -75,6 +75,7 @@ export class EmailConfigManager {
         .split(',')
         .map((p) => p.trim()) || [];
 
+    console.log('Available email providers from env:', providers);
     // Check if Google credentials are available and Google is in the provider list
     if (
       providers.includes('google') &&

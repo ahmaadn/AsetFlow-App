@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import * as AssetController from '../controllers/asset.controller';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * @swagger

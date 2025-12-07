@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import * as AssetService from '../services/asset.service';
 
@@ -9,7 +9,10 @@ export const redirectToAsset = async (req: Request, res: Response) => {
   try {
     const { slugFolder, slugAsset } = req.params;
 
-    const asset = await AssetService.getAssetBySlug(slugFolder, slugAsset);
+    const asset = await AssetService.getAssetBySlug(
+      slugFolder as string,
+      slugAsset as string
+    );
 
     if (!asset) {
       return res.status(404).json({
@@ -38,7 +41,7 @@ export const getAssetsByFolder = async (req: Request, res: Response) => {
     const { type } = req.query;
 
     const result = await AssetService.getAssetsByFolder(
-      slugFolder,
+      slugFolder as string,
       type as string | undefined
     );
 
