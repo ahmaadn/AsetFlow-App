@@ -13,7 +13,7 @@ export const auth = betterAuth({
   trustedOrigins: [process.env.CORS_ORIGIN || 'http://localhost:3000'],
   emailAndPassword: {
     enabled: true,
-    autoSignIn: false,
+    autoSignIn: true,
     sendResetPassword: async ({ user, url }) => {
       const emailService = createEmailService();
       await emailService.sendForgotPasswordEmail(user.email, {

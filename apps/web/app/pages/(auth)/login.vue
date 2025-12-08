@@ -23,16 +23,23 @@ const { values, errors, handleSubmit } = useForm({
   onSubmit: async (values) => {
     if (isLoading.value) return;
     isLoading.value = true;
-    await client.signIn.email(values, {
-      onSuccess: () => {
-        toast.success('Login successful! Welcome back.');
-        navigateTo('/dashboard');
+    await client.signIn.email(
+      {
+        email: values.email,
+        password: values.password,
+        callbackURL: `${window.location.origin}/dashboard`,
       },
-      onError: (error) => {
-        console.error('Login error:', error);
-        toast.error('Login failed. Please check your credentials.');
-      },
-    });
+      {
+        onSuccess: () => {
+          toast.success('Login successful! Welcome back.');
+          navigateTo('/dashboard');
+        },
+        onError: (error) => {
+          console.error('Login error:', error);
+          toast.error('Login failed. Please check your credentials.');
+        },
+      }
+    );
     isLoading.value = false;
   },
 });
