@@ -1,5 +1,7 @@
 import winston from 'winston';
 
+import { env } from '../configs/env.config.js';
+
 /**
  * Tentukan level log yang berbeda dan warnanya
  */
@@ -27,7 +29,7 @@ winston.addColors(colors);
 const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   // Tampilkan log dengan warna jika bukan di environment production
-  process.env.NODE_ENV !== 'production'
+  env.NODE_ENV !== 'production'
     ? winston.format.colorize({ all: true })
     : winston.format.uncolorize(),
   winston.format.align(),
@@ -64,7 +66,7 @@ const transports = [
  * Buat logger
  */
 const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL,
+  level: env.LOG_LEVEL,
   levels,
   format,
   transports,

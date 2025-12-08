@@ -15,6 +15,7 @@ import {
   GoogleEmailConfig,
   SMTPEmailConfig,
 } from '../../configs/email.config.js';
+import { env } from '../../configs/env.config.js';
 
 /**
  * Email sending result interface
@@ -101,7 +102,7 @@ export class EmailService {
       logger: false, // Enable for debugging
       debug: false, // Enable for debugging
       tls: {
-        rejectUnauthorized: process.env.NODE_ENV === 'production',
+        rejectUnauthorized: env.NODE_ENV === 'production',
       },
     });
   }
@@ -122,7 +123,7 @@ export class EmailService {
       logger: false, // Enable for debugging
       debug: false, // Enable for debugging
       tls: {
-        rejectUnauthorized: process.env.NODE_ENV === 'production',
+        rejectUnauthorized: env.NODE_ENV === 'production',
       },
     });
   }

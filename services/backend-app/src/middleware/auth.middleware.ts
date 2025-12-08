@@ -2,8 +2,10 @@ import type { UserModel } from '@asetflow/database';
 import { fromNodeHeaders } from 'better-auth/node';
 import { Request, Response, NextFunction } from 'express';
 
+import { env } from '../configs/env.config.js';
 import { UnauthorizedError } from '../utils/api-error.js';
 import { auth } from '../utils/auth.js';
+import { logger } from 'better-auth';
 
 export const betterAuthProtect = async (
   req: Request,
@@ -15,7 +17,7 @@ export const betterAuthProtect = async (
     if (req.method === 'OPTIONS') {
       res.header(
         'Access-Control-Allow-Origin',
-        process.env.CORS_ORIGIN || 'http://localhost:3000'
+        env.CORS_ORIGIN || 'http://localhost:3000'
       );
       res.header('Access-Control-Allow-Credentials', 'true');
       res.header(
@@ -34,14 +36,12 @@ export const betterAuthProtect = async (
     });
 
     // Debug logging
-    if (process.env.DEBUG === 'true') {
-      console.log('Session check:', {
-        hasSession: !!session,
-        hasUser: !!session?.user,
-        headers: Object.keys(req.headers),
-        cookies: req.headers.cookie ? 'present' : 'missing',
-      });
-    }
+    logger.debug('Session check:', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      headers: Object.keys(req.headers),
+      cookies: req.headers.cookie ? 'present' : 'missing',
+    });
 
     if (!session || !session.user) {
       return next(

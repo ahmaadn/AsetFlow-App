@@ -2,6 +2,7 @@ import { toNodeHandler } from 'better-auth/node';
 import cors from 'cors';
 import express, { type Response, Express } from 'express';
 
+import { env } from './configs/env.config.js';
 import { errorHandler } from './middleware/error-handler.middleware.js';
 import { requestLogger } from './middleware/request-logger.middleware.js';
 import routes from './routes/index.js';
@@ -13,7 +14,7 @@ export const app: Express = express();
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: env.CORS_ORIGIN || 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
