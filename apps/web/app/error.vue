@@ -101,13 +101,13 @@ const reloadPage = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center p-4">
+  <div class="min-h-screen flex items-center justify-center p-4 overflow-auto">
     <div class="max-w-2xl w-full">
       <!-- Error Card -->
       <div class="card">
         <div class="card-body items-center text-center p-8 md:p-12">
           <!-- Error Icon & Status Code -->
-          <div class="relative mb-4">
+          <div class="relative mb-4 overflow-auto">
             <div
               class="absolute inset-0 blur-3xl"
               :class="handleError(error).color"
@@ -142,14 +142,11 @@ const reloadPage = () => {
           </p>
 
           <!-- Error Details (Development Only) -->
-          <div
-            v-if="error.message && $config.public.nodeEnv === 'development'"
-            class="alert alert-error w-full mb-6"
-          >
+          <div v-if="error.stack" class="alert alert-error w-full mb-6">
             <Icon name="ri:bug-line" class="size-5" />
             <div class="text-left flex-1">
               <h3 class="font-semibold text-sm mb-1">Error Details:</h3>
-              <code class="text-xs break-all">{{ error.message }}</code>
+              <code class="text-xs break-all">{{ error.stack }}</code>
             </div>
           </div>
 
