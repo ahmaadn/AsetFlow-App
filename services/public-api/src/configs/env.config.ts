@@ -125,7 +125,11 @@ const loadEnvironmentFiles = (): void => {
       loaded = true;
       break;
     } else {
+      dotenv.config();
       console.log(`[CONFIG] ✗ ${envFile} not found`);
+      console.log(
+        '[CONFIG] Default dotenv behavior applied, environment variables must be set externally'
+      );
     }
   }
 
@@ -138,23 +142,20 @@ const loadEnvironmentFiles = (): void => {
  * Validates and transforms environment variables using Zod schema
  */
 const validateEnvironment = () => {
-  try {
-    const parsed = envSchema.parse(process.env);
-    console.log('[CONFIG] ✓ Environment variables validated successfully');
-    return parsed;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const formattedErrors = error.issues
-        .map((err) => `${err.path.join('.')}: ${err.message}`)
-        .join('\n  ');
+  const parsed = envSchema.safeParse(process.env);
 
-      console.log('[CONFIG] ✗ Environment validation failed:');
-      console.log(`  ${formattedErrors}`);
-
-      throw new Error(`Environment validation failed:\n  ${formattedErrors}`);
+  if (!parsed.success) {
+    console.error(
+      '[FATAL] [CONFIG] ❌ Environment variable validation failed:'
+    );
+    for (const issue of parsed.error.issues) {
+      console.error(`  - ${issue.path.join('.')}: ${issue.message}`);
     }
-    throw error;
+    throw new Error('Environment variable validation failed');
   }
+
+  console.log('[CONFIG] ✓ Environment variables validated successfully');
+  return parsed.data;
 };
 
 loadEnvironmentFiles();
