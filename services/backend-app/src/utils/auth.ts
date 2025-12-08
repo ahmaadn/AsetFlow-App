@@ -32,7 +32,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    autoSignIn: true,
+    autoSignIn: false,
     sendResetPassword: async ({ user, url }) => {
       const emailService = createEmailService();
       await emailService.sendForgotPasswordEmail(user.email, {
