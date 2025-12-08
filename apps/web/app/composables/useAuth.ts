@@ -58,9 +58,9 @@ export function useAuth() {
 
   // Use proxy URL for client-side requests to avoid CORS issues
   const baseURL = import.meta.client
-    ? ''
-    : config.public.authUrl || 'http://localhost:8000';
-  const basePath = import.meta.client ? '/api/auth' : '/v1/auth';
+    ? config.public.authUrl
+    : config.apiBaseServer;
+  const basePath = '/v1/auth';
 
   const client = createAuthClient({
     baseURL,
@@ -69,7 +69,6 @@ export function useAuth() {
       credentials: 'include',
       headers: {
         ...headers,
-        ...(import.meta.server && { 'Content-Type': 'application/json' }),
       },
     },
   });
