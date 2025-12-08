@@ -2,7 +2,6 @@ import { prisma } from '@asetflow/database';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
-import { logger } from '../configs/logger.config.js';
 import { createEmailService } from '../services/email/email.service.js';
 
 export const auth = betterAuth({
@@ -10,7 +9,27 @@ export const auth = betterAuth({
     provider: 'postgresql',
   }),
   basePath: '/v1/auth',
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:8000',
+  secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins: [process.env.CORS_ORIGIN || 'http://localhost:3000'],
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+  },
+  advanced: {
+    cookies: {
+      session_token: {
+        name: 'better-auth.session-token',
+        attributes: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7, // 7 days
+          domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
+        },
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
@@ -35,9 +54,6 @@ export const auth = betterAuth({
       }),
   },
   logger: {
-    log: (level, message, ...args) => {
-      const logMethod = logger[level] || logger.info;
-      logMethod(message, ...args);
-    },
+    disabled: false,
   },
 });

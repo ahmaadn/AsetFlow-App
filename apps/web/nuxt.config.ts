@@ -19,6 +19,14 @@ export default defineNuxtConfig({
     'pinia-plugin-persistedstate/nuxt',
     '@nuxt/image',
   ],
+
+  nitro: {
+    experimental: {
+      wasm: true,
+    },
+  },
+
+  ssr: true,
   fonts: {
     defaults: {
       weights: ['100 900'],

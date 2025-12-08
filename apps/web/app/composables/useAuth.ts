@@ -50,13 +50,27 @@ function clearApplicationStores(): void {
  */
 export function useAuth() {
   const config = useRuntimeConfig();
-  // TODO IMPORTANT: On server side, forward incoming request headers (cookies) to auth client
-  const headers = import.meta.server ? useRequestHeaders() : undefined;
+
+  // Forward incoming request headers (cookies) to auth client for SSR
+  const headers = import.meta.server
+    ? useRequestHeaders(['cookie'])
+    : undefined;
+
+  // Use proxy URL for client-side requests to avoid CORS issues
+  const baseURL = import.meta.client
+    ? ''
+    : config.public.authUrl || 'http://localhost:8000';
+  const basePath = import.meta.client ? '/api/auth' : '/v1/auth';
+
   const client = createAuthClient({
-    baseURL: config.public.authUrl,
-    basePath: '/v1/auth',
+    baseURL,
+    basePath,
     fetchOptions: {
-      headers,
+      credentials: 'include',
+      headers: {
+        ...headers,
+        ...(import.meta.server && { 'Content-Type': 'application/json' }),
+      },
     },
   });
 
