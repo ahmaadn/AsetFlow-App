@@ -1,5 +1,7 @@
 import { logger } from '@asetflow/logger';
 
+import { env } from './env.config.js';
+
 /**
  * Email service provider types
  */
@@ -71,7 +73,7 @@ export class EmailConfigManager {
    */
   private static determineProvider(): EmailProvider {
     const providers =
-      process.env.MAIL_SERVICE_PROVIDER?.toLowerCase()
+      env.MAIL_SERVICE_PROVIDER?.toLowerCase()
         .split(',')
         .map((p) => p.trim()) || [];
 
@@ -79,32 +81,28 @@ export class EmailConfigManager {
     // Check if Google credentials are available and Google is in the provider list
     if (
       providers.includes('google') &&
-      process.env.GOOGLE_APP_MAIL &&
-      process.env.GOOGLE_APP_PASSWORD
+      env.GOOGLE_APP_MAIL &&
+      env.GOOGLE_APP_PASSWORD
     ) {
       logger.info('Using Google email provider');
       return 'google';
     }
 
     // Check if SMTP credentials are available and SMTP is in the provider list
-    if (
-      providers.includes('smtp') &&
-      process.env.SMTP_HOST &&
-      process.env.SMTP_USER
-    ) {
+    if (providers.includes('smtp') && env.SMTP_HOST && env.SMTP_USER) {
       logger.info('Using SMTP email provider');
       return 'smtp';
     }
 
     // Default fallback logic
-    if (process.env.GOOGLE_APP_MAIL && process.env.GOOGLE_APP_PASSWORD) {
+    if (env.GOOGLE_APP_MAIL && env.GOOGLE_APP_PASSWORD) {
       logger.info(
         'Defaulting to Google email provider (credentials available)'
       );
       return 'google';
     }
 
-    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+    if (env.SMTP_HOST && env.SMTP_USER) {
       logger.info('Defaulting to SMTP email provider (credentials available)');
       return 'smtp';
     }
@@ -122,7 +120,7 @@ export class EmailConfigManager {
     const requiredEnvVars = ['GOOGLE_APP_MAIL', 'GOOGLE_APP_PASSWORD'];
 
     const missingVars = requiredEnvVars.filter(
-      (varName) => !process.env[varName]
+      (varName) => !env[varName as keyof typeof env]
     );
 
     if (missingVars.length > 0) {
@@ -138,12 +136,12 @@ export class EmailConfigManager {
     return {
       provider: 'google',
       auth: {
-        user: process.env.GOOGLE_APP_MAIL!,
-        pass: process.env.GOOGLE_APP_PASSWORD!,
+        user: env.GOOGLE_APP_MAIL!,
+        pass: env.GOOGLE_APP_PASSWORD!,
       },
       from: {
-        name: process.env.SMTP_FROM_NAME || 'AsetFlow',
-        address: process.env.SMTP_FROM_ADDRESS || process.env.GOOGLE_APP_MAIL!,
+        name: env.SMTP_FROM_NAME || 'AsetFlow',
+        address: env.SMTP_FROM_ADDRESS || env.GOOGLE_APP_MAIL!,
       },
     };
   }
@@ -163,7 +161,7 @@ export class EmailConfigManager {
     ];
 
     const missingVars = requiredEnvVars.filter(
-      (varName) => !process.env[varName]
+      (varName) => !env[varName as keyof typeof env]
     );
 
     if (missingVars.length > 0) {
@@ -178,16 +176,16 @@ export class EmailConfigManager {
 
     return {
       provider: 'smtp',
-      host: process.env.SMTP_HOST!,
-      port: parseInt(process.env.SMTP_PORT!, 10),
-      secure: process.env.SMTP_SECURE === 'true',
+      host: env.SMTP_HOST!,
+      port: env.SMTP_PORT!,
+      secure: !!env.SMTP_SECURE || true,
       auth: {
-        user: process.env.SMTP_USER!,
-        pass: process.env.SMTP_PASS!,
+        user: env.SMTP_USER!,
+        pass: env.SMTP_PASS!,
       },
       from: {
-        name: process.env.SMTP_FROM_NAME!,
-        address: process.env.SMTP_FROM_ADDRESS!,
+        name: env.SMTP_FROM_NAME!,
+        address: env.SMTP_FROM_ADDRESS!,
       },
     };
   }
