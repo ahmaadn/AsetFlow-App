@@ -3,9 +3,9 @@ import { fromNodeHeaders } from 'better-auth/node';
 import { Request, Response, NextFunction } from 'express';
 
 import { env } from '../configs/env.config.js';
+import { logger } from '../configs/logger.config.js';
 import { UnauthorizedError } from '../utils/api-error.js';
 import { auth } from '../utils/auth.js';
-import { logger } from 'better-auth';
 
 export const betterAuthProtect = async (
   req: Request,

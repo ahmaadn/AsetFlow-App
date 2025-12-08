@@ -52,34 +52,27 @@ export function useAuth() {
   const config = useRuntimeConfig();
 
   // Forward incoming request headers (cookies) to auth client for SSR
-  const headers = import.meta.server
-    ? useRequestHeaders(['cookie'])
-    : undefined;
+  const headers = import.meta.server ? useRequestHeaders() : undefined;
 
   // Use proxy URL for client-side requests to avoid CORS issues
   const baseURL = import.meta.client
-    ? config.public.authUrl
+    ? config.public.apiBase
     : config.apiBaseServer;
   const basePath = '/v1/auth';
-
   const client = createAuthClient({
     baseURL,
     basePath,
     fetchOptions: {
       credentials: 'include',
-      headers: {
-        ...headers,
-      },
+      ...headers,
     },
   });
-
   const session =
     useState<InferSessionFromClient<BetterAuthClientOptions> | null>(
       'auth:session',
       () => null
     );
   const user = useState<User | null>('auth:user', () => null);
-
   const sessionFetching = import.meta.server
     ? ref(false)
     : useState<boolean>('auth:session-fetched', () => false);
@@ -102,7 +95,6 @@ export function useAuth() {
     };
 
     user.value = data?.user ? Object.assign({}, userDefault, data.user) : null;
-
     sessionFetching.value = false;
     return data;
   };

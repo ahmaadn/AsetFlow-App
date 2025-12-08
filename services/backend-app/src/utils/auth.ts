@@ -11,7 +11,11 @@ export const auth = betterAuth({
   basePath: '/v1/auth',
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:8000',
   secret: process.env.BETTER_AUTH_SECRET,
-  trustedOrigins: [process.env.CORS_ORIGIN || 'http://localhost:3000'],
+  trustedOrigins: [
+    'http://localhost:3000',
+    process.env.CORS_ORIGIN,
+    process.env.VERCEL_URL || '',
+  ],
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
   },
