@@ -50,16 +50,28 @@ function clearApplicationStores(): void {
  */
 export function useAuth() {
   const config = useRuntimeConfig();
-  // TODO IMPORTANT: On server side, forward incoming request headers (cookies) to auth client
-  const headers = import.meta.server ? useRequestHeaders() : undefined;
+
+  // Improved header forwarding for SSR
+  const headers = import.meta.server
+    ? useRequestHeaders([
+        'cookie',
+        'authorization',
+        'user-agent',
+        'x-forwarded-for',
+        'x-forwarded-proto',
+      ])
+    : undefined;
+
   const client = createAuthClient({
     baseURL: config.public.apiBase,
     basePath: '/v1/auth',
     fetchOptions: {
       headers,
+      credentials: 'include', // Ensure cookies are included
     },
   });
 
+  // Use consistent state management across server and client
   const session =
     useState<InferSessionFromClient<BetterAuthClientOptions> | null>(
       'auth:session',
@@ -67,31 +79,51 @@ export function useAuth() {
     );
   const user = useState<User | null>('auth:user', () => null);
 
-  const sessionFetching = import.meta.server
-    ? ref(false)
-    : useState<boolean>('auth:session-fetched', () => false);
+  // Fix sessionFetching state to prevent hydration mismatch
+  const sessionFetching = useState<boolean>(
+    'auth:session-fetching',
+    () => false
+  );
 
   const fetchSession = async () => {
+    // Prevent concurrent session fetches
     if (sessionFetching.value) return;
 
-    sessionFetching.value = true;
-    const { data } = await client.getSession();
-    session.value = data?.session || null;
+    try {
+      sessionFetching.value = true;
 
-    const userDefault = {
-      id: null,
-      createdAt: null,
-      updatedAt: null,
-      email: null,
-      emailVerified: null,
-      name: null,
-      image: null,
-    };
+      const { data } = await client.getSession();
 
-    user.value = data?.user ? Object.assign({}, userDefault, data.user) : null;
+      // Handle session data consistently
+      const newSession = data?.session || null;
+      const newUser = data?.user || null;
 
-    sessionFetching.value = false;
-    return data;
+      // Only update state if there's a change to prevent unnecessary reactivity
+      if (JSON.stringify(session.value) !== JSON.stringify(newSession)) {
+        session.value = newSession;
+      }
+
+      if (JSON.stringify(user.value) !== JSON.stringify(newUser)) {
+        const userDefault = {
+          id: null,
+          createdAt: null,
+          updatedAt: null,
+          email: null,
+          emailVerified: null,
+          name: null,
+          image: null,
+        };
+        user.value = newUser ? Object.assign({}, userDefault, newUser) : null;
+      }
+
+      return data;
+    } catch (error) {
+      console.warn('Session fetch failed:', error);
+      // Don't clear session on fetch error to prevent auth loops
+      return null;
+    } finally {
+      sessionFetching.value = false;
+    }
   };
 
   const handleSignOut = async () => {

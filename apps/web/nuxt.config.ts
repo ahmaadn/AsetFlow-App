@@ -5,6 +5,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  // SSR Configuration for better hydration
+  ssr: true,
+
   vite: {
     plugins: [tailwindcss()],
   },
@@ -43,5 +46,19 @@ export default defineNuxtConfig({
     cloudinary: {
       baseURL: 'https://res.cloudinary.com/dbaexr1vs/image/upload',
     },
+  },
+
+  // App configuration for better hydration
+  app: {
+    head: {
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      ],
+    },
+  },
+
+  // Experimental features for better SSR
+  experimental: {
+    payloadExtraction: false, // Helps with hydration mismatches
   },
 });

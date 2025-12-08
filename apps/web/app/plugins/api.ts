@@ -10,18 +10,36 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     onRequest({ options }) {
       if (import.meta.server) {
-        const headers = useRequestHeaders(['cookie']);
+        // Forward essential headers for SSR
+        const headers = useRequestHeaders([
+          'cookie',
+          'authorization',
+          'user-agent',
+          'x-forwarded-for',
+          'x-forwarded-proto',
+          'x-real-ip',
+        ]);
+
         options.headers = {
           ...options.headers,
           ...headers,
         };
+
+        // Ensure proper content type
+        if (!options.headers['content-type']) {
+          options.headers['content-type'] = 'application/json';
+        }
       }
     },
+
     onResponseError({ request, response }) {
       if (response.status === 401) {
-        // Redirect ke login jika unauthorized
-        if (import.meta.client) {
-          navigateTo('/login');
+        // Only redirect on client-side and avoid loops
+        if (
+          import.meta.client &&
+          !window.location.pathname.startsWith('/login')
+        ) {
+          navigateTo('/login', { replace: true });
         }
       }
     },

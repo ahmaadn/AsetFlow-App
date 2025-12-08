@@ -63,15 +63,32 @@ function getAuthenticatedRedirectPath(
  * No manual setup required.
  */
 export default defineNuxtRouteMiddleware(async (to, from) => {
+  // Skip middleware on client-side hydration to prevent flickering
+  if (import.meta.client && !useState('auth:hydrated', () => false).value) {
+    return;
+  }
+
   const { isAuthenticated, fetchSession } = useAuth();
 
-  await fetchSession();
-
   try {
+    // Only fetch session if not already done during SSR
+    if (
+      import.meta.server ||
+      !useState('auth:session-initialized', () => false).value
+    ) {
+      await fetchSession();
+
+      // Mark session as initialized on client
+      if (import.meta.client) {
+        useState('auth:session-initialized', () => true);
+        useState('auth:hydrated', () => true);
+      }
+    }
+
     if (isAuthenticated.value) {
       if (AUTH_ROUTES.includes(to.path)) {
         const redirectPath = getAuthenticatedRedirectPath(from);
-        return navigateTo(redirectPath);
+        return navigateTo(redirectPath, { replace: true });
       }
 
       return;
@@ -83,12 +100,15 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     }
 
     // Redirect unauthenticated users to login for protected routes
-    return navigateTo('/login');
+    return navigateTo('/login', { replace: true });
   } catch (error) {
     console.error(
       `Authentication middleware failed during session fetch or auth check for route "${to.path}".`,
       error
     );
-    return navigateTo('/login');
+    // Only redirect to login if not already on a public route
+    if (!PUBLIC_ROUTES.includes(to.path)) {
+      return navigateTo('/login', { replace: true });
+    }
   }
 });
