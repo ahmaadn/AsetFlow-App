@@ -14,7 +14,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     'http://localhost:3000',
     process.env.CORS_ORIGIN,
-    process.env.VERCEL_URL || '',
+    process.env.VERCEL_URL || 'http://localhost:8000',
   ],
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
