@@ -20,13 +20,6 @@ export default defineNuxtConfig({
     '@nuxt/image',
   ],
 
-  nitro: {
-    experimental: {
-      wasm: true,
-    },
-  },
-
-  ssr: true,
   fonts: {
     defaults: {
       weights: ['100 900'],
