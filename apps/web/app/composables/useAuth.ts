@@ -94,13 +94,6 @@ export function useAuth() {
     return data;
   };
 
-  if (import.meta.client) {
-    client.$store.listen('$sessionSignal', async (signal) => {
-      if (!signal) return;
-      await fetchSession();
-    });
-  }
-
   const handleSignOut = async () => {
     clearApplicationStores();
     session.value = null;
