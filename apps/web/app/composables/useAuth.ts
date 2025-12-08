@@ -53,7 +53,7 @@ export function useAuth() {
   // TODO IMPORTANT: On server side, forward incoming request headers (cookies) to auth client
   const headers = import.meta.server ? useRequestHeaders() : undefined;
   const client = createAuthClient({
-    baseURL: import.meta.server ? config.apiBaseServer : config.public.apiBase,
+    baseURL: config.public.apiBase,
     basePath: '/v1/auth',
     fetchOptions: {
       headers,
