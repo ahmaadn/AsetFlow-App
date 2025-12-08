@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app';
 
-defineProps<{
+const props = defineProps<{
   error: NuxtError;
 }>();
 
@@ -98,6 +98,10 @@ const goBack = () => {
 const reloadPage = () => {
   window.location.reload();
 };
+
+onMounted(() => {
+  console.error('Error Page:', props.error);
+});
 </script>
 
 <template>

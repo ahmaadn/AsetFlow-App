@@ -63,8 +63,8 @@ export function useAuth() {
     baseURL,
     basePath,
     fetchOptions: {
-      credentials: 'include',
       ...headers,
+      credentials: 'include',
     },
   });
   const session =
