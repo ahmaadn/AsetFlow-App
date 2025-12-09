@@ -39,15 +39,10 @@ const loadDashboardData = async () => {
   }
 };
 
-// Wait for authentication to be ready before loading dashboard data
-watchEffect(async () => {
-  if (auth.isAuthenticated.value && auth.user.value) {
-    await loadDashboardData();
-  }
-});
-
 // Fallback for mounted hook
 onMounted(async () => {
+  await auth.fetchSession();
+
   // Only load if auth is ready
   if (auth.isAuthenticated.value) {
     await loadDashboardData();
