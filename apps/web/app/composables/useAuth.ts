@@ -101,9 +101,30 @@ export function useAuth() {
     await navigateTo('/login');
   };
 
+  const setSession = (
+    newSession: InferSessionFromClient<BetterAuthClientOptions> | null
+  ) => {
+    session.value = newSession;
+  };
+
+  const setUser = (newUser: User | null) => {
+    const userDefault = {
+      id: null,
+      createdAt: null,
+      updatedAt: null,
+      email: null,
+      emailVerified: null,
+      name: null,
+      image: null,
+    };
+    user.value = newUser ? Object.assign({}, userDefault, newUser) : null;
+  };
+
   return {
     client,
     session,
+    setSession,
+    setUser,
     fetchSession,
     handleSignOut,
     user,

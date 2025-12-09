@@ -39,10 +39,12 @@ const loadDashboardData = async () => {
   }
 };
 
+const { data } = await auth.client.useSession(useFetch);
+auth.setSession(data?.value?.session || null);
+auth.setUser(data?.value?.user || null);
+
 // Fallback for mounted hook
 onMounted(async () => {
-  await auth.fetchSession();
-
   // Only load if auth is ready
   if (auth.isAuthenticated.value) {
     await loadDashboardData();

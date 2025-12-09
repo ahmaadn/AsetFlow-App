@@ -68,22 +68,25 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     return;
   }
 
-  const { isAuthenticated, fetchSession } = useAuth();
+  const { isAuthenticated, client, setSession, setUser } = useAuth();
 
   try {
     // Only fetch session if not already done during SSR
-    if (
-      import.meta.server ||
-      !useState('auth:session-initialized', () => false).value
-    ) {
-      await fetchSession();
+    // if (
+    //   import.meta.server ||
+    //   !useState('auth:session-initialized', () => false).value
+    // ) {
+    //   await fetchSession();
 
-      // Mark session as initialized on client
-      if (import.meta.client) {
-        useState('auth:session-initialized', () => true);
-        useState('auth:hydrated', () => true);
-      }
-    }
+    //   // Mark session as initialized on client
+    //   if (import.meta.client) {
+    //     useState('auth:session-initialized', () => true);
+    //     useState('auth:hydrated', () => true);
+    //   }
+    // }
+    const { data } = await client.useSession(useFetch);
+    setSession(data?.value?.session || null);
+    setUser(data?.value?.user || null);
 
     if (isAuthenticated.value) {
       if (AUTH_ROUTES.includes(to.path)) {
