@@ -63,29 +63,12 @@ function getAuthenticatedRedirectPath(
  * No manual setup required.
  */
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  // Skip middleware on client-side hydration to prevent flickering
-  if (import.meta.client && !useState('auth:hydrated', () => false).value) {
-    return;
-  }
-
-  const { isAuthenticated, fetchSession } = useAuth();
+  const auth = useAuth();
 
   try {
-    // Only fetch session if not already done during SSR
-    if (
-      import.meta.server ||
-      !useState('auth:session-initialized', () => false).value
-    ) {
-      await fetchSession();
+    await auth.fetchSession();
 
-      // Mark session as initialized on client
-      if (import.meta.client) {
-        useState('auth:session-initialized', () => true);
-        useState('auth:hydrated', () => true);
-      }
-    }
-
-    if (isAuthenticated.value) {
+    if (auth.isAuthenticated.value) {
       if (AUTH_ROUTES.includes(to.path)) {
         const redirectPath = getAuthenticatedRedirectPath(from);
         return navigateTo(redirectPath, { replace: true });

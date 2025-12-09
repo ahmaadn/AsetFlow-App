@@ -2,6 +2,18 @@
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
 
+  // Get headers once at plugin initialization time
+  const ssrHeaders = import.meta.server
+    ? useRequestHeaders([
+        'cookie',
+        'authorization',
+        'user-agent',
+        'x-forwarded-for',
+        'x-forwarded-proto',
+        'x-real-ip',
+      ])
+    : {};
+
   const api = $fetch.create({
     baseURL: import.meta.server
       ? config.apiBaseServer || 'http://localhost:8000'
@@ -10,25 +22,11 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     onRequest({ options }) {
       if (import.meta.server) {
-        // Forward essential headers for SSR
-        const headers = useRequestHeaders([
-          'cookie',
-          'authorization',
-          'user-agent',
-          'x-forwarded-for',
-          'x-forwarded-proto',
-          'x-real-ip',
-        ]);
-
+        // Use pre-captured headers instead of calling useRequestHeaders
         options.headers = {
           ...options.headers,
-          ...headers,
+          ...ssrHeaders,
         };
-
-        // Ensure proper content type
-        if (!options.headers['content-type']) {
-          options.headers['content-type'] = 'application/json';
-        }
       }
     },
 

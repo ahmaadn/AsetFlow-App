@@ -1,5 +1,4 @@
 import type { User } from '@asetflow/shared-types';
-import { createAuthClient } from 'better-auth/vue';
 import type {
   InferSessionFromClient,
   BetterAuthClientOptions,
@@ -11,65 +10,11 @@ import type {
  *
  * @private
  */
-function clearApplicationStores(): void {
-  const { clear: clearFolder } = useFolderStore();
-  const { clear: clearAsset } = useAssetStore();
-  const { clear: clearStagingFiles } = useStaggingFilesStore();
-  const { closeAll: closeModals } = useModal();
-  const { cancelAllUploadTasks } = useUploadQueue();
-
-  try {
-    clearFolder();
-  } catch (error) {
-    console.warn('Failed to clear folder store:', error);
-  }
-  try {
-    clearAsset();
-  } catch (error) {
-    console.warn('Failed to clear asset store:', error);
-  }
-  try {
-    clearStagingFiles();
-  } catch (error) {
-    console.warn('Failed to clear staging files store:', error);
-  }
-  try {
-    closeModals();
-  } catch (error) {
-    console.warn('Failed to close modals:', error);
-  }
-  try {
-    cancelAllUploadTasks();
-  } catch (error) {
-    console.warn('Failed to cancel upload tasks:', error);
-  }
-}
-
 /**
  * Main authentication composable providing reactive auth state and methods.
  */
 export function useAuth() {
-  const config = useRuntimeConfig();
-
-  // Improved header forwarding for SSR
-  const headers = import.meta.server
-    ? useRequestHeaders([
-        'cookie',
-        'authorization',
-        'user-agent',
-        'x-forwarded-for',
-        'x-forwarded-proto',
-      ])
-    : undefined;
-
-  const client = createAuthClient({
-    baseURL: config.public.apiBase,
-    basePath: '/v1/auth',
-    fetchOptions: {
-      headers,
-      credentials: 'include', // Ensure cookies are included
-    },
-  });
+  const { $client } = useNuxtApp();
 
   // Use consistent state management across server and client
   const session =
@@ -79,20 +24,10 @@ export function useAuth() {
     );
   const user = useState<User | null>('auth:user', () => null);
 
-  // Fix sessionFetching state to prevent hydration mismatch
-  const sessionFetching = useState<boolean>(
-    'auth:session-fetching',
-    () => false
-  );
-
   const fetchSession = async () => {
-    // Prevent concurrent session fetches
-    if (sessionFetching.value) return;
-
     try {
-      sessionFetching.value = true;
-
-      const { data } = await client.getSession();
+      const { data } = await $client.getSession();
+      console.log('Fetched session data:', data);
 
       // Handle session data consistently
       const newSession = data?.session || null;
@@ -119,23 +54,18 @@ export function useAuth() {
       return data;
     } catch (error) {
       console.warn('Session fetch failed:', error);
-      // Don't clear session on fetch error to prevent auth loops
       return null;
-    } finally {
-      sessionFetching.value = false;
     }
   };
 
   const handleSignOut = async () => {
-    clearApplicationStores();
     session.value = null;
     user.value = null;
-    await client.signOut();
-    await navigateTo('/login');
+    await $client.signOut();
   };
 
   return {
-    client,
+    client: $client,
     session,
     fetchSession,
     handleSignOut,
