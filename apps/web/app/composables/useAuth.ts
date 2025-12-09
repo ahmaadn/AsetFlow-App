@@ -1,9 +1,5 @@
 import type { User } from '@asetflow/shared-types';
 import { createAuthClient } from 'better-auth/vue';
-import type {
-  InferSessionFromClient,
-  BetterAuthClientOptions,
-} from 'better-auth/client';
 
 /**
  * Clears all application stores when user logs out.
@@ -50,33 +46,19 @@ function clearApplicationStores(): void {
  */
 export function useAuth() {
   const config = useRuntimeConfig();
+  const { auth } = useApi();
 
-  // Improved header forwarding for SSR
-  const headers = import.meta.server
-    ? useRequestHeaders([
-        'cookie',
-        'authorization',
-        'user-agent',
-        'x-forwarded-for',
-        'x-forwarded-proto',
-      ])
-    : undefined;
-
+  // Keep better-auth client for other auth operations (sign in, sign up, etc.)
   const client = createAuthClient({
     baseURL: config.public.apiBase,
     basePath: '/v1/auth',
     fetchOptions: {
-      headers,
-      credentials: 'include', // Ensure cookies are included
+      credentials: 'include',
     },
   });
 
   // Use consistent state management across server and client
-  const session =
-    useState<InferSessionFromClient<BetterAuthClientOptions> | null>(
-      'auth:session',
-      () => null
-    );
+  const session = useState<any>('auth:session', () => null);
   const user = useState<User | null>('auth:user', () => null);
 
   // Fix sessionFetching state to prevent hydration mismatch
@@ -92,9 +74,18 @@ export function useAuth() {
     try {
       sessionFetching.value = true;
 
-      const { data } = await client.getSession();
+      // Use manual fetch instead of better-auth getSession
+      const response = await auth.getSession();
 
-      // Handle session data consistently
+      if (response.error) {
+        console.warn('Session fetch failed:', response.error);
+        // Clear session on auth error
+        session.value = null;
+        user.value = null;
+        return null;
+      }
+
+      const data = response.data;
       const newSession = data?.session || null;
       const newUser = data?.user || null;
 
@@ -116,10 +107,12 @@ export function useAuth() {
         user.value = newUser ? Object.assign({}, userDefault, newUser) : null;
       }
 
-      return data;
+      return { data };
     } catch (error) {
       console.warn('Session fetch failed:', error);
-      // Don't clear session on fetch error to prevent auth loops
+      // Clear session on unexpected error
+      session.value = null;
+      user.value = null;
       return null;
     } finally {
       sessionFetching.value = false;
@@ -127,11 +120,20 @@ export function useAuth() {
   };
 
   const handleSignOut = async () => {
-    clearApplicationStores();
-    session.value = null;
-    user.value = null;
-    await client.signOut();
-    await navigateTo('/login');
+    try {
+      clearApplicationStores();
+      session.value = null;
+      user.value = null;
+
+      // Use manual fetch for sign out
+      await auth.signOut();
+
+      await navigateTo('/login');
+    } catch (error) {
+      console.warn('Sign out failed:', error);
+      // Force navigate to login even if sign out fails
+      await navigateTo('/login');
+    }
   };
 
   return {

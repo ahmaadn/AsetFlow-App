@@ -43,6 +43,11 @@ const envSchema = z.object({
     .default('http://localhost:3000')
     .describe('CORS allowed origins'),
 
+  FRONTEND_URL: z
+    .string()
+    .default('http://localhost:3000')
+    .describe('Frontend URL for redirects'),
+
   // Database Configuration
   DATABASE_URL: z
     .url('DATABASE_URL must be a valid URL')

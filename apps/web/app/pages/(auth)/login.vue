@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const { client } = useAuth();
+const { auth } = useApi();
 const toast = useToast();
 const isLoading = ref(false);
 const config = useRuntimeConfig();
@@ -23,24 +24,28 @@ const { values, errors, handleSubmit } = useForm({
   onSubmit: async (values) => {
     if (isLoading.value) return;
     isLoading.value = true;
-    await client.signIn.email(
-      {
+
+    try {
+      // Use manual fetch for sign in
+      const response = await auth.signInWithEmail({
         email: values.email,
         password: values.password,
-        callbackURL: `${window.location.origin}/dashboard`,
-      },
-      {
-        onSuccess: () => {
-          toast.success('Login successful! Welcome back.');
-          navigateTo('/dashboard');
-        },
-        onError: (error) => {
-          console.error('Login error:', error);
-          toast.error('Login failed. Please check your credentials.');
-        },
+      });
+
+      if (response.error) {
+        console.error('Login error:', response.error);
+        toast.error('Login failed. Please check your credentials.');
+        return;
       }
-    );
-    isLoading.value = false;
+
+      toast.success('Login successful! Welcome back.');
+      await navigateTo('/dashboard');
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('Login failed. Please try again.');
+    } finally {
+      isLoading.value = false;
+    }
   },
 });
 

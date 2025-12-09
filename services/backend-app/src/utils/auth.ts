@@ -13,11 +13,16 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins: [
     'http://localhost:3000',
+    'https://localhost:3000',
     process.env.CORS_ORIGIN,
-    process.env.VERCEL_URL || 'http://localhost:8000',
+    process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:8000',
+    ...(process.env.NODE_ENV === 'production' ? ['https://*.vercel.app'] : []),
   ],
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // Update session daily
   },
   advanced: {
     cookies: {
@@ -26,12 +31,19 @@ export const auth = betterAuth({
         attributes: {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // Changed from 'none' to 'lax' for better compatibility
           path: '/',
           maxAge: 60 * 60 * 24 * 7, // 7 days
-          domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
+          domain:
+            process.env.NODE_ENV === 'production'
+              ? process.env.COOKIE_DOMAIN || undefined
+              : undefined,
         },
       },
+    },
+    crossSubDomainCookies: {
+      enabled: process.env.NODE_ENV === 'production',
+      domain: process.env.COOKIE_DOMAIN || undefined,
     },
   },
   emailAndPassword: {

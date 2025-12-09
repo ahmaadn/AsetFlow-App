@@ -26,8 +26,9 @@ export default defineNuxtPlugin((nuxtApp) => {
         };
 
         // Ensure proper content type
-        if (!options.headers['content-type']) {
-          options.headers['content-type'] = 'application/json';
+        const headers = options.headers as Record<string, string>;
+        if (!headers['content-type']) {
+          headers['content-type'] = 'application/json';
         }
       }
     },

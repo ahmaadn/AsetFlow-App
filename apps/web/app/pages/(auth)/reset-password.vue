@@ -9,6 +9,7 @@ const route = useRoute();
 const toast = useToast();
 const isLoading = ref(false);
 const { client } = useAuth();
+const { auth } = useApi();
 const token = route.query.token as string;
 
 // Redirect to forgot password if no token
@@ -45,26 +46,32 @@ const { values, errors, handleSubmit } = useForm({
   onSubmit: async (values) => {
     if (isLoading.value) return;
 
-    await client.resetPassword({
-      newPassword: values.password,
-      token,
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success(
-            'Password has been successfully reset! You can now login with your new password.'
-          );
-          navigateTo('/login');
-          isLoading.value = false;
-        },
-        onError: (error) => {
-          console.error('Reset password error:', error);
-          toast.error(
-            'Failed to reset password. The link may be expired or invalid.'
-          );
-          isLoading.value = false;
-        },
-      },
-    });
+    isLoading.value = true;
+
+    try {
+      // Use manual fetch for reset password
+      const response = await auth.resetPassword(token, values.password);
+
+      if (response.error) {
+        console.error('Reset password error:', response.error);
+        toast.error(
+          'Failed to reset password. The link may be expired or invalid.'
+        );
+        return;
+      }
+
+      toast.success(
+        'Password has been successfully reset! You can now login with your new password.'
+      );
+      await navigateTo('/login');
+    } catch (error) {
+      console.error('Reset password error:', error);
+      toast.error(
+        'Failed to reset password. The link may be expired or invalid.'
+      );
+    } finally {
+      isLoading.value = false;
+    }
   },
 });
 

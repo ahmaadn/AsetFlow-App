@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const { client } = useAuth();
+const { auth } = useApi();
 const toast = useToast();
 const isLoading = ref(false);
 
@@ -22,12 +23,19 @@ const { values, errors, handleSubmit } = useForm({
 
     isLoading.value = true;
     try {
-      await client.signUp.email({
+      // Use manual fetch for sign up
+      const response = await auth.signUpWithEmail({
         name: values.name,
         email: values.email,
         password: values.password,
-        callbackURL: `${window.location.origin}/login`,
       });
+
+      if (response.error) {
+        console.error('Registration error:', response.error);
+        toast.error('Registration failed. Please try again.');
+        return;
+      }
+
       toast.success('Registration successful! Please sign in to continue.');
       await navigateTo('/login');
     } catch (error) {

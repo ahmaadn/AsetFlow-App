@@ -13,6 +13,7 @@ interface ResendState {
 const toast = useToast();
 const isLoading = ref(false);
 const { client } = useAuth();
+const { auth } = useApi();
 
 const RESEND_COOLDOWN = 60;
 const resendCooldown = ref(0);
@@ -103,32 +104,30 @@ const sendPasswordReset = async (email: string) => {
 
   isLoading.value = true;
 
-  const baseURL = import.meta.client
-    ? window.location.origin
-    : useRequestURL().origin;
+  try {
+    // Use manual fetch for forgot password
+    const response = await auth.forgotPassword(email);
 
-  await client.requestPasswordReset({
-    email: email,
-    redirectTo: `${baseURL}/reset-password`,
-    fetchOptions: {
-      onSuccess: () => {
-        toast.success(
-          'Password reset link has been sent to your email address.'
-        );
+    if (response.error) {
+      console.error('Forgot password error:', response.error);
+      toast.error('Failed to send password reset email. Please try again.');
+      return;
+    }
 
-        // Start global cooldown timer
-        resendCooldown.value = RESEND_COOLDOWN;
-        lastEmailSent.value = email;
-        saveCooldownState(email);
-        startCountdown();
-      },
-      onError: (error) => {
-        console.error('Forgot password error:', error);
-        toast.error('Failed to send reset link. Please try again.');
-        isLoading.value = false;
-      },
-    },
-  });
+    toast.success(
+      'Password reset link has been sent to your email address.'
+    );
+
+    lastEmailSent.value = email;
+    saveCooldownState(email);
+    startCountdown();
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    toast.error('Failed to send reset link. Please try again.');
+  } finally {
+    isLoading.value = false;
+  }
+};
 };
 
 const { values, errors, handleSubmit } = useForm({
