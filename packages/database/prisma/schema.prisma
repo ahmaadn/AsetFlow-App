@@ -13,71 +13,69 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
-  id            String   @id
-  name          String   @map("name")
-  email         String   @unique @map("email")
-  emailVerified Boolean  @default(false) @map("email_verified")
-  image         String?  @map("image")
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id            String    @id @default(uuid())
+  name          String    @map("name")
+  email         String    @unique @map("email")
+  emailVerified Boolean   @default(false) @map("email_verified")
+  role          UserRole  @default(USER) @map("role")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  verifiedAt    DateTime? @map("verified_at") @db.Timestamptz(6)
+  password      String?   @map("password")
 
-  // Auth relations
-  sessions Session[]
-  accounts Account[]
+  refreshTokens RefreshToken[]
+  folders       Folder[]
+  assets        Asset[]
 
-  // Application relations
-  folders Folder[]
-  assets  Asset[]
-
+  @@index([email])
+  @@index([createdAt])
   @@map("users")
 }
 
-model Session {
-  id        String   @id
-  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
-  token     String   @map("token")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  ipAddress String?  @map("ip_address")
-  userAgent String?  @map("user_agent")
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @map("token")
+  isRevoked Boolean   @default(false) @map("is_revoked")
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  userAgent String?   @map("user_agent")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@unique([token])
+  @@index([token])
   @@index([userId])
-  @@map("sessions")
+  @@index([expiresAt])
+  @@map("refresh_tokens")
 }
 
-model Account {
-  id                    String    @id
-  accountId             String    @map("account_id")
-  providerId            String    @map("provider_id")
-  userId                String    @map("user_id")
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?   @map("access_token")
-  refreshToken          String?   @map("refresh_token")
-  idToken               String?   @map("id_token")
-  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
-  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
-  scope                 String?   @map("scope")
-  password              String?   @map("password")
-  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([userId])
-  @@map("accounts")
+enum VerificationType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
 }
 
 model Verification {
-  id         String   @id
-  identifier String   @map("identifier")
-  value      String   @map("value")
-  expiresAt  DateTime @map("expires_at") @db.Timestamptz(6)
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id        String           @id @default(uuid())
+  type      VerificationType
+  userId    String
+  email     String
+  token     String           @unique
+  expiresAt DateTime
+  isUsed    Boolean          @default(false)
+  usedAt    DateTime?        @db.Timestamptz(6)
+  createdAt DateTime         @default(now()) @db.Timestamptz(6)
 
-  @@index([identifier])
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
   @@map("verifications")
 }
 
