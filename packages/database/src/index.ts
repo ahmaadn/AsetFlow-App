@@ -1,4 +1,4 @@
-export { Prisma } from '@prisma/client';
+export { Prisma } from '../prisma/generated/client';
 export { prisma } from './client';
 export {
   isPrismaConflictError,

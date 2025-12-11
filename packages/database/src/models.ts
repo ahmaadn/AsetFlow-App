@@ -8,7 +8,7 @@ import type {
   Session,
   User,
   Verification,
-} from '@prisma/client';
+} from '../prisma/generated/client';
 
 export type UserModel = User;
 export type SessionModel = Session;
