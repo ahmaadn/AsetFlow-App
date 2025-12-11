@@ -5,7 +5,7 @@ definePageMeta({
   layout: 'auth',
 });
 
-const client = useAuthClient();
+const auth = useAuthStore();
 const toast = useToast();
 const isLoading = ref(false);
 
@@ -22,19 +22,17 @@ const { values, errors, handleSubmit } = useForm({
 
     isLoading.value = true;
     try {
-      await client.signUp.email({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        callbackURL: `${window.location.origin}/login`,
-      });
-      toast.success('Registration successful! Please sign in to continue.');
-      await navigateTo('/login');
-    } catch (error) {
-      console.error('Registration error:', error);
-      toast.error('Registration failed. Please try again.');
-    } finally {
+      await auth.signUpWithEmailAndPassword(
+        values.name,
+        values.email,
+        values.password
+      );
       isLoading.value = false;
+      toast.success('Registration successful! Redirecting to dashboard...');
+      await navigateTo('/dashboard');
+    } catch (error) {
+      isLoading.value = false;
+      toast.error('Registration failed. Please try again.');
     }
   },
 });

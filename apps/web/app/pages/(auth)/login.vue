@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { loginSchema } from '@asetflow/validators';
+import { any } from 'zod';
 
 definePageMeta({
   layout: 'auth',
 });
 
+const auth = useAuthStore();
 const client = useAuthClient();
 const toast = useToast();
 const isLoading = ref(false);
@@ -22,25 +24,16 @@ const { values, errors, handleSubmit } = useForm({
   validationSchema: loginSchema,
   onSubmit: async (values) => {
     if (isLoading.value) return;
-    isLoading.value = true;
-    await client.signIn.email(
-      {
-        email: values.email,
-        password: values.password,
-        callbackURL: `${window.location.origin}/dashboard`,
-      },
-      {
-        onSuccess: () => {
-          toast.success('Login successful! Welcome back.');
-          navigateTo('/dashboard');
-        },
-        onError: (error) => {
-          console.error('Login error:', error);
-          toast.error('Login failed. Please check your credentials.');
-        },
-      }
-    );
-    isLoading.value = false;
+    try {
+      isLoading.value = true;
+      await auth.loginWithEmailAndPassword(values.email, values.password);
+      isLoading.value = false;
+      toast.success('Login successful! Redirecting to dashboard...');
+      await navigateTo('/dashboard');
+    } catch (error) {
+      isLoading.value = false;
+      toast.error('Login failed. Please check your credentials and try again.');
+    }
   },
 });
 
