@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { loginSchema } from '@asetflow/validators';
-import { any } from 'zod';
 
 definePageMeta({
   layout: 'auth',
