@@ -52,7 +52,7 @@ export default defineNuxtRouteMiddleware((to) => {
     return;
   }
 
-  const auth = useAuthStore();
+  const auth = useAuthStore(useNuxtApp().$pinia);
 
   if (!auth.isAuthenticated) {
     // Allow unauthenticated users to access public routes
