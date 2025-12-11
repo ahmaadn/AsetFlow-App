@@ -1,3 +1,9 @@
+<script setup lang="ts">
+const auth = useAuthStore();
+
+await auth.getSession();
+</script>
+
 <template>
   <div>
     <div class="main-content relative">

@@ -45,7 +45,6 @@ const DEFAULT_AUTHENTICATED_REDIRECT: string = '/dashboard';
  */
 export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuthStore(useNuxtApp().$pinia);
-  await auth.getSession();
 
   // Allow access to public routes, except auth routes for authenticated users
   if (
