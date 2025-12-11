@@ -45,15 +45,10 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model Session
+ * Model RefreshToken
  * 
  */
-export type Session = Prisma.SessionModel
-/**
- * Model Account
- * 
- */
-export type Account = Prisma.AccountModel
+export type RefreshToken = Prisma.RefreshTokenModel
 /**
  * Model Verification
  * 

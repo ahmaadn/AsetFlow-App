@@ -52,8 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Session: 'Session',
-  Account: 'Account',
+  RefreshToken: 'RefreshToken',
   Verification: 'Verification',
   Tag: 'Tag',
   Folder: 'Folder',
@@ -83,54 +82,41 @@ export const UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   emailVerified: 'emailVerified',
-  image: 'image',
+  role: 'role',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  verifiedAt: 'verifiedAt',
+  password: 'password'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const SessionScalarFieldEnum = {
+export const RefreshTokenScalarFieldEnum = {
   id: 'id',
-  expiresAt: 'expiresAt',
-  token: 'token',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  ipAddress: 'ipAddress',
-  userAgent: 'userAgent',
-  userId: 'userId'
-} as const
-
-export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
-
-
-export const AccountScalarFieldEnum = {
-  id: 'id',
-  accountId: 'accountId',
-  providerId: 'providerId',
   userId: 'userId',
-  accessToken: 'accessToken',
-  refreshToken: 'refreshToken',
-  idToken: 'idToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  password: 'password',
+  token: 'token',
+  isRevoked: 'isRevoked',
+  revokedAt: 'revokedAt',
+  expiresAt: 'expiresAt',
+  userAgent: 'userAgent',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
+export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
 export const VerificationScalarFieldEnum = {
   id: 'id',
-  identifier: 'identifier',
-  value: 'value',
+  type: 'type',
+  userId: 'userId',
+  email: 'email',
+  token: 'token',
   expiresAt: 'expiresAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  isUsed: 'isUsed',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
 } as const
 
 export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]

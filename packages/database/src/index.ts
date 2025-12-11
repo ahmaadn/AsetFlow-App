@@ -16,10 +16,8 @@ export {
 export type {
   AssetModel,
   FolderModel,
-  SessionModel,
   TagModel,
   UserModel,
-  AccountModel,
   AssetTagModel,
   FolderTagModel,
   VerificationModel,
