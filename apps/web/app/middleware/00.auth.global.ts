@@ -43,7 +43,7 @@ const DEFAULT_AUTHENTICATED_REDIRECT: string = '/dashboard';
  * This middleware runs automatically on all route changes.
  * No manual setup required.
  */
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   // Allow access to public routes, except auth routes for authenticated users
   if (
     PUBLIC_ROUTES.includes(to.fullPath) &&
