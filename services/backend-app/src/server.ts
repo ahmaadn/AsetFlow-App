@@ -1,36 +1,5 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-import dotenv from 'dotenv';
-
-// Get __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-console.log(`[CONFIG] NODE_ENV saat ini: ${process.env.NODE_ENV}`);
-
-let envPath = path.resolve(__dirname, '../.env');
-if (process.env.NODE_ENV === 'production') {
-  console.log('[CONFIG] Mode produksi terdeteksi, memuat .env.prod...');
-  envPath = path.resolve(__dirname, '../.env.prod');
-} else {
-  console.log('[CONFIG] Mode development, memuat .env...');
-}
-
-const result = dotenv.config({ path: envPath });
-
-if (result.error) {
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn(`[WARN] Tidak dapat memuat file env dari: ${envPath}`);
-  }
-}
-
-console.log(`[CONFIG] Port dimuat: ${process.env.PORT}`);
-
-const PORT = process.env.PORT || 3000;
-
-// Import app setelah mengatur dotenv
 import { app } from './app.js';
+import { PORT } from './configs/env.config.js';
 import logger from './utils/logger.js';
 
 if (process.env.NODE_ENV === 'development') {
