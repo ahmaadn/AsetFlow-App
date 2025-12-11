@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "db:generate": "prisma generate && npm run build",
+    "db:generate": "prisma generate && pnpm build",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
