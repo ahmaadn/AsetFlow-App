@@ -1,4 +1,5 @@
 <script setup lang="ts">
-const { handleSignOut } = useAuth();
-await handleSignOut();
+const auth = useAuthStore();
+await auth.signOut();
+await navigateTo('/login');
 </script>

@@ -1,5 +1,3 @@
-import type { RouteLocationNormalizedGeneric } from 'vue-router';
-
 /**
  * Public routes that don't require authentication.
  * These routes are accessible to both authenticated and unauthenticated users.
@@ -7,6 +5,7 @@ import type { RouteLocationNormalizedGeneric } from 'vue-router';
 const PUBLIC_ROUTES: string[] = [
   '/login',
   '/register',
+  '/logout',
   '/forgot-password',
   '/reset-password',
   '/404',
@@ -17,35 +16,17 @@ const PUBLIC_ROUTES: string[] = [
  * Authentication routes that authenticated users shouldn't access.
  * These routes are only for unauthenticated users.
  */
-const AUTH_ROUTES: string[] = ['/login', '/register'] as const;
+const AUTH_ROUTES: string[] = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+] as const;
 
 /**
  * Default redirect path for authenticated users.
  */
 const DEFAULT_AUTHENTICATED_REDIRECT: string = '/dashboard';
-
-/**
- * Determines the best redirect path for authenticated users trying to access auth pages.
- *
- * @param from - The route user came from
- * @returns {string} The redirect path
- */
-function getAuthenticatedRedirectPath(
-  from: RouteLocationNormalizedGeneric
-): string {
-  // If user came from a valid non-auth route, redirect back there
-  if (
-    from?.fullPath &&
-    from.fullPath !== '/login' &&
-    from.fullPath !== '/register' &&
-    !PUBLIC_ROUTES.includes(from.fullPath)
-  ) {
-    return from.fullPath;
-  }
-
-  // Otherwise redirect to dashboard
-  return DEFAULT_AUTHENTICATED_REDIRECT;
-}
 
 /**
  * Global authentication middleware.
@@ -62,36 +43,32 @@ function getAuthenticatedRedirectPath(
  * This middleware runs automatically on all route changes.
  * No manual setup required.
  */
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  const auth = useAuth();
-
-  try {
-    await auth.fetchSession();
-
-    if (auth.isAuthenticated.value) {
-      if (AUTH_ROUTES.includes(to.path)) {
-        const redirectPath = getAuthenticatedRedirectPath(from);
-        return navigateTo(redirectPath, { replace: true });
-      }
-
-      return;
-    }
-
-    // Allow access to public routes
-    if (PUBLIC_ROUTES.includes(to.path)) {
-      return;
-    }
-
-    // Redirect unauthenticated users to login for protected routes
-    return navigateTo('/login', { replace: true });
-  } catch (error) {
-    console.error(
-      `Authentication middleware failed during session fetch or auth check for route "${to.path}".`,
-      error
-    );
-    // Only redirect to login if not already on a public route
-    if (!PUBLIC_ROUTES.includes(to.path)) {
-      return navigateTo('/login', { replace: true });
-    }
+export default defineNuxtRouteMiddleware((to) => {
+  // Allow access to public routes, except auth routes for authenticated users
+  if (
+    PUBLIC_ROUTES.includes(to.fullPath) &&
+    !AUTH_ROUTES.includes(to.fullPath)
+  ) {
+    return;
   }
+
+  const auth = useAuthStore();
+
+  if (!auth.isAuthenticated) {
+    // Allow unauthenticated users to access public routes
+    if (
+      PUBLIC_ROUTES.includes(to.fullPath) ||
+      AUTH_ROUTES.includes(to.fullPath)
+    ) {
+      return;
+    }
+
+    return navigateTo('/login', { replace: true });
+  }
+
+  // Redirect authenticated users away from auth routes
+  if (AUTH_ROUTES.includes(to.fullPath)) {
+    return navigateTo(DEFAULT_AUTHENTICATED_REDIRECT, { replace: true });
+  }
+  return;
 });

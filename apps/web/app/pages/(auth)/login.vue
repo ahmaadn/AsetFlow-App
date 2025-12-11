@@ -5,7 +5,7 @@ definePageMeta({
   layout: 'auth',
 });
 
-const { client } = useAuth();
+const client = useAuthClient();
 const toast = useToast();
 const isLoading = ref(false);
 const config = useRuntimeConfig();

@@ -6,7 +6,7 @@ defineProps<{
 }>();
 
 const router = useRouter();
-const auth = useAuth();
+const auth = useAuthStore();
 
 const getErrorConfig = (statusCode: number) => {
   const configs: Record<
@@ -80,7 +80,7 @@ const handleError = (error: NuxtError) => {
 };
 
 const goHome = () => {
-  if (!auth.isAuthenticated.value) {
+  if (!auth.isAuthenticated) {
     router.push('/login');
     return;
   }
@@ -155,7 +155,7 @@ const reloadPage = () => {
 
           <!-- Action Buttons -->
           <div
-            v-if="auth.isAuthenticated.value"
+            v-if="auth.isAuthenticated"
             class="flex flex-wrap gap-3 justify-center w-full"
           >
             <button class="btn btn-primary" @click="goHome">

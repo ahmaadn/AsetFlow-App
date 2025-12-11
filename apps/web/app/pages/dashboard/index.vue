@@ -5,7 +5,7 @@ definePageMeta({
   layout: 'dashboard',
 });
 
-const auth = useAuth();
+const auth = useAuthStore();
 const { statistics } = useApi();
 
 // State
@@ -15,13 +15,13 @@ const isLoading = ref(true);
 // Get user name from auth with fallback
 const userName = computed(() => {
   // Wait for auth to be ready before showing user name
-  if (!auth.user.value) return 'Loading...';
+  if (!auth.currentUser) return 'Loading...';
 
-  if (auth.user.value?.email) {
-    return auth.user.value.email.split('@')[0];
+  if (auth.currentUser?.email) {
+    return auth.currentUser.email.split('@')[0];
   }
-  if (auth.user.value?.name) {
-    return auth.user.value.name;
+  if (auth.currentUser?.name) {
+    return auth.currentUser.name;
   }
   return 'User';
 });
@@ -39,17 +39,10 @@ const loadDashboardData = async () => {
   }
 };
 
-// Wait for authentication to be ready before loading dashboard data
-watchEffect(async () => {
-  if (auth.isAuthenticated.value && auth.user.value) {
-    await loadDashboardData();
-  }
-});
-
 // Fallback for mounted hook
 onMounted(async () => {
   // Only load if auth is ready
-  if (auth.isAuthenticated.value) {
+  if (auth.isAuthenticated) {
     await loadDashboardData();
   }
 });

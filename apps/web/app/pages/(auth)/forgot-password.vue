@@ -12,7 +12,7 @@ interface ResendState {
 
 const toast = useToast();
 const isLoading = ref(false);
-const { client } = useAuth();
+const client = useAuthClient();
 
 const RESEND_COOLDOWN = 60;
 const resendCooldown = ref(0);

@@ -8,7 +8,7 @@ definePageMeta({
 const route = useRoute();
 const toast = useToast();
 const isLoading = ref(false);
-const { client } = useAuth();
+const client = useAuthClient();
 const token = route.query.token as string;
 
 // Redirect to forgot password if no token

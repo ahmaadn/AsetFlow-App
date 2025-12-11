@@ -1,32 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(async () => {
   const config = useRuntimeConfig();
 
-  // Get headers once at plugin initialization time
-  const ssrHeaders = import.meta.server
-    ? useRequestHeaders([
-        'cookie',
-        'authorization',
-        'user-agent',
-        'x-forwarded-for',
-        'x-forwarded-proto',
-        'x-real-ip',
-      ])
-    : {};
+  await useAuthStore().getSession();
+  const cookieString = useRequestHeader('cookie');
 
   const api = $fetch.create({
-    baseURL: import.meta.server
-      ? config.apiBaseServer || 'http://localhost:8000'
-      : config.public.apiBase || 'http://localhost:8000',
+    baseURL: import.meta.server ? config.apiBaseServer : config.public.apiBase,
     credentials: 'include',
 
     onRequest({ options }) {
-      if (import.meta.server) {
-        // Use pre-captured headers instead of calling useRequestHeaders
-        options.headers = {
-          ...options.headers,
-          ...ssrHeaders,
-        };
+      const headers = options.headers as Headers;
+
+      if (cookieString) {
+        headers.set('cookie', cookieString);
       }
     },
 
