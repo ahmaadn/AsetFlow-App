@@ -29,7 +29,7 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
-    "dayjs": "^1.11.19"
+    "jose": "^6.1.3"
   },
   "devDependencies": {
     "@asetflow/typescript-config": "workspace:*",
