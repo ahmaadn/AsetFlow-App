@@ -21,6 +21,7 @@
     "@asetflow/validators": "workspace:*",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.8.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
@@ -36,6 +37,8 @@
   "devDependencies": {
     "@asetflow/shared-types": "workspace:*",
     "@asetflow/typescript-config": "workspace:*",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/multer": "^2.0.0",
