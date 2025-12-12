@@ -13,12 +13,4 @@ export {
   isPrismaNotFoundError,
   isPrismaValidationError,
 } from './helper';
-export type {
-  AssetModel,
-  FolderModel,
-  TagModel,
-  UserModel,
-  AssetTagModel,
-  FolderTagModel,
-  VerificationModel,
-} from './models';
+export type * from './models';

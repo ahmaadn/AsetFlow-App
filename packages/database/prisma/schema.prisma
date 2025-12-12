@@ -27,7 +27,7 @@ model User {
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   verifiedAt    DateTime? @map("verified_at") @db.Timestamptz(6)
-  password      String?   @map("password")
+  password      String    @map("password")
 
   refreshTokens RefreshToken[]
   folders       Folder[]
