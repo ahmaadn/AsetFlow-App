@@ -6,7 +6,11 @@ import { refreshTokenRepository } from '../repositories/refresh-token.repository
 import { userRepository } from '../repositories/user.repository.js';
 import { AuthService } from '../services/auth.service.js';
 import { AuthTokenService } from '../services/token.service.js';
-import { ForbiddenError, UnauthorizedError } from '../utils/api-error.js';
+import {
+  ForbiddenError,
+  InternalServerError,
+  UnauthorizedError,
+} from '../utils/api-error.js';
 
 export class AuthController {
   public authServive: AuthService;
@@ -96,7 +100,7 @@ export class AuthController {
   /**
    * User logout (revoke refresh token)
    */
-  async logout(req: Request, res: Response): Promise<void> {
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
 
@@ -105,19 +109,16 @@ export class AuthController {
       }
 
       // Clear refresh token cookie
-      res.clearCookie('refreshToken');
+      // for now we dont implement cookie
+      // res.clearCookie('refreshToken');
 
       res.status(200).json({
         success: true,
         message: 'Logout successful',
       });
     } catch (error) {
-      console.error('Logout error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-      });
+      // handle error by middleware
+      next(error);
     }
   }
 

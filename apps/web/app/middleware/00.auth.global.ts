@@ -86,13 +86,3 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   }
   return;
 });
-
-// jika public biarkan
-// jika adaa refresh token dan tidak ada access token coba refresh
-// jika access token expired coba refresh
-//     - jika error redirect ke logout kalo menuju halaman protected
-//     - jika error tapi menuju halaman logout tapi redirect auth biatkan
-//     - jika error tapi menuju halaman public biarkan
-// jika tidak ada refresh token, dan menuju halaman protected redirect ke login
-//    - jika menuju halaman auth redirect ke dashboard
-//    - jika menuju halaman public biarkan

@@ -109,6 +109,18 @@ export function useAuth() {
     return data.value;
   };
 
+  const logout = () => {
+    clearTokens();
+    const { data, error } = useFetchAPI('/v1/auth/logout', {
+      method: 'POST',
+      body: {
+        refreshToken: refreshToken.value,
+      },
+    });
+    // ignore errors on logout
+    return { data, error };
+  };
+
   return {
     accessToken,
     refreshToken,
@@ -122,5 +134,6 @@ export function useAuth() {
     setTokens,
     clearTokens,
     refresh,
+    logout,
   };
 }
