@@ -1,3 +1,4 @@
+import { ErrorCode } from '@asetflow/shared';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { type Response, Express } from 'express';
@@ -7,8 +8,6 @@ import { errorHandler } from './middleware/error-handler.middleware.js';
 import { requestLogger } from './middleware/request-logger.middleware.js';
 import routes from './routes/index.js';
 import { setupSwaggerDocs } from './swagger.js';
-import { ErrorCode } from './utils/error-code.js';
-
 export const app: Express = express();
 
 app.use(

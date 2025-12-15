@@ -2,12 +2,12 @@ import { httpUpload } from '@asetflow/validators';
 import { Router } from 'express';
 
 import * as UploadController from '../controllers/upload.controller.js';
-import { betterAuthProtect } from '../middleware/auth.middleware.js';
+import { authenticateUserWithRoles } from '../middleware/auth.middleware.js';
 import { uploadMiddleware } from '../middleware/muler.middleware.js';
 import { validate } from '../middleware/validation.middleware.js';
 
 const router: Router = Router();
-router.use(betterAuthProtect);
+router.use(authenticateUserWithRoles(['ADMIN', 'USER']));
 
 /**
  * @swagger

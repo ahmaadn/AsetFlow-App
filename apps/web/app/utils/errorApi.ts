@@ -1,3 +1,5 @@
+import { FetchError } from 'ofetch';
+
 export const returnErrorMessage = (errorCode: string): string => {
   if (typeof errorCode !== 'string') {
     return 'Unknown error';
@@ -11,3 +13,7 @@ export const returnErrorMessage = (errorCode: string): string => {
   }
   return 'An unexpected error occurred.';
 };
+
+export function isFetchError<T>(error: any): error is FetchError<T> {
+  return error instanceof FetchError;
+}

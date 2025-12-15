@@ -49,7 +49,7 @@ export async function signJWT<T extends jose.JWTPayload>({
  * @returns Decoded payload
  */
 export function decodeJWT<T>(token: string): T {
-  const { payload } = jose.decodeJwt(token);
+  const payload = jose.decodeJwt(token);
   return payload as T;
 }
 
@@ -70,26 +70,54 @@ export async function isValidJWT(token: string): Promise<boolean> {
 }
 
 /**
- * Verify JWT token
+ * Verify JWT token, use this for backend verification
+ * @param param0 Token details
  * @returns Payload if valid, otherwise false
  */
 export async function verifyJWT<T>({
   publicKey,
   token,
-  expectedIssuer,
-  expectedAudience,
+  expectedIssuer = DEFAULT_ISS,
+  expectedAudience = DEFAULT_AUD,
   alg = ALGORITM,
 }: TokenDetails): Promise<T | false> {
-  // Check signature and standard claims
-  const key = await jose.importSPKI(publicKey, alg);
-  const { payload } = await jose.jwtVerify(token, key, {
-    issuer: expectedIssuer,
-    audience: expectedAudience,
-  });
+  try {
+    // Check signature and standard claims
+    const key = await jose.importSPKI(publicKey, alg);
+    const { payload } = await jose.jwtVerify(token, key, {
+      issuer: expectedIssuer,
+      audience: expectedAudience,
+    });
 
-  // Check expiration
-  const { exp } = payload;
-  if (!exp) return false;
-  const now = Math.floor(Date.now() / 1000);
-  return exp > now ? (payload as T) : false;
+    return payload as T;
+  } catch (error) {
+    console.error('JWT verification failed', error);
+    return false;
+  }
+}
+
+/**
+ * Check if token is expired, based on exp claim
+ * @param token
+ * @returns
+ */
+export function isExpired(payload: string | jose.JWTPayload): boolean {
+  try {
+    // decodeJwt tidak memverifikasi signature, hanya membaca isi payload
+    let exp;
+    if (typeof payload === 'string') {
+      const data = decodeJWT<{ exp?: number }>(payload);
+      exp = data.exp;
+    } else {
+      exp = payload.exp;
+    }
+    if (!exp) {
+      return false; // Jika tidak ada exp, diasumsikan tidak expired
+    }
+    const currentTime = Math.floor(Date.now() / 1000);
+    return exp < currentTime;
+  } catch (error) {
+    // Jika token malformed, anggap saja expired/invalid
+    return true;
+  }
 }

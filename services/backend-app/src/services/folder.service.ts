@@ -1,4 +1,5 @@
 import { type UserModel } from '@asetflow/database';
+import { ErrorCode } from '@asetflow/shared';
 import type {
   PaginationResult,
   FolderDetailResponse,
@@ -11,7 +12,6 @@ import type {
 
 import * as FolderRepository from '../repositories/folder.repository.js';
 import { BadRequestError, NotFoundError } from '../utils/api-error.js';
-import { ErrorCode } from '../utils/error-code.js';
 import logger from '../utils/logger.js';
 
 /**

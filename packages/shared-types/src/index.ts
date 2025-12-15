@@ -5,3 +5,4 @@ export * from './auth.types';
 export * from './asset.types';
 export * from './user.types';
 export * from './statistics.types';
+export * from './token.types';

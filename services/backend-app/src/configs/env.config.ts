@@ -48,16 +48,30 @@ const envSchema = z.object({
     .url('DATABASE_URL must be a valid URL')
     .describe('Database connection URL'),
 
-  // Better Auth Configuration
-  BETTER_AUTH_SECRET: z
+  // JWT Configuration
+  JWT_PRIVATE_KEY: z
     .string()
-    .min(32, 'BETTER_AUTH_SECRET must be at least 32 characters')
-    .describe('Better Auth secret key'),
+    .min(1, 'JWT_PRIVATE_KEY is required')
+    .describe('JWT RS256 private key'),
 
-  BETTER_AUTH_URL: z
-    .url('BETTER_AUTH_URL must be a valid URL')
-    .default('http://localhost:8000') // URL backend default
-    .describe('Better Auth base URL'),
+  JWT_PUBLIC_KEY: z
+    .string()
+    .min(1, 'JWT_PUBLIC_KEY is required')
+    .describe('JWT RS256 public key'),
+
+  JWT_ISSUER: z.string().default('asetflow-backend').describe('JWT issuer'),
+
+  JWT_AUDIENCE: z.string().default('asetflow-app').describe('JWT audience'),
+
+  JWT_ACCESS_TOKEN_EXPIRATION: z
+    .string()
+    .default('15m')
+    .describe('Access token expiration time'),
+
+  JWT_REFRESH_TOKEN_EXPIRATION: z
+    .string()
+    .default('7d')
+    .describe('Refresh token expiration time'),
 
   // Cloudinary Configuration
   CLOUDINARY_CLOUD_NAME: z

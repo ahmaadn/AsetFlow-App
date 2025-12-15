@@ -12,8 +12,6 @@ interface ResendState {
 
 const toast = useToast();
 const isLoading = ref(false);
-const { client } = useAuth();
-
 const RESEND_COOLDOWN = 60;
 const resendCooldown = ref(0);
 const canSend = computed(() => resendCooldown.value === 0 && !isLoading.value);
@@ -99,36 +97,33 @@ const forgotPasswordSchema = z.object({
 
 // Send password reset function
 const sendPasswordReset = async (email: string) => {
-  if (isLoading.value || !canSend.value) return;
-
-  isLoading.value = true;
-
-  const baseURL = import.meta.client
-    ? window.location.origin
-    : useRequestURL().origin;
-
-  await client.requestPasswordReset({
-    email: email,
-    redirectTo: `${baseURL}/reset-password`,
-    fetchOptions: {
-      onSuccess: () => {
-        toast.success(
-          'Password reset link has been sent to your email address.'
-        );
-
-        // Start global cooldown timer
-        resendCooldown.value = RESEND_COOLDOWN;
-        lastEmailSent.value = email;
-        saveCooldownState(email);
-        startCountdown();
-      },
-      onError: (error) => {
-        console.error('Forgot password error:', error);
-        toast.error('Failed to send reset link. Please try again.');
-        isLoading.value = false;
-      },
-    },
-  });
+  console.log('sendPasswordReset called with email:', email);
+  // if (isLoading.value || !canSend.value) return;
+  // isLoading.value = true;
+  // const baseURL = import.meta.client
+  //   ? window.location.origin
+  //   : useRequestURL().origin;
+  // await client.requestPasswordReset({
+  //   email: email,
+  //   redirectTo: `${baseURL}/reset-password`,
+  //   fetchOptions: {
+  //     onSuccess: () => {
+  //       toast.success(
+  //         'Password reset link has been sent to your email address.'
+  //       );
+  //       // Start global cooldown timer
+  //       resendCooldown.value = RESEND_COOLDOWN;
+  //       lastEmailSent.value = email;
+  //       saveCooldownState(email);
+  //       startCountdown();
+  //     },
+  //     onError: (error) => {
+  //       console.error('Forgot password error:', error);
+  //       toast.error('Failed to send reset link. Please try again.');
+  //       isLoading.value = false;
+  //     },
+  //   },
+  // });
 };
 
 const { values, errors, handleSubmit } = useForm({

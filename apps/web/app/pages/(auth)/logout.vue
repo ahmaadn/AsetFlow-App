@@ -1,4 +1,9 @@
 <script setup lang="ts">
-const { handleSignOut } = useAuth();
-await handleSignOut();
+const auth = useAuth();
+auth.setRefreshToken(null);
+auth.setAccessToken(null);
+await navigateTo('/login');
 </script>
+<template>
+  <p>Logging out...</p>
+</template>

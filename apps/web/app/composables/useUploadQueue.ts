@@ -21,6 +21,7 @@ export const useUploadQueue = () => {
   const config = useRuntimeConfig();
   const BASE_URL = config.public.apiBase as string;
   const VERSION = '/v1';
+  const { accessToken } = useAuth();
 
   const isUploading = computed(() =>
     queue.value.some((item) => item.status === 'uploading')
@@ -105,6 +106,7 @@ export const useUploadQueue = () => {
 
   const uploadFile = async (item: UploadQueueItem): Promise<void> => {
     const formData = new FormData();
+
     formData.append('file', item.file);
     formData.append('filename', item.filename);
     if (item.slug) {
@@ -158,6 +160,9 @@ export const useUploadQueue = () => {
       });
 
       xhr.open('POST', `${BASE_URL}${VERSION}${item.apiEndpoint}`);
+      if (accessToken.value) {
+        xhr.setRequestHeader('Authorization', `Bearer ${accessToken.value}`);
+      }
       xhr.send(formData);
     });
   };

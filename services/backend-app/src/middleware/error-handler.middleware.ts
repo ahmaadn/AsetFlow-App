@@ -3,10 +3,10 @@ import {
   PrismaClientKnownRequestError,
   PrismaClientUnknownRequestError,
 } from '@asetflow/database';
+import { ErrorCode } from '@asetflow/shared';
 import { NextFunction, Request, Response } from 'express';
 
 import { ApiError } from '../utils/api-error.js';
-import { ErrorCode } from '../utils/error-code.js';
 import logger from '../utils/logger.js';
 
 /**
