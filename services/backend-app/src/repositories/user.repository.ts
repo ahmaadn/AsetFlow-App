@@ -16,6 +16,8 @@ export interface IUserRepository {
   findByEmail(email: string): Promise<UserModel | null>;
 
   create(user: CreateUserDTO): Promise<UserModel>;
+
+  updatePassword(userId: string, newPassword: string): Promise<void>;
 }
 
 class UserRepository implements IUserRepository {
@@ -33,6 +35,13 @@ class UserRepository implements IUserRepository {
         password: user.password!,
         role: user.role || 'USER',
       },
+    });
+  }
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: newPassword },
     });
   }
 }

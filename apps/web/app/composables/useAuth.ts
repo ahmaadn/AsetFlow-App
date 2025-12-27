@@ -18,6 +18,7 @@ import { useFetchAPI } from './useApiFetch';
  */
 
 export function useAuth() {
+  // Cookies to store tokens securely
   const accessToken = useCookie<string | null>('auth.access_token', {
     secure: true,
     maxAge: 30 * 60, // 30 minutes
@@ -37,7 +38,6 @@ export function useAuth() {
   const setAccessToken = (token: string | null) => {
     accessToken.value = token;
 
-    // update user information based payload in the token
     if (!token) {
       user.value = null;
       return;

@@ -341,9 +341,12 @@ export class EmailService {
  * Should be called after environment variables are loaded
  * @returns New EmailService instance
  */
+
 export function createEmailService(): EmailService {
   return new EmailService();
 }
+
+export const emailService = createEmailService();
 
 export type {
   ForgotPasswordEmailData,

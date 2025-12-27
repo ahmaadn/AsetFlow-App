@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/error-handler.middleware.js';
 import { requestLogger } from './middleware/request-logger.middleware.js';
 import routes from './routes/index.js';
 import { setupSwaggerDocs } from './swagger.js';
+import { logger } from './configs/logger.config.js';
 export const app: Express = express();
 
 app.use(
@@ -33,6 +34,7 @@ app.use('/v1', routes);
 
 // Handler untuk route tidak ditemukan
 app.use((_req, res: Response) => {
+  logger.error('Route not found');
   res.status(404).send({
     message: 'Not Found',
     errorCode: ErrorCode.NOT_FOUND,

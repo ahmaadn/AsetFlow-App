@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { DashboardStatistics } from '@asetflow/shared-types';
-import { da } from 'zod/v4/locales';
 
 definePageMeta({
   layout: 'dashboard',

@@ -13,4 +13,4 @@ export {
   isPrismaNotFoundError,
   isPrismaValidationError,
 } from './helper';
-export type * from './models';
+export * from './models';

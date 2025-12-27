@@ -154,6 +154,52 @@ export class JWTService {
   isTokenExpired(payload: string | JWTPayload): boolean {
     return isExpired(payload);
   }
+
+  async generateVerificationToken(
+    type: string,
+    payload: {
+      userId: string;
+      email: string;
+    }
+  ): Promise<string> {
+    const jwtPayload = {
+      ...payload,
+      type,
+      iss: jwtConfig.issuer,
+      aud: jwtConfig.audience,
+    };
+
+    return await signJWT({
+      payload: jwtPayload,
+      privateKey: jwtConfig.privateKey,
+      exp: '1h', // Verification tokens expire in 1 hour
+      aud: jwtConfig.audience,
+      iss: jwtConfig.issuer,
+    });
+  }
+
+  async verifyVerificationToken(token: string, expectedType: string) {
+    try {
+      const payload = await verifyJWT<AccessTokenPayload>({
+        token,
+        publicKey: jwtConfig.publicKey,
+        expectedIssuer: jwtConfig.issuer,
+        expectedAudience: jwtConfig.audience,
+      });
+
+      logger.debug('Verified access token payload');
+
+      if (!payload || payload.type !== expectedType) {
+        logger.warn('Access token type mismatch or invalid payload');
+        return false;
+      }
+
+      return payload;
+    } catch (error) {
+      logger.error('Error verifying access token:', error);
+      return false;
+    }
+  }
 }
 
 // Export singleton instance

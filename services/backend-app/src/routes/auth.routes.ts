@@ -1,65 +1,54 @@
 import {
-  httpLoginValidation,
-  httpRegisterValidation,
+  httpForgetPasswordSchema,
+  httpLoginSchema,
+  httpRegisterSchema,
+  httpResetPasswordSchema,
 } from '@asetflow/validators';
 import { Router } from 'express';
 
+import { passwordController } from '../controllers/auth/password.controller.js';
 import { authController } from '../controllers/auth.controller.js';
 import { validate } from '../middleware/validation.middleware.js';
 
-const router: Router = Router();
-
 /**
- * @swagger
- * components:
- *   schemas:
- *     LoginRequest:
- *       type: object
- *       required:
- *         - email
- *         - password
- *       properties:
- *         email:
- *           type: string
- *           format: email
- *           description: User's email address
- *         password:
- *           type: string
- *           description: User's password
- *
- *     LoginResponse:
- *       type: object
- *       properties:
- *         success:
- *           type: boolean
- *         message:
- *           type: string
- *         data:
- *           type: object
- *           properties:
- *             accessToken:
- *               type: string
- *               description: JWT access token
- *             expiresIn:
- *               type: number
- *               description: Access token expiration in seconds
- *             user:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                 email:
- *                   type: string
- *                 role:
- *                   type: string
- *
- *     RefreshTokenRequest:
- *       type: object
- *       properties:
- *         refreshToken:
- *           type: string
- *           description: Refresh token (optional if sent via cookie)
+ * Function to create authentication routes.
+ * @returns
  */
+export function createAuthRoutes(): Router {
+  const router: Router = Router();
+
+  router.post(
+    '/login',
+    validate(httpLoginSchema),
+    authController.login.bind(authController)
+  );
+
+  router.post('/refresh', authController.refreshToken.bind(authController));
+
+  router.post('/logout', authController.logout.bind(authController));
+
+  router.post(
+    '/register',
+    validate(httpRegisterSchema),
+    authController.register.bind(authController)
+  );
+
+  router.post(
+    '/forget-password',
+    validate(httpForgetPasswordSchema),
+    passwordController.forgetPassword.bind(passwordController)
+  );
+
+  router.post(
+    '/reset-password',
+    validate(httpResetPasswordSchema),
+    passwordController.resetPassword.bind(passwordController)
+  );
+
+  return router;
+}
+
+export default createAuthRoutes;
 
 /**
  * @swagger
@@ -90,11 +79,6 @@ const router: Router = Router();
  *       401:
  *         description: Invalid credentials or email not verified
  */
-router.post(
-  '/login',
-  validate(httpLoginValidation),
-  authController.login.bind(authController)
-);
 
 /**
  * @swagger
@@ -131,7 +115,6 @@ router.post(
  *       401:
  *         description: Invalid or expired refresh token
  */
-router.post('/refresh', authController.refreshToken.bind(authController));
 
 /**
  * @swagger
@@ -152,12 +135,3 @@ router.post('/refresh', authController.refreshToken.bind(authController));
  *                 message:
  *                   type: string
  */
-router.post('/logout', authController.logout.bind(authController));
-
-router.post(
-  '/register',
-  validate(httpRegisterValidation),
-  authController.register.bind(authController)
-);
-
-export default router;

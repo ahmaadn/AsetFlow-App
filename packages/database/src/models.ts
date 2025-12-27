@@ -8,8 +8,8 @@ import type {
   Verification,
   UserRole,
   RefreshToken,
-  VerificationType,
 } from '../prisma/generated/client';
+import { VerificationType } from '../prisma/generated/client';
 
 export type UserModel = User;
 export type TagModel = Tag;
@@ -21,4 +21,5 @@ export type VerificationModel = Verification;
 
 export type RefreshTokenModel = RefreshToken;
 
-export type { UserRole, VerificationType };
+export type { UserRole };
+export { VerificationType };

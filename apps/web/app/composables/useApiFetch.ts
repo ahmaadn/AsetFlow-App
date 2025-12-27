@@ -1,6 +1,6 @@
-import { ErrorCode, type ApiErrorResponse } from '@asetflow/shared';
+import { ErrorCode } from '@asetflow/shared';
 import type { UseFetchOptions } from 'nuxt/app';
-import type { FetchError } from 'ofetch';
+// import type { FetchError } from 'ofetch';
 
 export function useFetchAPI<T>(
   url: string | (() => string),
@@ -34,7 +34,6 @@ export function useSecureFetchAPI<T>(
             ...fetchOptions,
             headers: {
               ...fetchOptions.headers,
-              // Include updated auth headers if needed
             },
           });
         } catch (error) {

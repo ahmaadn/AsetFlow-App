@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { z } from 'zod';
+import { passwordValidationSchema } from '@asetflow/validators';
 
 definePageMeta({
   layout: 'auth',
@@ -8,7 +8,7 @@ definePageMeta({
 const route = useRoute();
 const toast = useToast();
 const isLoading = ref(false);
-const { client } = useAuth();
+const { auth: authService } = useApi();
 const token = route.query.token as string;
 
 // Redirect to forgot password if no token
@@ -20,51 +20,31 @@ if (!token) {
   });
 }
 
-// Schema for reset password form
-const resetPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(8, { message: 'Password must be at least 8 characters long' })
-      .max(128, { message: 'Password must be at most 128 characters long' }),
-    confirmPassword: z.string().min(8, {
-      message: 'Confirm password must be at least 8 characters long',
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
 const { values, errors, handleSubmit } = useForm({
   initialValues: {
     password: '',
     confirmPassword: '',
   },
-  validationSchema: resetPasswordSchema,
+  validationSchema: passwordValidationSchema,
   onSubmit: async (values) => {
     if (isLoading.value) return;
-
-    await client.resetPassword({
-      newPassword: values.password,
-      token,
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success(
-            'Password has been successfully reset! You can now login with your new password.'
-          );
-          navigateTo('/login');
-          isLoading.value = false;
-        },
-        onError: (error) => {
-          console.error('Reset password error:', error);
-          toast.error(
-            'Failed to reset password. The link may be expired or invalid.'
-          );
-          isLoading.value = false;
-        },
-      },
-    });
+    try {
+      await authService.resetPassword({
+        newPassword: values.password,
+        token,
+      });
+      toast.success(
+        'Password has been successfully reset! You can now login with your new password.'
+      );
+      navigateTo('/login');
+    } catch (error) {
+      console.error('Reset password error:', error);
+      toast.error(
+        'Failed to reset password. The link may be expired or invalid.'
+      );
+    } finally {
+      isLoading.value = false;
+    }
   },
 });
 

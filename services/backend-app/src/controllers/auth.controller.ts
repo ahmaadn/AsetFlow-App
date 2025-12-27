@@ -6,11 +6,7 @@ import { refreshTokenRepository } from '../repositories/refresh-token.repository
 import { userRepository } from '../repositories/user.repository.js';
 import { AuthService } from '../services/auth.service.js';
 import { AuthTokenService } from '../services/token.service.js';
-import {
-  ForbiddenError,
-  InternalServerError,
-  UnauthorizedError,
-} from '../utils/api-error.js';
+import { ForbiddenError, UnauthorizedError } from '../utils/api-error.js';
 
 export class AuthController {
   public authServive: AuthService;
