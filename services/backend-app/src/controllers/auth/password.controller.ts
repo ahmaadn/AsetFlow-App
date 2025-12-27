@@ -1,10 +1,10 @@
-import type { RequestForgetPasswordInput } from '@asetflow/validators';
+import type { forgetPasswordInput } from '@asetflow/validators';
 import type { NextFunction, Request, Response } from 'express';
 
+import { logger } from '../../configs/logger.config.js';
 import { userRepository } from '../../repositories/user.repository.js';
 import { verificationRepository } from '../../repositories/verification.repository.js';
 import { PasswordService } from '../../services/auth/password.service.js';
-import { logger } from '../../configs/logger.config.js';
 
 /**
  * Controller for handling password-related operations such as
@@ -47,9 +47,12 @@ export class PasswordController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email, redirectUrl } = req.body as RequestForgetPasswordInput;
+      const { email, redirectUrl } = req.body as forgetPasswordInput;
       logger.info(`Password reset requested for email: ${email}`);
-      await this.passwordService.sendResetPasswordEmail(email, redirectUrl);
+      await this.passwordService.sendResetPasswordEmail(
+        email,
+        redirectUrl || req.baseUrl
+      );
       res
         .status(200)
         .json({ message: 'If the email exists, a reset link has been sent' });

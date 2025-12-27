@@ -16,6 +16,7 @@ export interface IVerificationRepository {
   findByToken(token: string): Promise<VerificationModel | null>;
   create(verification: CreateVerificationDTO): Promise<VerificationModel>;
   revoke(token: string): Promise<void>;
+  isTokenUsed(token: string): Promise<boolean>;
 }
 
 export class VerificationRepository implements IVerificationRepository {
@@ -50,6 +51,14 @@ export class VerificationRepository implements IVerificationRepository {
         usedAt: new Date(),
       },
     });
+  }
+
+  async isTokenUsed(token: string): Promise<boolean> {
+    const verification = await prisma.verification.findUnique({
+      where: { token },
+      select: { isUsed: true },
+    });
+    return verification ? verification.isUsed : false;
   }
 }
 export const verificationRepository = new VerificationRepository();

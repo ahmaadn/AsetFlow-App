@@ -56,31 +56,48 @@ export class PasswordService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const isValid = await jwtService.verifyVerificationToken(
-      token,
-      VerificationType.PASSWORD_RESET
-    );
+    try {
+      const isValid = await jwtService.verifyVerificationToken(
+        token,
+        VerificationType.PASSWORD_RESET
+      );
 
-    if (!isValid) {
-      // throw new Error('Invalid or expired password reset token');
+      if (!isValid) {
+        logger.warn('Invalid or expired password reset token used');
+        return;
+      }
+
+      const isExpired = jwtService.isTokenExpired(token);
+      if (isExpired) {
+        logger.warn('Expired password reset token used');
+        return;
+      }
+
+      const payload = jwtService.decodeToken<{ userId: string; email: string }>(
+        token
+      );
+      if (!payload) {
+        logger.error('Failed to decode password reset token payload');
+        return;
+      }
+
+      const isUsed = await this.verificationRepository.isTokenUsed(token);
+      if (isUsed) {
+        logger.warn('Attempt to reuse password reset token');
+        return;
+      }
+
+      const userId = payload!.userId;
+
+      const hashedPassword = await hashPassword(newPassword);
+      await this.verificationRepository.revoke(token);
+
+      await this.userRepository.updatePassword(userId, hashedPassword);
+    } catch (error) {
+      logger.error(
+        `Error resetting password with token: ${error instanceof Error ? error.message : String(error)}`
+      );
+      return;
     }
-
-    const isExpired = jwtService.isTokenExpired(token);
-    if (isExpired) {
-      // throw new Error('Password reset token has expired');
-    }
-
-    const payload = jwtService.decodeToken<{ userId: string; email: string }>(
-      token
-    );
-    if (!payload) {
-      // throw new Error('Invalid token payload');
-    }
-
-    const userId = payload!.userId;
-
-    const hashedPassword = await hashPassword(newPassword);
-
-    await this.userRepository.updatePassword(userId, hashedPassword);
   }
 }
