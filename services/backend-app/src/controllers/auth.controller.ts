@@ -134,6 +134,7 @@ export class AuthController {
       });
       res.status(201).json({
         success: true,
+        message: 'Registration successful',
       });
     } catch (error) {
       next(error);

@@ -7,10 +7,15 @@ import swaggerUi from 'swagger-ui-express';
 const swaggerDefinition: SwaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'API Documentation',
+    title: 'AsetFlow API',
     version: '1.0.0',
-    description: 'API documentation for the Backend App',
+    description: 'API documentation for the AsetFlow application',
+    license: {
+      name: 'MIT',
+      url: 'https://opensource.org/licenses/MIT',
+    },
   },
+
   host: 'localhost:8000',
   basePath: '/v1',
   components: {
@@ -19,6 +24,39 @@ const swaggerDefinition: SwaggerDefinition = {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
+        description: 'Enter your JWT token in the format **Bearer {token}**',
+      },
+    },
+    responses: {
+      UnauthorizedError: {
+        description: 'Authentication information is missing or invalid',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/ApiError',
+            },
+          },
+        },
+      },
+      ValidationError: {
+        description: 'The request data is invalid',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/ValidationError',
+            },
+          },
+        },
+      },
+      ApiError: {
+        description: 'An unexpected error occurred',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/ApiError',
+            },
+          },
+        },
       },
     },
     schemas: {
@@ -56,7 +94,7 @@ const swaggerDefinition: SwaggerDefinition = {
         properties: {
           message: {
             type: 'string',
-            example: 'Validation Error',
+            example: 'An unexpected error occurred',
           },
           ErrorCode: {
             type: 'string',
@@ -64,62 +102,40 @@ const swaggerDefinition: SwaggerDefinition = {
           },
         },
       },
-      Authentication: {
-        type: 'object',
-        properties: {
-          token: {
-            type: 'string',
-            example: 'JWT Token',
-          },
-          tokenType: {
-            type: 'string',
-            example: 'Bearer',
-          },
-        },
-      },
-      RegisterUser: {
-        type: 'object',
-        required: ['email', 'username', 'password'],
-        properties: {
-          email: {
-            type: 'string',
-            example: 'test@mail.com',
-          },
-          name: {
-            type: 'string',
-            example: 'testuser',
-          },
-          password: {
-            type: 'string',
-            example: 'testpassword',
-          },
-        },
-      },
-      LoginUser: {
-        type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: {
-            type: 'string',
-            example: 'admin@example.com',
-          },
-          password: {
-            type: 'string',
-            example: 'adminpassword',
-          },
-        },
-      },
     },
   },
+  tags: [
+    {
+      name: 'Authentication',
+      description: 'Authentication related endpoints',
+    },
+    {
+      name: 'Users',
+      description: 'User management endpoints',
+    },
+    {
+      name: 'Assets',
+      description: 'Asset management endpoints',
+    },
+  ],
 };
 
 const options: Options = {
   definition: swaggerDefinition,
-  apis: ['./src/routes/**/*.routes.ts'],
+  apis: [
+    './src/routes/**/*.routes.ts',
+    './src/controllers/**/*.ts',
+    './src/docs/**/*.yaml',
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
-export const setupSwaggerDocs = (app: Express) => {
+export function createSwaggerDocs(app: Express) {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-};
+
+  app.get('/api-docs.json', (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+  });
+}
