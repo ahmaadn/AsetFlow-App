@@ -6,8 +6,8 @@ import {
 } from '@asetflow/validators';
 import { Router } from 'express';
 
+import { authController } from '../controllers/auth/auth.controller.js';
 import { passwordController } from '../controllers/auth/password.controller.js';
-import { authController } from '../controllers/auth.controller.js';
 import { validate } from '../middleware/validation.middleware.js';
 
 /**
