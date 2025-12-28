@@ -1,11 +1,11 @@
 import { VerificationType } from '@asetflow/database';
 
 import { logger } from '../../configs/logger.config.js';
+import { emailService } from '../../mail/index.js';
 import { IUserRepository } from '../../repositories/user.repository.js';
 import { IVerificationRepository } from '../../repositories/verification.repository.js';
 import { jwtService } from '../../utils/jwt.utils.js';
 import { hashPassword } from '../../utils/password-helper.js';
-import { emailService } from '../email/email.service.js';
 
 export class PasswordService {
   public userRepository: IUserRepository;
