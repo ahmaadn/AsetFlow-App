@@ -98,17 +98,17 @@ export function createAuthRoutes(): Router {
    *       required: true
    *       content:
    *         application/json:
-   *         schema:
+   *           schema:
    *             $ref: '#/components/schemas/RegisterRequest'
-   *    responses:
-   *     201:
-   *       $ref : '#/components/responses/SuccessResponse'
-   *     400:
-   *       $ref : '#/components/responses/BadRequestError'
-   *     422:
-   *       $ref : '#/components/responses/ValidationError'
-   *     500:
-   *       $ref : '#/components/responses/ApiError'
+   *     responses:
+   *       201:
+   *         $ref : '#/components/responses/SuccessResponse'
+   *       400:
+   *         $ref : '#/components/responses/BadRequestError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.post(
     '/register',
