@@ -4,7 +4,7 @@ import type { NextFunction, Request, Response } from 'express';
 
 import { refreshTokenRepository } from '../../repositories/refresh-token.repository.js';
 import { userRepository } from '../../repositories/user.repository.js';
-import { AuthService } from '../../services/auth.service.js';
+import { AuthService } from '../../services/auth/auth.service.js';
 import { AuthTokenService } from '../../services/token.service.js';
 import { ForbiddenError, UnauthorizedError } from '../../utils/api-error.js';
 
