@@ -19,7 +19,6 @@
     "db:reset:dev": "dotenv -e packages/database/.env -- pnpm --filter=@asetflow/database run db:reset",
     "db:deploy": "dotenv -e packages/database/.env.prod -- pnpm --filter=@asetflow/database run db:deploy",
     "db:resolve:prod": "dotenv -e packages/database/.env.prod -- pnpm --filter=@asetflow/database run db:resolve",
-    "auth-schema": "pnpm --filter=@asetflow/backend-app run auth-schema",
     "format": "prettier --write \"**/*.{ts,js,json,md}\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

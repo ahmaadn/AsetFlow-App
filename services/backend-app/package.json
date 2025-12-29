@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development node --import=tsx --watch src/server.ts",
     "build": "tsup",
-    "start": "cross-env NODE_ENV=production node dist/server.js",
-    "auth-schema": "npx @better-auth/cli@latest generate --output ./../../packages/database/prisma/auth-schema.prisma"
+    "start": "cross-env NODE_ENV=production node dist/server.js"
   },
   "keywords": [],
   "author": "",
