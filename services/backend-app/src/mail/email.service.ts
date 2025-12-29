@@ -1,5 +1,4 @@
-import { logger } from '@asetflow/logger';
-
+import logger from '../configs/logger.config.js';
 import {
   ForgotPasswordTemplate,
   type ForgotPasswordEmailData,

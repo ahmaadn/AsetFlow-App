@@ -1,4 +1,3 @@
-import { type UserModel } from '@asetflow/database';
 import { ErrorCode } from '@asetflow/shared';
 import type {
   PaginationResult,
@@ -21,7 +20,7 @@ import { BadRequestError, NotFoundError } from '../utils/api-error.js';
  * @returns Daftar folder
  */
 export const getAllFolders = async (
-  user: UserModel,
+  user_id: string,
   {
     page = 1,
     per_page = 20,
@@ -31,13 +30,13 @@ export const getAllFolders = async (
   }: Partial<GetFolderType>
 ): Promise<PaginationResult<FolderDetailResponse>> => {
   logger.info(
-    `Fetching folders for user ID: ${user.id}, Page: ${page}, Per Page: ${per_page}, Search: "${search}", Sort By: ${sort_by}, Order: ${order}`
+    `Fetching folders for user ID: ${user_id}, Page: ${page}, Per Page: ${per_page}, Search: "${search}", Sort By: ${sort_by}, Order: ${order}`
   );
 
   // Mengambil folder dari repository
   const folders = await FolderRepository.getByFilter({
     where: {
-      ownerId: user.id,
+      ownerId: user_id,
       ...(search && { name: { $like: `%${search}%` } }),
     },
     limit: per_page,
@@ -68,7 +67,7 @@ export const getAllFolders = async (
  * @returns Folder yang telah dibuat
  */
 export const createFolder = async (
-  user: UserModel,
+  user_id: string,
   data: CreateFolderType
 ): Promise<FolderDetailResponse> => {
   let slug = data.slug;
@@ -91,7 +90,7 @@ export const createFolder = async (
   const newFolder = await FolderRepository.create({
     name: data.name,
     slug,
-    ownerId: user.id,
+    ownerId: user_id,
   });
 
   return {

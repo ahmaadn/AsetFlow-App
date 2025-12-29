@@ -1,8 +1,8 @@
 import { prisma } from '@asetflow/database';
-import { logger } from '@asetflow/logger';
 import cors from 'cors';
 import express, { type Express } from 'express';
 
+import { logger } from './configs/logger.js';
 import routes from './routes/index.js';
 import { setupSwaggerDocs } from './swagger.js';
 

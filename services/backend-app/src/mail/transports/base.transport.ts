@@ -1,4 +1,4 @@
-import { logger } from '@asetflow/logger';
+import logger from '../../configs/logger.config';
 
 /**
  * Email sending result interface

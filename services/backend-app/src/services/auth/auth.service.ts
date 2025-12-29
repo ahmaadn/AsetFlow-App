@@ -1,14 +1,14 @@
 import { UserModel } from '@asetflow/database';
 import { ErrorCode } from '@asetflow/shared';
+import { PayloadTokenResponse } from '@asetflow/shared-types';
 import { RegisterInput } from '@asetflow/validators';
 
-import { logger } from '../../configs/logger.config.js';
+import logger from '../../configs/logger.config.js';
 import { IRefreshTokenRepository } from '../../repositories/refresh-token.repository.js';
 import { IUserRepository } from '../../repositories/user.repository.js';
 import { BadRequestError } from '../../utils/api-error.js';
 import { jwtService } from '../../utils/jwt.utils.js';
 import { hashPassword, verifyPassword } from '../../utils/password-helper.js';
-import { PayloadTokenResponse } from '@asetflow/shared-types';
 
 export interface TokenPair {
   accessToken: string;

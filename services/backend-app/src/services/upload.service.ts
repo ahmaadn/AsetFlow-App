@@ -1,9 +1,8 @@
-import { type UserModel } from '@asetflow/database';
-import { logger } from '@asetflow/logger';
 import { generateSlug, getExtension } from '@asetflow/shared';
 import type { AssetResponse, MetadataAsset } from '@asetflow/shared-types';
 
 import { CLOUDINARY_ROOT_FOLDER } from '../configs/cloudinary.config.js';
+import logger from '../configs/logger.config.js';
 import * as AssetRepository from '../repositories/asset.repository.js';
 import * as FolderRepository from '../repositories/folder.repository.js';
 import { NotFoundError } from '../utils/api-error.js';
