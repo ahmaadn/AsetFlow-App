@@ -6,8 +6,9 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsup",
-    "db:generate": "prisma generate && pnpm build",
+    "build": "prisma generate && tsup",
+    "dev": "tsx --watch src/index.ts",
+    "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
@@ -23,6 +24,7 @@
     "@types/node": "^24.10.3",
     "prisma": "^7.1.0",
     "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
