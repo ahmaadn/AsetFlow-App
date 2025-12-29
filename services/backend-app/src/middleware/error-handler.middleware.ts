@@ -6,8 +6,8 @@ import {
 import { ErrorCode } from '@asetflow/shared';
 import { NextFunction, Request, Response } from 'express';
 
+import logger from '../configs/logger.config.js';
 import { ApiError } from '../utils/api-error.js';
-import logger from '../utils/logger.js';
 
 /**
  * Middleware untuk menangani error secara global.

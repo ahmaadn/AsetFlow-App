@@ -10,9 +10,9 @@ import type {
   UpdateFolderType,
 } from '@asetflow/validators';
 
+import logger from '../configs/logger.config.js';
 import * as FolderRepository from '../repositories/folder.repository.js';
 import { BadRequestError, NotFoundError } from '../utils/api-error.js';
-import logger from '../utils/logger.js';
 
 /**
  * Mendapatkan semua folder milik user

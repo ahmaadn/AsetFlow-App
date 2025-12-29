@@ -1,6 +1,6 @@
 import { VerificationType } from '@asetflow/database';
 
-import { logger } from '../../configs/logger.config.js';
+import logger from '../../configs/logger.config.js';
 import { emailService } from '../../mail/index.js';
 import { IUserRepository } from '../../repositories/user.repository.js';
 import { IVerificationRepository } from '../../repositories/verification.repository.js';

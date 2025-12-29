@@ -6,3 +6,5 @@ export const logger = new Logger({
   level: (env.LOG_LEVEL || 'info') as LogLevel,
   enableFile: false,
 });
+
+export default logger;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import logger from '../utils/logger.js';
+import logger from '../configs/logger.config.js';
 
 /**
  * Middleware untuk mencatat setiap permintaan yang masuk.

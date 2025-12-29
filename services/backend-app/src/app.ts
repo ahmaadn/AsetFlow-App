@@ -4,7 +4,7 @@ import cors from 'cors';
 import express, { type Response, Express } from 'express';
 
 import { env } from './configs/env.config.js';
-import { logger } from './configs/logger.config.js';
+import logger from './configs/logger.config.js';
 import { createSwaggerDocs } from './docs/swagger.js';
 import { errorHandler } from './middleware/error-handler.middleware.js';
 import { requestLogger } from './middleware/request-logger.middleware.js';

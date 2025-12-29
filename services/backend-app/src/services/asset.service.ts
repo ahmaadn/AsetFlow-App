@@ -10,9 +10,9 @@ import {
   UpdateAssetType,
 } from '@asetflow/validators';
 
+import logger from '../configs/logger.config.js';
 import * as AssetRepository from '../repositories/asset.repository.js';
 import { ConflictError, NotFoundError } from '../utils/api-error.js';
-import logger from '../utils/logger.js';
 
 /**
  * Membuat aset baru.

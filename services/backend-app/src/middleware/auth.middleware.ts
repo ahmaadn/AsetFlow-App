@@ -1,7 +1,7 @@
 import { ErrorCode } from '@asetflow/shared';
 import type { NextFunction, Request, Response } from 'express';
 
-import { logger } from '../configs/logger.config.js';
+import logger from '../configs/logger.config.js';
 import { userRepository } from '../repositories/user.repository.js';
 import { ForbiddenError, UnauthorizedError } from '../utils/api-error.js';
 import { jwtService } from '../utils/jwt.utils.js';

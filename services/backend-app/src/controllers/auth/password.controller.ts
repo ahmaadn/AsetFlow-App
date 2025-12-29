@@ -1,11 +1,10 @@
 import type { forgetPasswordInput } from '@asetflow/validators';
 import type { NextFunction, Request, Response } from 'express';
 
-import { logger } from '../../configs/logger.config.js';
+import logger from '../../configs/logger.config.js';
 import { userRepository } from '../../repositories/user.repository.js';
 import { verificationRepository } from '../../repositories/verification.repository.js';
 import { PasswordService } from '../../services/auth/password.service.js';
-import { success } from 'zod';
 
 /**
  * Controller for handling password-related operations such as
@@ -54,12 +53,10 @@ export class PasswordController {
         email,
         redirectUrl || req.baseUrl
       );
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: 'If the email exists, a reset link has been sent',
-        });
+      res.status(200).json({
+        success: true,
+        message: 'If the email exists, a reset link has been sent',
+      });
     } catch (error) {
       next(error);
     }

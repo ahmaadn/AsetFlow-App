@@ -14,7 +14,7 @@ import {
 
 export const uploadAset = async (
   folderId: string,
-  user: UserModel,
+  user_id: string,
   file: Express.Multer.File,
   filename: string,
   slug: string | undefined
@@ -58,7 +58,7 @@ export const uploadAset = async (
   // simpan
   const asset = await AssetRepository.create({
     folderId: folder.id,
-    ownerId: user.id,
+    ownerId: user_id,
     publicId: result.public_id,
     name: filename,
     slug: slug,

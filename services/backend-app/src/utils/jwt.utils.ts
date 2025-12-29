@@ -3,7 +3,7 @@ import type { AccessTokenPayload, RefreshTokenPayload } from '@asetflow/shared';
 import type { JWTPayload } from 'jose';
 
 import { jwtConfig } from '../configs/jwt.config.js';
-import { logger } from '../configs/logger.config.js';
+import logger from '../configs/logger.config.js';
 
 export class JWTService {
   /**
