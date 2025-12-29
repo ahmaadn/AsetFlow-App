@@ -1,4 +1,4 @@
-import logger from '../../configs/logger.config';
+import logger from '../../configs/logger.config.js';
 
 /**
  * Email sending result interface
