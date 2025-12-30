@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../prisma/generated/client';
 
 /**
  * Memeriksa apakah sebuah error adalah Prisma error 'record not found'.

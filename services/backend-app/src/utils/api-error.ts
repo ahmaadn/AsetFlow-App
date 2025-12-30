@@ -1,41 +1,10 @@
-import { ErrorCode } from './error-code.js';
-
-/**
- * Detail tambahan untuk error API.
- */
-export type ErrorDetail = {
-  message: string;
-  [key: string]: unknown;
-};
-
-/**
- * Kumpulan detail tambahan untuk error API.
- */
-export type ApiErrorDetails = { [key: string]: ErrorDetail };
-
-/**
- * Parameter untuk membuat error API.
- */
-export type ParamErrorType = {
-  message?: string;
-  statusCode?: number;
-  errorCode?: ErrorCode;
-  details?: ApiErrorDetails;
-};
-
-/**
- * Tipe respons error API.
- */
-export type ValidationErrorResponse = {
-  message: string;
-  errorCode: ErrorCode;
-  details: ApiErrorDetails;
-};
-
-export type ApiErrorResponse = {
-  message: string;
-  errorCode: ErrorCode;
-};
+import { ErrorCode } from '@asetflow/shared';
+import type {
+  ApiErrorDetails,
+  ApiErrorResponse,
+  ParamErrorType,
+  ValidationErrorResponse,
+} from '@asetflow/shared';
 
 /**
  * Kelas Dasar untuk Error API, kelas ini dapat diperluas untuk error spesifik lainnya.

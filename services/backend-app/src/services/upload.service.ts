@@ -1,9 +1,8 @@
-import { type UserModel } from '@asetflow/database';
-import { logger } from '@asetflow/logger';
 import { generateSlug, getExtension } from '@asetflow/shared';
 import type { AssetResponse, MetadataAsset } from '@asetflow/shared-types';
 
 import { CLOUDINARY_ROOT_FOLDER } from '../configs/cloudinary.config.js';
+import logger from '../configs/logger.config.js';
 import * as AssetRepository from '../repositories/asset.repository.js';
 import * as FolderRepository from '../repositories/folder.repository.js';
 import { NotFoundError } from '../utils/api-error.js';
@@ -14,7 +13,7 @@ import {
 
 export const uploadAset = async (
   folderId: string,
-  user: UserModel,
+  user_id: string,
   file: Express.Multer.File,
   filename: string,
   slug: string | undefined
@@ -58,7 +57,7 @@ export const uploadAset = async (
   // simpan
   const asset = await AssetRepository.create({
     folderId: folder.id,
-    ownerId: user.id,
+    ownerId: user_id,
     publicId: result.public_id,
     name: filename,
     slug: slug,

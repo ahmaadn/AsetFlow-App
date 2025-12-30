@@ -6,8 +6,9 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsup",
-    "db:generate": "prisma generate && npm run build",
+    "build": "prisma generate && tsup",
+    "dev": "tsx --watch src/index.ts",
+    "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
@@ -20,12 +21,15 @@
   "packageManager": "pnpm@10.17.1",
   "devDependencies": {
     "@asetflow/typescript-config": "workspace:*",
-    "@types/node": "^24.8.1",
-    "prisma": "^6.17.1",
-    "tsup": "^8.5.0",
+    "@types/node": "^24.10.3",
+    "prisma": "^7.1.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@prisma/client": "^6.17.1"
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "dotenv": "^17.2.3"
   }
 }

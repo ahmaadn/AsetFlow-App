@@ -33,10 +33,9 @@ export interface ModalConfig {
   onClose?: () => void;
 }
 
-export interface Modal
-  extends Required<
-    Omit<ModalConfig, 'buttons' | 'html' | 'onConfirm' | 'onCancel' | 'onClose'>
-  > {
+export interface Modal extends Required<
+  Omit<ModalConfig, 'buttons' | 'html' | 'onConfirm' | 'onCancel' | 'onClose'>
+> {
   buttons: ModalButton[];
 
   onConfirm?: (value?: string) => void | Promise<void>;

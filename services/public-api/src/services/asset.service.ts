@@ -1,5 +1,4 @@
-import { logger } from '@asetflow/logger';
-
+import { logger } from '../configs/logger.js';
 import * as AssetRepository from '../repositories/asset.repository.js';
 import * as FolderRepository from '../repositories/folder.repository.js';
 

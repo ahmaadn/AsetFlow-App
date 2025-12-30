@@ -1,9 +1,13 @@
-import { Prisma } from '@asetflow/database';
+import {
+  PrismaClientInitializationError,
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+} from '@asetflow/database';
+import { ErrorCode } from '@asetflow/shared';
 import { NextFunction, Request, Response } from 'express';
 
+import logger from '../configs/logger.config.js';
 import { ApiError } from '../utils/api-error.js';
-import { ErrorCode } from '../utils/error-code.js';
-import logger from '../utils/logger.js';
 
 /**
  * Middleware untuk menangani error secara global.
@@ -40,7 +44,7 @@ export const errorHandler = (
 
   // Pengaman untuk error Prisma yang tidak ditangani di service
   // Ini adalah error yang "tidak terduga" dari sisi bisnis
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+  if (err instanceof PrismaClientKnownRequestError) {
     logger.warn('Unhandled Prisma Error', {
       code: err.code,
       meta: err.meta,
@@ -51,7 +55,7 @@ export const errorHandler = (
     });
   }
 
-  if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+  if (err instanceof PrismaClientUnknownRequestError) {
     logger.error('An unknown database error occurred.', { error: err });
     return res.status(500).json({
       message: 'An unexpected database error occurred.',
@@ -59,7 +63,7 @@ export const errorHandler = (
     });
   }
 
-  if (err instanceof Prisma.PrismaClientInitializationError) {
+  if (err instanceof PrismaClientInitializationError) {
     logger.error('Failed to initialize database connection.', { error: err });
     return res.status(500).json({
       message: 'Could not connect to the database.',

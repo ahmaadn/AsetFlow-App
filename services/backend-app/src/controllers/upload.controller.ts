@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 
+import logger from '../configs/logger.config.js';
 import * as UploadService from '../services/upload.service.js';
 import { UnauthorizedError } from '../utils/api-error.js';
-import logger from '../utils/logger.js';
 
 export const handleFileUpload = async (
   req: Request,
@@ -33,7 +33,7 @@ export const handleFileUpload = async (
 
     const result = await UploadService.uploadAset(
       folderId as string,
-      user,
+      user.id,
       req.file,
       filename,
       slug

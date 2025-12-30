@@ -8,13 +8,8 @@ export interface User {
   image?: string | null;
 }
 
-export interface Session {
+export interface SimpleUser {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: string;
-  expiresAt: Date;
-  token: string;
-  ipAddress?: string | null;
-  userAgent?: string | null;
+  email: string;
+  role: string;
 }

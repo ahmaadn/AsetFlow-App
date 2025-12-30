@@ -1,6 +1,7 @@
 import path from 'path';
+import 'dotenv/config';
 
-import type { PrismaConfig } from 'prisma';
+import { type PrismaConfig, env } from 'prisma/config';
 
 export default {
   schema: path.join('prisma', 'schema.prisma'),
@@ -12,5 +13,8 @@ export default {
   },
   typedSql: {
     path: path.join('prisma', 'queries'),
+  },
+  datasource: {
+    url: env('DATABASE_URL'),
   },
 } satisfies PrismaConfig;

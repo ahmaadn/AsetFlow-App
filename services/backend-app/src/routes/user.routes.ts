@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
 import * as userController from '../controllers/user.controller.js';
-import { betterAuthProtect } from '../middleware/auth.middleware.js';
+import { authenticateUserWithRoles } from '../middleware/auth.middleware.js';
 
 const router: Router = Router();
-router.use(betterAuthProtect);
+router.use(authenticateUserWithRoles(['ADMIN', 'USER']));
 
 /**
  * @swagger

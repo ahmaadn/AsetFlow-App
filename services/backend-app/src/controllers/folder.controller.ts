@@ -18,7 +18,7 @@ export const getAllFolder = async (
       throw new UnauthorizedError({ message: 'User not authenticated' });
     }
     const queryParams = req.query as Partial<GetFolderType>;
-    const result = await folderService.getAllFolders(user, queryParams);
+    const result = await folderService.getAllFolders(user.id, queryParams);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -38,7 +38,7 @@ export const createFolder = async (
     if (!user) {
       throw new UnauthorizedError({ message: 'User not authenticated' });
     }
-    const result = await folderService.createFolder(user, req.body);
+    const result = await folderService.createFolder(user.id, req.body);
     res.status(201).json(result);
   } catch (error) {
     next(error);

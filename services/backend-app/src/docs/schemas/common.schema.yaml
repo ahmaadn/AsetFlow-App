@@ -1,0 +1,21 @@
+components:
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the operation was successful
+        message:
+          type: string
+          description: A message providing additional information
+      required:
+        - success
+        - message
+  responses:
+    SuccessResponse:
+      description: Standard success response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'

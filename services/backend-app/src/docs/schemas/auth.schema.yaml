@@ -1,0 +1,127 @@
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          format: password
+          description: User's password
+      required:
+        - email
+        - password
+    RefreshTokenRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: JWT refresh token
+      required:
+        - refreshToken
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          format: password
+          description: User's password
+        confirmPassword:
+          type: string
+          format: password
+          description: Confirmation of the user's password
+      required:
+        - name
+        - email
+        - password
+        - confirmPassword
+    RequestForgetPassword:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        redirectUrl:
+          type: string
+          format: uri
+          description: URL to redirect the user after password reset
+      required:
+        - email
+    ResetPasswordRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Password reset token
+        newPassword:
+          type: string
+          format: password
+          description: New password for the user
+      required:
+        - token
+        - newPassword
+    PayloadTokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+        refreshToken:
+          type: string
+          description: JWT refresh token
+        expiresIn:
+          type: integer
+          description: Expiration time in seconds
+        refreshExpiresIn:
+          type: integer
+          description: Refresh token expiration time in seconds
+        tokenType:
+          type: string
+          description: Type of the token, typically "Bearer"
+      required:
+        - accessToken
+        - refreshToken
+        - expiresIn
+        - refreshExpiresIn
+        - tokenType
+    RefreshTokenResponse:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: New JWT refresh token
+        expiresIn:
+          type: integer
+          description: New expiration time in seconds
+        user:
+          $ref: '#/components/schemas/SimpleUserResponse'
+      required:
+        - accessToken
+        - refreshToken
+        - expiresIn
+        - refreshExpiresIn
+        - tokenType
+  responses:
+    PayloadTokenResponse:
+      description: Successful response with JWT tokens
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PayloadTokenResponse'
+    RefreshTokenResponse:
+      description: Successful response with new refresh token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RefreshTokenResponse'

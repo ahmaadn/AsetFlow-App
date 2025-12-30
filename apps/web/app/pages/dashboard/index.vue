@@ -6,37 +6,25 @@ definePageMeta({
 });
 
 const auth = useAuth();
-const { statistics } = useApi();
-
-// State
-const statisticsData = ref<DashboardStatistics | null>(null);
+const { statistics } = useRepository(useSecureFetchAPI);
+const { data } = statistics.getDashboardStatistics();
+const statisticsData = ref<DashboardStatistics | null>(data.value || null);
 const isLoading = ref(true);
 
 // Get user name from auth with fallback
-const userName = computed(() => {
-  // Wait for auth to be ready before showing user name
-  if (!auth.user.value) return 'Loading...';
-
-  if (auth.user.value?.email) {
-    return auth.user.value.email.split('@')[0];
-  }
-  if (auth.user.value?.name) {
-    return auth.user.value.name;
-  }
-  return 'User';
-});
+const userName = computed(() => auth.user.value?.email);
 
 // Fetch dashboard data in one call
 const loadDashboardData = async () => {
-  try {
-    isLoading.value = true;
-    const data = await statistics.getDashboardStatistics();
-    statisticsData.value = data;
-  } catch (error) {
-    console.error('Error loading dashboard statistics:', error);
-  } finally {
-    isLoading.value = false;
+  isLoading.value = true;
+  const { data, error } = await statistics.getDashboardStatistics();
+  if (data.value) {
+    statisticsData.value = data.value;
   }
+  if (error.value) {
+    console.error('Error loading dashboard statistics:', error);
+  }
+  isLoading.value = false;
 };
 
 // Wait for authentication to be ready before loading dashboard data

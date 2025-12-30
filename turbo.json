@@ -18,7 +18,8 @@
         "MAIL_SERVICE_PROVIDER",
         "GOOGLE_APP_MAIL",
         "GOOGLE_APP_PASSWORD",
-        "SMTP_*"
+        "SMTP_*",
+        "JWT_*"
       ]
     },
     "start": {
@@ -43,7 +44,8 @@
         "MAIL_SERVICE_PROVIDER",
         "GOOGLE_APP_MAIL",
         "GOOGLE_APP_PASSWORD",
-        "SMTP_*"
+        "SMTP_*",
+        "JWT_*"
       ]
     },
     "db:generate": {

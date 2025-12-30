@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from 'express';
 import z, { ZodError } from 'zod';
 
 import { BadRequestError } from '../utils/api-error.js';
+
 /**
  * Validasi data request menggunakan schema Zod.
  * @param schema  Schema Zod untuk validasi.

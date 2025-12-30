@@ -5,8 +5,7 @@ definePageMeta({
   layout: 'auth',
 });
 
-const { client } = useAuth();
-const toast = useToast();
+const { auth: authApi } = useApi();
 const isLoading = ref(false);
 
 const { values, errors, handleSubmit } = useForm({
@@ -18,21 +17,23 @@ const { values, errors, handleSubmit } = useForm({
   },
   validationSchema: registerSchema,
   onSubmit: async (values) => {
-    if (isLoading.value) return;
-
     isLoading.value = true;
     try {
-      await client.signUp.email({
+      await authApi.register({
         name: values.name,
         email: values.email,
         password: values.password,
-        callbackURL: `${window.location.origin}/login`,
+        confirmPassword: values.confirmPassword,
       });
-      toast.success('Registration successful! Please sign in to continue.');
-      await navigateTo('/login');
+      useToast().success(
+        'Registration successful! You can now log in with your credentials.'
+      );
+      navigateTo('/login');
     } catch (error) {
-      console.error('Registration error:', error);
-      toast.error('Registration failed. Please try again.');
+      useToast().error(
+        error.response?.data?.message ||
+          'An error occurred during registration. Please try again.'
+      );
     } finally {
       isLoading.value = false;
     }

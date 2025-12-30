@@ -1,21 +1,25 @@
 import type {
   Asset,
-  Account,
   AssetTag,
   Folder,
   FolderTag,
   Tag,
-  Session,
   User,
   Verification,
-} from '@prisma/client';
+  UserRole,
+  RefreshToken,
+} from '../prisma/generated/client';
+import { VerificationType } from '../prisma/generated/client';
 
 export type UserModel = User;
-export type SessionModel = Session;
 export type TagModel = Tag;
 export type FolderModel = Folder;
 export type AssetModel = Asset;
 export type FolderTagModel = FolderTag;
 export type AssetTagModel = AssetTag;
-export type AccountModel = Account;
 export type VerificationModel = Verification;
+
+export type RefreshTokenModel = RefreshToken;
+
+export type { UserRole };
+export { VerificationType };
