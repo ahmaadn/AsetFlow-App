@@ -4,9 +4,9 @@ import type {
   FolderDetailResponse,
 } from '@asetflow/shared-types';
 import type {
-  CreateFolderType,
-  GetFolderType,
-  UpdateFolderType,
+  CreateFolderInput,
+  GetFolderInput,
+  UpdateFolderInput,
 } from '@asetflow/validators';
 
 import logger from '../configs/logger.config.js';
@@ -34,7 +34,7 @@ export class FolderService {
       search = '',
       sort_by = 'createdAt',
       order = 'desc',
-    }: Partial<GetFolderType>
+    }: Partial<GetFolderInput>
   ): Promise<PaginationResult<FolderDetailResponse>> {
     logger.info(
       `Fetching folders for user ID: ${user_id}, Page: ${page}, Per Page: ${per_page}, Search: "${search}", Sort By: ${sort_by}, Order: ${order}`
@@ -75,7 +75,7 @@ export class FolderService {
    */
   async createFolder(
     user_id: string,
-    data: CreateFolderType
+    data: CreateFolderInput
   ): Promise<FolderDetailResponse> {
     let slug = data.slug;
     if (typeof data.slug !== 'string') {
@@ -133,7 +133,7 @@ export class FolderService {
    */
   async updateFolder(
     folderId: string,
-    data: UpdateFolderType
+    data: UpdateFolderInput
   ): Promise<FolderDetailResponse> {
     // Cek apakah folder ada
     const existingFolder = await this.folderRepository.findById(folderId);
@@ -203,5 +203,5 @@ export class FolderService {
     }
 
     return folder;
-  };
+  }
 }

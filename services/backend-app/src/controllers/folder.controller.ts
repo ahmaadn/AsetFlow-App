@@ -1,4 +1,4 @@
-import { GetFolderType } from '@asetflow/validators';
+import { GetFolderInput } from '@asetflow/validators';
 import { NextFunction, Request, Response } from 'express';
 
 import folderRepository from '../repositories/folder.repository.js';
@@ -26,7 +26,7 @@ export class FolderController {
       if (!user) {
         throw new UnauthorizedError({ message: 'User not authenticated' });
       }
-      const queryParams = req.query as Partial<GetFolderType>;
+      const queryParams = req.query as Partial<GetFolderInput>;
       const result = await this.folderService.getAllFolders(
         user.id,
         queryParams

@@ -1,4 +1,7 @@
-import type { CreateFolderType, UpdateFolderType } from '@asetflow/validators';
+import type {
+  CreateFolderInput,
+  UpdateFolderInput,
+} from '@asetflow/validators';
 import type { FolderItem, PaginationResult } from '@asetflow/shared-types';
 import { API_CONFIG } from '../config';
 
@@ -42,7 +45,7 @@ export class FolderService {
    * @param option Additional fetch options
    * @returns A promise resolving to the created folder
    */
-  createFolder(data: CreateFolderType, option: OptionFetch = {}) {
+  createFolder(data: CreateFolderInput, option: OptionFetch = {}) {
     return this.api<FolderItem>(
       `${API_CONFIG.VERSION}${API_CONFIG.ENDPOINTS.FOLDERS}`,
       {
@@ -62,7 +65,7 @@ export class FolderService {
    */
   updateFolder(
     folderId: string,
-    data: UpdateFolderType,
+    data: UpdateFolderInput,
     option: OptionFetch = {}
   ) {
     return this.api<FolderItem>(

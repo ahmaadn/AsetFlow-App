@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FolderItem } from '@asetflow/shared-types';
-import { updateFolderSchema } from '@asetflow/validators';
+import { UpdateFolderSchema } from '@asetflow/validators';
 
 const props = withDefaults(
   defineProps<{
@@ -31,7 +31,7 @@ const { values, errors, handleSubmit } = useForm({
     slug: props.folderItem.slug,
     tags: props.folderItem.tags.map((tag) => tag.id),
   },
-  validationSchema: updateFolderSchema,
+  validationSchema: UpdateFolderSchema,
   onSubmit: async (values) => {
     // TODO: Untuk Sekarang tags diabaikan dulu
     // WIP

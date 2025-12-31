@@ -1,5 +1,4 @@
 import { type FolderModel, prisma } from '@asetflow/database';
-import { type UpdateFolderType } from '@asetflow/validators';
 
 interface FolderQueryOptionsDTO {
   where: {
@@ -20,7 +19,12 @@ interface CreateFolderDTO {
   slug: string;
 }
 
-interface FolderWithAssetCount extends FolderModel {
+interface UpdateFolderDTO {
+  name?: string;
+  slug?: string;
+}
+
+interface FolderWithAssetCountQuery extends FolderModel {
   _count: {
     assets: number;
   };
@@ -38,7 +42,9 @@ export interface IFolderRepository {
    * @param options Filter options
    * @returns Folders that match the filter
    */
-  getByFilter(options: FolderQueryOptionsDTO): Promise<FolderWithAssetCount[]>;
+  getByFilter(
+    options: FolderQueryOptionsDTO
+  ): Promise<FolderWithAssetCountQuery[]>;
 
   /**
    * Create a new folder.
@@ -61,8 +67,8 @@ export interface IFolderRepository {
    */
   update(
     folderId: string,
-    data: UpdateFolderType
-  ): Promise<FolderWithAssetCount>;
+    data: UpdateFolderDTO
+  ): Promise<FolderWithAssetCountQuery>;
 
   /**
    * Find a folder by slug.
@@ -89,7 +95,7 @@ class FolderRepository implements IFolderRepository {
 
   async getByFilter(
     options: FolderQueryOptionsDTO
-  ): Promise<FolderWithAssetCount[]> {
+  ): Promise<FolderWithAssetCountQuery[]> {
     const { where, limit, offset, sort_by, order } = options;
 
     return await prisma.folder.findMany({
@@ -126,8 +132,8 @@ class FolderRepository implements IFolderRepository {
 
   async update(
     folderId: string,
-    data: UpdateFolderType
-  ): Promise<FolderWithAssetCount> {
+    data: UpdateFolderDTO
+  ): Promise<FolderWithAssetCountQuery> {
     return await prisma.folder.update({
       where: {
         id: folderId,

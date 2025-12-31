@@ -1,4 +1,4 @@
-import { GetAssetsByTypeType, GetAssetsType } from '@asetflow/validators';
+import { GetAssetsByTypeInput, GetAssetsInput } from '@asetflow/validators';
 import { NextFunction, Request, Response } from 'express';
 
 import assetRepository from '../repositories/asset.repository.js';
@@ -28,7 +28,7 @@ export class AssetController {
       }
 
       const { id: folderId } = req.params;
-      const queryParams = req.query as Partial<GetAssetsType>;
+      const queryParams = req.query as Partial<GetAssetsInput>;
 
       const result = await this.assetService.getAssetsByFolder(
         folderId as string,
@@ -108,7 +108,7 @@ export class AssetController {
         throw new UnauthorizedError({ message: 'User not authenticated' });
       }
 
-      const queryParams = req.query as Partial<GetAssetsByTypeType>;
+      const queryParams = req.query as Partial<GetAssetsByTypeInput>;
 
       const result = await this.assetService.getAssetsByType(queryParams);
       res.status(200).json(result);

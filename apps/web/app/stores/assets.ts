@@ -1,5 +1,5 @@
 import type { AssetResponse } from '@asetflow/shared-types';
-import type { UpdateAssetType } from '@asetflow/validators';
+import type { UpdateAssetInput } from '@asetflow/validators';
 import type { AssetQueryParams } from '~/lib/services/modules/asset';
 
 interface AssetState {
@@ -161,7 +161,7 @@ export const useAssetStore = defineStore('asset', {
     async updateAsset(
       folderId: string,
       assetId: string,
-      data: UpdateAssetType
+      data: UpdateAssetInput
     ) {
       try {
         const { asset } = useApi();

@@ -1,5 +1,8 @@
 import type { FolderItem } from '@asetflow/shared-types';
-import type { CreateFolderType, UpdateFolderType } from '@asetflow/validators';
+import type {
+  CreateFolderInput,
+  UpdateFolderInput,
+} from '@asetflow/validators';
 import { FetchError } from 'ofetch';
 
 interface FolderState {
@@ -66,7 +69,7 @@ export const useFolderStore = defineStore('folder', {
         slug = name.toLowerCase().replace(/\s+/g, '-');
       }
 
-      const folderData: CreateFolderType = { name, slug };
+      const folderData: CreateFolderInput = { name, slug };
 
       toast.promise(folder.createFolder(folderData), {
         loading: 'Creating folder...',
@@ -86,7 +89,7 @@ export const useFolderStore = defineStore('folder', {
       this.isLoading = false;
     },
 
-    async updateFolder(folderId: string, data: UpdateFolderType) {
+    async updateFolder(folderId: string, data: UpdateFolderInput) {
       this.isLoading = true;
       const toast = useToast();
       const { folder } = useApi();

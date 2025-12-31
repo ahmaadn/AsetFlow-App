@@ -1,4 +1,4 @@
-import type { UpdateAssetType } from '@asetflow/validators';
+import type { UpdateAssetInput } from '@asetflow/validators';
 import type { AssetListResponse, AssetResponse } from '@asetflow/shared-types';
 import { API_CONFIG } from '../config';
 
@@ -82,7 +82,7 @@ export class AssetService {
    */
   updateAsset(
     assetId: string,
-    data: UpdateAssetType,
+    data: UpdateAssetInput,
     option: OptionFetch = {}
   ) {
     return this.api<AssetResponse>(

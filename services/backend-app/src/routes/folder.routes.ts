@@ -1,9 +1,9 @@
 import {
-  httpCheckFolder,
-  httpCreateFolder,
-  httpFoldersQuery,
-  httpGetAssets,
-  httpUpdateFolder,
+  httpCheckFolderSchema,
+  httpCreateFolderSchema,
+  httpFoldersQuerySchema,
+  httpGetAssetsSchema,
+  httpUpdateFolderSchema,
 } from '@asetflow/validators';
 import { Router } from 'express';
 
@@ -58,7 +58,7 @@ export function createFolderRoutes(): Router {
    */
   router.get(
     '/',
-    validate(httpFoldersQuery),
+    validate(httpFoldersQuerySchema),
     folderController.getAllFolder.bind(folderController)
   );
 
@@ -92,7 +92,7 @@ export function createFolderRoutes(): Router {
    */
   router.post(
     '/',
-    validate(httpCreateFolder),
+    validate(httpCreateFolderSchema),
     folderController.createFolder.bind(folderController)
   );
 
@@ -133,7 +133,7 @@ export function createFolderRoutes(): Router {
    */
   router.put(
     '/:id',
-    validate(httpUpdateFolder),
+    validate(httpUpdateFolderSchema),
     folderController.updateFolder.bind(folderController)
   );
 
@@ -158,7 +158,7 @@ export function createFolderRoutes(): Router {
    */
   router.delete(
     '/:id',
-    validate(httpCheckFolder),
+    validate(httpCheckFolderSchema),
     folderController.deleteFolder.bind(folderController)
   );
 
@@ -185,7 +185,7 @@ export function createFolderRoutes(): Router {
    */
   router.head(
     '/check/:id',
-    validate(httpCheckFolder),
+    validate(httpCheckFolderSchema),
     folderController.checkFolderExists.bind(folderController)
   );
 
@@ -238,7 +238,7 @@ export function createFolderRoutes(): Router {
    */
   router.get(
     '/:id/assets',
-    validate(httpGetAssets),
+    validate(httpGetAssetsSchema),
     assetController.getAssetsByFolder.bind(assetController)
   );
 

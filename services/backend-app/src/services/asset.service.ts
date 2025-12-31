@@ -6,9 +6,9 @@ import {
   PaginationResult,
 } from '@asetflow/shared-types';
 import {
-  GetAssetsByTypeType,
-  GetAssetsType,
-  UpdateAssetType,
+  GetAssetsByTypeInput,
+  GetAssetsInput,
+  UpdateAssetInput,
 } from '@asetflow/validators';
 
 import logger from '../configs/logger.config.js';
@@ -45,7 +45,7 @@ export class AssetService {
    */
   async getAssetsByFolder(
     folderId: string,
-    queryParams: Partial<GetAssetsType>
+    queryParams: Partial<GetAssetsInput>
   ): Promise<PaginationResult<AssetResponse>> {
     const {
       page = 1,
@@ -102,7 +102,7 @@ export class AssetService {
    * @returns Daftar asset dengan pagination
    */
   async getAssetsByType(
-    queryParams: Partial<GetAssetsByTypeType>
+    queryParams: Partial<GetAssetsByTypeInput>
   ): Promise<PaginationResult<AssetResponse>> {
     const {
       page = 1,
@@ -155,7 +155,7 @@ export class AssetService {
    */
   async updateAsset(
     assetId: string,
-    data: UpdateAssetType
+    data: UpdateAssetInput
   ): Promise<AssetResponse> {
     const existingAsset = await this.assetRepository.findById(assetId);
     if (!existingAsset) {

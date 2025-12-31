@@ -1,4 +1,4 @@
-import { httpUpload } from '@asetflow/validators';
+import { httpUploadSchema } from '@asetflow/validators';
 import { Router } from 'express';
 
 import uploadController from '../controllers/upload.controller.js';
@@ -62,7 +62,7 @@ export function createUploadRoutes(): Router {
   router.post(
     '/:id/upload',
     uploadMiddleware.single('file'),
-    validate(httpUpload),
+    validate(httpUploadSchema),
     uploadController.handleFileUpload.bind(uploadController)
   );
   return router;

@@ -1,7 +1,7 @@
 import {
-  httpUpdateAsset,
-  httpParamsAsset,
-  httpGetAssetsByType,
+  httpUpdateAssetSchema,
+  httpParamsAssetSchema,
+  httpGetAssetsByTypeSchema,
 } from '@asetflow/validators';
 import { Router } from 'express';
 
@@ -49,7 +49,7 @@ export function createAssetRoutes(): Router {
    */
   router.put(
     '/:id',
-    validate(httpUpdateAsset),
+    validate(httpUpdateAssetSchema),
     assetController.updateAsset.bind(assetController)
   );
 
@@ -82,7 +82,7 @@ export function createAssetRoutes(): Router {
    */
   router.delete(
     '/:id',
-    validate(httpParamsAsset),
+    validate(httpParamsAssetSchema),
     assetController.deleteAsset.bind(assetController)
   );
 
@@ -115,7 +115,7 @@ export function createAssetRoutes(): Router {
    */
   router.get(
     '/:id',
-    validate(httpParamsAsset),
+    validate(httpParamsAssetSchema),
     assetController.getAssetById.bind(assetController)
   );
 
@@ -161,7 +161,7 @@ export function createAssetRoutes(): Router {
    */
   router.get(
     '',
-    validate(httpGetAssetsByType),
+    validate(httpGetAssetsByTypeSchema),
     assetController.getAssetsByType.bind(assetController)
   );
 

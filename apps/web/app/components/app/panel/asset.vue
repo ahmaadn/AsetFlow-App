@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AssetResponse } from '@asetflow/shared-types';
-import type { UpdateAssetType } from '@asetflow/validators';
+import type { UpdateAssetInput } from '@asetflow/validators';
 import {
   formatDisplayDate,
   formatSize,
@@ -30,7 +30,7 @@ const { getPublicAssetUrl } = usePublicApi();
 
 const isEditMode = ref(false);
 const isUpdating = ref(false);
-const editForm = ref<UpdateAssetType>({
+const editForm = ref<UpdateAssetInput>({
   name: props.asset.name,
   slug: props.asset.slug,
 });
