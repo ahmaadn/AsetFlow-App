@@ -1,109 +1,159 @@
-import { prisma } from '@asetflow/database';
+import { AssetModel, prisma } from '@asetflow/database';
 
-/**
- * Count total assets for a user
- */
-export const countUserAssets = async (userId: string): Promise<number> => {
-  return await prisma.asset.count({
-    where: { ownerId: userId },
-  });
-};
+interface RecentAssetQuery extends AssetModel {
+  folder: {
+    name: string;
+    slug: string;
+  };
+}
 
-/**
- * Count total folders for a user
- */
-export const countUserFolders = async (userId: string): Promise<number> => {
-  return await prisma.folder.count({
-    where: { ownerId: userId },
-  });
-};
+interface CountByMimeTypeQuery {
+  mimeType: string;
+  _count: {
+    mimeType: number;
+  };
+}
 
-/**
- * Count total users in the system
- */
-export const countTotalUsers = async (): Promise<number> => {
-  return await prisma.user.count();
-};
+interface DateRangeAssetQuery {
+  createdAt: Date;
+}
 
-/**
- * Calculate total storage used by a user
- */
-export const calculateUserStorage = async (userId: string): Promise<bigint> => {
-  const result = await prisma.asset.aggregate({
-    where: { ownerId: userId },
-    _sum: {
-      size: true,
-    },
-  });
+export interface IStatisticsRepository {
+  /**
+   * Count total assets for a user
+   */
+  countUserAssets(userId: string): Promise<number>;
 
-  return result._sum.size || BigInt(0);
-};
+  /**
+   * Count total folders for a user
+   */
+  countUserFolders(userId: string): Promise<number>;
 
-/**
- * Get recent files for a user
- */
-export const findRecentFiles = async (userId: string, limit: number = 5) => {
-  return await prisma.asset.findMany({
-    where: { ownerId: userId },
-    take: limit,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      folder: {
-        select: {
-          name: true,
-          slug: true,
+  /**
+   * Count total users in the system
+   */
+  countTotalUsers(): Promise<number>;
+
+  /**
+   * Calculate total storage used by a user
+   */
+  calculateUserStorage(userId: string): Promise<bigint>;
+
+  /**
+   * Get recent files for a user
+   */
+  findRecentFiles(userId: string, limit?: number): Promise<RecentAssetQuery[]>;
+
+  /**
+   * Get asset count grouped by mime type for a user
+   */
+  countAssetsByMimeType(userId: string): Promise<CountByMimeTypeQuery[]>;
+
+  /**
+   * Get assets created within a date range for a user
+   */
+  findAssetsInDateRange(
+    userId: string,
+    startDate: Date
+  ): Promise<DateRangeAssetQuery[]>;
+
+  /**
+   * Calculate total views across all assets for a user
+   */
+  calculateTotalViews(userId: string): Promise<number>;
+}
+
+class StatisticsRepository implements IStatisticsRepository {
+  async countUserAssets(userId: string): Promise<number> {
+    return await prisma.asset.count({
+      where: { ownerId: userId },
+    });
+  }
+
+  async countUserFolders(userId: string): Promise<number> {
+    return await prisma.folder.count({
+      where: { ownerId: userId },
+    });
+  }
+
+  async countTotalUsers(): Promise<number> {
+    return await prisma.user.count();
+  }
+
+  async calculateUserStorage(userId: string): Promise<bigint> {
+    const result = await prisma.asset.aggregate({
+      where: { ownerId: userId },
+      _sum: {
+        size: true,
+      },
+    });
+
+    return result._sum.size || BigInt(0);
+  }
+
+  async findRecentFiles(
+    userId: string,
+    limit: number = 5
+  ): Promise<RecentAssetQuery[]> {
+    return await prisma.asset.findMany({
+      where: { ownerId: userId },
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        folder: {
+          select: {
+            name: true,
+            slug: true,
+          },
         },
       },
-    },
-  });
-};
+    });
+  }
 
-/**
- * Get asset count grouped by mime type for a user
- */
-export const findUserAssetMimeTypes = async (userId: string) => {
-  return await prisma.asset.groupBy({
-    by: ['mimeType'],
-    where: { ownerId: userId },
-    _count: {
-      mimeType: true,
-    },
-  });
-};
-
-/**
- * Get assets created within a date range for a user
- */
-export const findAssetsInDateRange = async (
-  userId: string,
-  startDate: Date
-) => {
-  return await prisma.asset.findMany({
-    where: {
-      ownerId: userId,
-      createdAt: {
-        gte: startDate,
+  async countAssetsByMimeType(userId: string): Promise<CountByMimeTypeQuery[]> {
+    const result = await prisma.asset.groupBy({
+      by: ['mimeType'],
+      where: { ownerId: userId },
+      _count: {
+        mimeType: true,
       },
-    },
-    select: {
-      createdAt: true,
-    },
-    orderBy: {
-      createdAt: 'asc',
-    },
-  });
-};
+    });
+    return result;
+  }
 
-/**
- * Calculate total views across all assets for a user
- */
-export const calculateTotalViews = async (userId: string): Promise<number> => {
-  const result = await prisma.asset.aggregate({
-    where: { ownerId: userId },
-    _sum: {
-      viewCount: true,
-    },
-  });
+  async findAssetsInDateRange(
+    userId: string,
+    startDate: Date
+  ): Promise<DateRangeAssetQuery[]> {
+    const result = await prisma.asset.findMany({
+      where: {
+        ownerId: userId,
+        createdAt: {
+          gte: startDate,
+        },
+      },
+      select: {
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
 
-  return result._sum.viewCount || 0;
-};
+    return result;
+  }
+
+  async calculateTotalViews(userId: string): Promise<number> {
+    const result = await prisma.asset.aggregate({
+      where: { ownerId: userId },
+      _sum: {
+        viewCount: true,
+      },
+    });
+
+    return result._sum.viewCount || 0;
+  }
+}
+
+export const statisticsRepository = new StatisticsRepository();
+export default statisticsRepository;

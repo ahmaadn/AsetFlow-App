@@ -63,5 +63,5 @@ export class PasswordController {
   }
 }
 
-const passwordController = new PasswordController();
-export { passwordController };
+export const passwordController = new PasswordController();
+export default passwordController;

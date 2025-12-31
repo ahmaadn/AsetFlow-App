@@ -1,73 +1,90 @@
 import { formatSize } from '@asetflow/shared';
 import type { DashboardStatistics, RecentFile } from '@asetflow/shared-types';
 
-import * as statisticsRepository from '../repositories/statistics.repository.js';
+import logger from '../configs/logger.config.js';
+import type { IStatisticsRepository } from '../repositories/statistics.repository.js';
 import {
   calculateAssetTypeDistribution,
   calculateRecentUploadActivity,
   getStartDate,
 } from '../utils/statistics.helper.js';
 
-/**
- * Get all dashboard statistics in one call
- */
-export const getDashboardStatistics = async (
-  userId: string
-): Promise<DashboardStatistics> => {
-  const [
-    totalAssets,
-    totalFolders,
-    totalUsers,
-    storageBytes,
-    totalViews,
-    rawRecentFiles,
-    assetMimeTypes,
-    recentAssets,
-  ] = await Promise.all([
-    statisticsRepository.countUserAssets(userId),
-    statisticsRepository.countUserFolders(userId),
-    statisticsRepository.countTotalUsers(),
-    statisticsRepository.calculateUserStorage(userId),
-    statisticsRepository.calculateTotalViews(userId),
-    statisticsRepository.findRecentFiles(userId, 5),
-    statisticsRepository.findUserAssetMimeTypes(userId),
-    statisticsRepository.findAssetsInDateRange(userId, getStartDate(7)),
-  ]);
+export class StatisticsService {
+  private statisticsRepository: IStatisticsRepository;
+  constructor(statisticsRepository: IStatisticsRepository) {
+    this.statisticsRepository = statisticsRepository;
+  }
 
-  // Format storage
-  const totalStorage = formatSize(Number(storageBytes));
+  /**
+   * Get all dashboard statistics in one call
+   */
+  async getUserDashboardStatistics(
+    userId: string
+  ): Promise<DashboardStatistics> {
+    logger.info(`Fetching dashboard statistics for user: ${userId}`);
+    const timeStart = Date.now();
+    const [
+      totalAssets,
+      totalFolders,
+      totalUsers,
+      storageBytes,
+      totalViews,
+      rawRecentFiles,
+      countByMimeType,
+      recentAssets,
+    ] = await Promise.all([
+      this.statisticsRepository.countUserAssets(userId),
+      this.statisticsRepository.countUserFolders(userId),
+      this.statisticsRepository.countTotalUsers(),
+      this.statisticsRepository.calculateUserStorage(userId),
+      this.statisticsRepository.calculateTotalViews(userId),
+      this.statisticsRepository.findRecentFiles(userId, 5),
+      this.statisticsRepository.countAssetsByMimeType(userId),
+      this.statisticsRepository.findAssetsInDateRange(userId, getStartDate(7)),
+    ]);
+    const timeEnd = Date.now();
+    logger.info(
+      `Fetched dashboard statistics for user: ${userId} in ${
+        timeEnd - timeStart
+      } ms`
+    );
 
-  // Calculate asset type distribution
-  const assetTypeDistribution = calculateAssetTypeDistribution(assetMimeTypes);
+    // Format storage
+    const totalStorage = formatSize(Number(storageBytes));
 
-  // Calculate recent upload activity
-  const recentUploadActivity = calculateRecentUploadActivity(recentAssets, 7);
+    // Calculate asset type distribution
+    const assetTypeDistribution =
+      calculateAssetTypeDistribution(countByMimeType);
 
-  const recentFiles: RecentFile[] = rawRecentFiles.map((file) => ({
-    id: file.id,
-    name: file.name,
-    slug: file.slug,
-    size: Number(file.size),
-    mimeType: file.mimeType,
-    url: file.url,
-    format: file.format,
-    viewCount: file.viewCount,
-    createdAt: file.createdAt,
-    folder: {
-      name: file.folder.name,
-      slug: file.folder.slug,
-    },
-  }));
+    // Calculate recent upload activity
+    const recentUploadActivity = calculateRecentUploadActivity(recentAssets, 7);
 
-  return {
-    totalAssets,
-    totalFolders,
-    totalUsers,
-    totalStorage,
-    storageBytes: Number(storageBytes),
-    totalViews,
-    recentFiles,
-    assetTypeDistribution,
-    recentUploadActivity,
-  };
-};
+    const recentFiles: RecentFile[] = rawRecentFiles.map((file) => ({
+      id: file.id,
+      name: file.name,
+      slug: file.slug,
+      size: Number(file.size),
+      mimeType: file.mimeType,
+      url: file.url,
+      format: file.format,
+      viewCount: file.viewCount,
+      createdAt: file.createdAt,
+      folder: {
+        name: file.folder.name,
+        slug: file.folder.slug,
+      },
+    }));
+
+    return {
+      totalAssets,
+      totalFolders,
+      totalUsers,
+      totalStorage,
+      storageBytes: Number(storageBytes),
+      totalViews,
+      recentFiles,
+      assetTypeDistribution,
+      recentUploadActivity,
+    };
+  }
+}

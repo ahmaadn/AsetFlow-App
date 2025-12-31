@@ -1,14 +1,18 @@
 import { Router } from 'express';
 
-import * as statisticsController from '../controllers/statistics.controller.js';
+import statisticsController from '../controllers/statistics.controller.js';
 import { authenticateUserWithRoles } from '../middleware/auth.middleware.js';
 
-const router: Router = Router();
+export function createStatisticsRoutes(): Router {
+  const router: Router = Router();
 
-// All routes require authentication
-router.use(authenticateUserWithRoles(['ADMIN', 'USER']));
+  router.use(authenticateUserWithRoles(['ADMIN', 'USER']));
 
-// Get all dashboard statistics in one endpoint
-router.get('/dashboard', statisticsController.getDashboardStatistics);
+  router.get(
+    '/dashboard',
+    statisticsController.getUserDashboardStatistics.bind(statisticsController)
+  );
 
-export default router;
+  return router;
+}
+export default createStatisticsRoutes;

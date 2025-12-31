@@ -7,6 +7,9 @@ interface CreateUserDTO {
   role?: UserRole;
 }
 
+/**
+ * User Repository Interface
+ */
 export interface IUserRepository {
   /**
    * Find user by email
@@ -15,11 +18,23 @@ export interface IUserRepository {
    */
   findByEmail(email: string): Promise<UserModel | null>;
 
+  /**
+   * Create a new user
+   * @param user User data
+   */
   create(user: CreateUserDTO): Promise<UserModel>;
 
+  /**
+   * Update user's password
+   * @param userId User's ID
+   * @param newPassword New password string
+   */
   updatePassword(userId: string, newPassword: string): Promise<void>;
 }
 
+/**
+ * User Repository Implementation
+ */
 class UserRepository implements IUserRepository {
   async findByEmail(email: string): Promise<UserModel | null> {
     return await prisma.user.findUnique({
@@ -47,3 +62,4 @@ class UserRepository implements IUserRepository {
 }
 
 export const userRepository = new UserRepository();
+export default userRepository;
