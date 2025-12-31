@@ -1,5 +1,8 @@
 import { formatSize } from '@asetflow/shared';
-import type { DashboardStatistics, RecentFile } from '@asetflow/shared-types';
+import type {
+  DashboardStatisticsResponse,
+  RecentFileType,
+} from '@asetflow/shared-types';
 
 import logger from '../configs/logger.config.js';
 import type { IStatisticsRepository } from '../repositories/statistics.repository.js';
@@ -20,7 +23,7 @@ export class StatisticsService {
    */
   async getUserDashboardStatistics(
     userId: string
-  ): Promise<DashboardStatistics> {
+  ): Promise<DashboardStatisticsResponse> {
     logger.info(`Fetching dashboard statistics for user: ${userId}`);
     const timeStart = Date.now();
     const [
@@ -59,7 +62,7 @@ export class StatisticsService {
     // Calculate recent upload activity
     const recentUploadActivity = calculateRecentUploadActivity(recentAssets, 7);
 
-    const recentFiles: RecentFile[] = rawRecentFiles.map((file) => ({
+    const recentFiles: RecentFileType[] = rawRecentFiles.map((file) => ({
       id: file.id,
       name: file.name,
       slug: file.slug,

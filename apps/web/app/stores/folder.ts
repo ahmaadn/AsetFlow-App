@@ -1,4 +1,4 @@
-import type { FolderItem } from '@asetflow/shared-types';
+import type { FolderItemType } from '@asetflow/shared-types';
 import type {
   CreateFolderInput,
   UpdateFolderInput,
@@ -6,7 +6,7 @@ import type {
 import { FetchError } from 'ofetch';
 
 interface FolderState {
-  folders: FolderItem[];
+  folders: FolderItemType[];
   isLoading: boolean;
   searchQuery: string;
 }
@@ -19,7 +19,7 @@ export const useFolderStore = defineStore('folder', {
   }),
 
   getters: {
-    filteredFolders(state): FolderItem[] {
+    filteredFolders(state): FolderItemType[] {
       if (!state.searchQuery) {
         return state.folders;
       }
@@ -141,7 +141,7 @@ export const useFolderStore = defineStore('folder', {
       this.isLoading = false;
     },
 
-    findFolderById(folderId: string): FolderItem | null {
+    findFolderById(folderId: string): FolderItemType | null {
       const folder = this.folders.find((folder) => folder.id === folderId);
       return folder || null;
     },
@@ -149,7 +149,7 @@ export const useFolderStore = defineStore('folder', {
     /**
      * Set folders
      */
-    setFolders(folders: Array<FolderItem>) {
+    setFolders(folders: Array<FolderItemType>) {
       this.folders = folders;
     },
 

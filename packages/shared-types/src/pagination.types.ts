@@ -1,4 +1,7 @@
-export type PaginationResult<T> = {
+// Response Types
+// -------------------------
+
+export type PaginationResponse<T> = {
   items: T[];
   total: number;
   page: number;

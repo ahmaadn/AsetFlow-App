@@ -1,6 +1,6 @@
 import { ErrorCode } from '@asetflow/shared';
 import type {
-  PaginationResult,
+  PaginationResponse,
   FolderDetailResponse,
 } from '@asetflow/shared-types';
 import type {
@@ -35,7 +35,7 @@ export class FolderService {
       sort_by = 'createdAt',
       order = 'desc',
     }: Partial<GetFolderInput>
-  ): Promise<PaginationResult<FolderDetailResponse>> {
+  ): Promise<PaginationResponse<FolderDetailResponse>> {
     logger.info(
       `Fetching folders for user ID: ${user_id}, Page: ${page}, Per Page: ${per_page}, Search: "${search}", Sort By: ${sort_by}, Order: ${order}`
     );

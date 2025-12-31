@@ -1,5 +1,5 @@
 import { getAssetTypeFromMime } from '@asetflow/shared';
-import { MetadataAsset } from '@asetflow/shared-types';
+import type { MetadataAssetType } from '@asetflow/shared-types';
 import { UploadApiOptions, UploadApiResponse } from 'cloudinary';
 
 import { InternalServerError } from './api-error.js';
@@ -65,12 +65,12 @@ export const uploadToCloudinary = (
  * Mengekstrak metadata dari response Cloudinary berdasarkan tipe MIME
  * @param mimeType Tipe MIME dari file
  * @param result Response dari Cloudinary setelah upload
- * @returns MetadataAsset
+ * @returns MetadataAssetType
  */
 export const extractMetadataFromCloudinary = (
   mimeType: string,
   result: UploadApiResponse
-): MetadataAsset => {
+): MetadataAssetType => {
   const typeAsset = getAssetTypeFromMime(mimeType);
 
   const metadata: Record<string, unknown> = {
@@ -98,5 +98,5 @@ export const extractMetadataFromCloudinary = (
     }
   }
 
-  return metadata as unknown as MetadataAsset;
+  return metadata as unknown as MetadataAssetType;
 };

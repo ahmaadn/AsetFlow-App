@@ -1,6 +1,6 @@
 import { AssetModel, type Prisma, prisma } from '@asetflow/database';
 import { GeneralAssetType } from '@asetflow/shared';
-import { AssetCreate } from '@asetflow/shared-types';
+import type { CreateAssetDTO } from '@asetflow/shared-types';
 
 import { buildAssetTypeFilter } from '../utils/query-helper.js';
 
@@ -27,7 +27,7 @@ export interface IAssetRepository {
    * @param data data for the new Asset
    * @returns Asset that has been created
    */
-  create(data: AssetCreate): Promise<AssetModel>;
+  create(data: CreateAssetDTO): Promise<AssetModel>;
 
   /**
    * Find an asset by ID
@@ -103,7 +103,7 @@ export interface IAssetRepository {
 }
 
 class AssetRepository implements IAssetRepository {
-  async create(data: AssetCreate): Promise<AssetModel> {
+  async create(data: CreateAssetDTO): Promise<AssetModel> {
     return await prisma.asset.create({
       data: {
         folderId: data.folderId,

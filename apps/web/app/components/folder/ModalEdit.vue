@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { FolderItem } from '@asetflow/shared-types';
+import type { FolderItemType } from '@asetflow/shared-types';
 import { UpdateFolderSchema } from '@asetflow/validators';
 
 const props = withDefaults(
   defineProps<{
     modelValue: boolean;
-    folderItem: FolderItem;
+    folderItem: FolderItemType;
     teleportTo?: string | HTMLElement | null;
   }>(),
   {
@@ -17,7 +17,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
   (e: 'cancel'): void;
-  (e: 'update', folderItem: FolderItem): void;
+  (e: 'update', folderItem: FolderItemType): void;
 }>();
 
 const isOpen = computed({

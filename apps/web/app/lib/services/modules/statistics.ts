@@ -1,4 +1,4 @@
-import type { DashboardStatistics } from '@asetflow/shared-types';
+import type { DashboardStatisticsResponse } from '@asetflow/shared-types';
 import type { UseFetchOptions } from 'nuxt/app';
 import { API_CONFIG } from '../config';
 
@@ -29,11 +29,11 @@ export class StatisticsService<T extends Fetcher> {
    * @returns Dashboard statistics based on fetch type
    */
   getDashboardStatistics(
-    options?: FetchOptions<T, DashboardStatistics>
-  ): FetchReturnType<T, DashboardStatistics> {
+    options?: FetchOptions<T, DashboardStatisticsResponse>
+  ): FetchReturnType<T, DashboardStatisticsResponse> {
     const url = `${API_CONFIG.VERSION}/statistics/dashboard`;
 
-    return this.fetcher<DashboardStatistics>(url, {
+    return this.fetcher<DashboardStatisticsResponse>(url, {
       method: 'GET',
       ...options,
     });

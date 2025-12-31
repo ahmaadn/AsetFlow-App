@@ -1,5 +1,5 @@
 import { generateSlug, getExtension } from '@asetflow/shared';
-import type { AssetResponse, MetadataAsset } from '@asetflow/shared-types';
+import type { AssetResponse, MetadataAssetType } from '@asetflow/shared-types';
 
 import { CLOUDINARY_ROOT_FOLDER } from '../configs/cloudinary.config.js';
 import logger from '../configs/logger.config.js';
@@ -96,7 +96,7 @@ export class UploadService {
       viewCount: asset.viewCount,
       createdAt: asset.createdAt.toISOString(),
       updatedAt: asset.updatedAt.toISOString(),
-      metadata: asset.metadata as unknown as MetadataAsset,
+      metadata: asset.metadata as unknown as MetadataAssetType,
     };
   }
 }

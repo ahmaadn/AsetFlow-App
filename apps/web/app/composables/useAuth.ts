@@ -8,7 +8,7 @@ import {
 import type {
   AccessTokenResponse,
   PayloadTokenResponse,
-  SimpleUser,
+  SimpleUserType,
 } from '@asetflow/shared-types';
 import type { FetchError } from 'ofetch';
 import { useFetchAPI } from './useApiFetch';
@@ -28,7 +28,7 @@ export function useAuth() {
     maxAge: 7 * 24 * 60 * 60, // 7 days
   });
 
-  const user = useState<SimpleUser | null>('auth_user', () => null);
+  const user = useState<SimpleUserType | null>('auth_user', () => null);
   const isAuthenticated = computed(
     () => !!accessToken.value && !!refreshToken.value
   );

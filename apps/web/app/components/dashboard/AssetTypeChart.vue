@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { AssetTypeDistribution } from '@asetflow/shared-types';
+import type { AssetDistributionType } from '@asetflow/shared-types';
 import { VisSingleContainer, VisDonut, VisTooltip } from '@unovis/vue';
 import { Donut } from '@unovis/ts';
 
 interface Props {
-  data?: AssetTypeDistribution[];
+  data?: AssetDistributionType[];
   isLoading?: boolean;
 }
 
@@ -32,11 +32,11 @@ const total = computed(() => {
 });
 
 // Unovis donut configuration
-const value = (d: AssetTypeDistribution) => d.count;
+const value = (d: AssetDistributionType) => d.count;
 const donutColors = computed(() => chartData.value.map((d) => d.color));
 
 const triggers = {
-  [Donut.selectors.segment]: (d: { data: AssetTypeDistribution }) => {
+  [Donut.selectors.segment]: (d: { data: AssetDistributionType }) => {
     const item = d.data;
     const itemData = chartData.value.find((cd) => cd.type === item.type);
     return `

@@ -1,7 +1,7 @@
 import { getAssetTypeFromMime } from '@asetflow/shared';
-import {
-  AssetTypeDistribution,
-  RecentUploadActivity,
+import type {
+  AssetDistributionType,
+  RecentUploadActivityType,
 } from '@asetflow/shared-types';
 
 /**
@@ -9,7 +9,7 @@ import {
  */
 export function calculateAssetTypeDistribution(
   groupedAssets: { mimeType: string; _count: { mimeType: number } }[]
-): AssetTypeDistribution[] {
+): AssetDistributionType[] {
   const typeMap = new Map<string, number>();
 
   groupedAssets.forEach((asset) => {
@@ -22,7 +22,7 @@ export function calculateAssetTypeDistribution(
     (sum, asset) => sum + asset._count.mimeType,
     0
   );
-  const distribution: AssetTypeDistribution[] = [];
+  const distribution: AssetDistributionType[] = [];
 
   // Calculate raw percentages and keep track of remainders
   const temp: {
@@ -78,7 +78,7 @@ export function calculateAssetTypeDistribution(
 export function calculateRecentUploadActivity(
   assets: { createdAt: Date }[],
   days: number
-): RecentUploadActivity[] {
+): RecentUploadActivityType[] {
   const startDate = getStartDate(days);
   const dateMap = new Map<string, number>();
 
@@ -96,7 +96,7 @@ export function calculateRecentUploadActivity(
     dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
   });
 
-  const activity: RecentUploadActivity[] = [];
+  const activity: RecentUploadActivityType[] = [];
   dateMap.forEach((count, date) => {
     activity.push({ date, count });
   });

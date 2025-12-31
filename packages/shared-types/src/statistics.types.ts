@@ -1,16 +1,7 @@
-export interface DashboardStatistics {
-  totalAssets: number;
-  totalFolders: number;
-  totalUsers: number;
-  totalStorage: string;
-  storageBytes: number;
-  totalViews: number;
-  recentFiles: RecentFile[];
-  assetTypeDistribution: AssetTypeDistribution[];
-  recentUploadActivity: RecentUploadActivity[];
-}
+// Types
+// -------------------------
 
-export interface RecentFile {
+export interface RecentFileType {
   id: string;
   name: string;
   slug: string;
@@ -26,13 +17,28 @@ export interface RecentFile {
   };
 }
 
-export interface AssetTypeDistribution {
+export interface AssetDistributionType {
   type: string;
   count: number;
   percentage: number;
 }
 
-export interface RecentUploadActivity {
+export interface RecentUploadActivityType {
   date: string;
   count: number;
+}
+
+// Response Types
+// -------------------------
+
+export interface DashboardStatisticsResponse {
+  totalAssets: number;
+  totalFolders: number;
+  totalUsers: number;
+  totalStorage: string;
+  storageBytes: number;
+  totalViews: number;
+  recentFiles: RecentFileType[];
+  assetTypeDistribution: AssetDistributionType[];
+  recentUploadActivity: RecentUploadActivityType[];
 }

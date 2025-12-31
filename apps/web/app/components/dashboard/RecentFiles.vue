@@ -4,10 +4,10 @@ import {
   formatSize,
   getIconForMimeType,
 } from '@asetflow/shared';
-import type { RecentFile } from '@asetflow/shared-types';
+import type { RecentFileType } from '@asetflow/shared-types';
 
 interface Props {
-  files?: RecentFile[];
+  files?: RecentFileType[];
   isLoading?: boolean;
 }
 

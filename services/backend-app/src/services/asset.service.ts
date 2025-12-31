@@ -1,9 +1,9 @@
 import { AssetModel } from '@asetflow/database';
-import {
-  AssetCreate,
+import type {
+  CreateAssetDTO,
   AssetResponse,
-  MetadataAsset,
-  PaginationResult,
+  MetadataAssetType,
+  PaginationResponse,
 } from '@asetflow/shared-types';
 import {
   GetAssetsByTypeInput,
@@ -33,7 +33,7 @@ export class AssetService {
    * @param data Data for the new asset
    * @returns Asset that has been created
    */
-  async createAsset(data: AssetCreate): Promise<AssetModel> {
+  async createAsset(data: CreateAssetDTO): Promise<AssetModel> {
     return await this.assetRepository.create(data);
   }
 
@@ -46,7 +46,7 @@ export class AssetService {
   async getAssetsByFolder(
     folderId: string,
     queryParams: Partial<GetAssetsInput>
-  ): Promise<PaginationResult<AssetResponse>> {
+  ): Promise<PaginationResponse<AssetResponse>> {
     const {
       page = 1,
       per_page = 20,
@@ -85,7 +85,7 @@ export class AssetService {
         url: asset.url,
         format: asset.format,
         viewCount: asset.viewCount,
-        metadata: asset.metadata as unknown as MetadataAsset,
+        metadata: asset.metadata as unknown as MetadataAssetType,
         createdAt: asset.createdAt.toISOString(),
         updatedAt: asset.updatedAt.toISOString(),
       })),
@@ -103,7 +103,7 @@ export class AssetService {
    */
   async getAssetsByType(
     queryParams: Partial<GetAssetsByTypeInput>
-  ): Promise<PaginationResult<AssetResponse>> {
+  ): Promise<PaginationResponse<AssetResponse>> {
     const {
       page = 1,
       per_page = 20,
@@ -136,7 +136,7 @@ export class AssetService {
         mimeType: asset.mimeType,
         url: asset.url,
         format: asset.format,
-        metadata: asset.metadata as unknown as MetadataAsset,
+        metadata: asset.metadata as unknown as MetadataAssetType,
         viewCount: asset.viewCount,
         createdAt: asset.createdAt.toISOString(),
         updatedAt: asset.updatedAt.toISOString(),
@@ -188,7 +188,7 @@ export class AssetService {
       mimeType: updatedAsset.mimeType,
       url: updatedAsset.url,
       format: updatedAsset.format,
-      metadata: updatedAsset.metadata as unknown as MetadataAsset,
+      metadata: updatedAsset.metadata as unknown as MetadataAssetType,
       viewCount: updatedAsset.viewCount,
       createdAt: updatedAsset.createdAt.toISOString(),
       updatedAt: updatedAsset.updatedAt.toISOString(),
@@ -217,7 +217,7 @@ export class AssetService {
       mimeType: asset.mimeType,
       url: asset.url,
       format: asset.format,
-      metadata: asset.metadata as unknown as MetadataAsset,
+      metadata: asset.metadata as unknown as MetadataAssetType,
       viewCount: asset.viewCount,
       createdAt: asset.createdAt.toISOString(),
       updatedAt: asset.updatedAt.toISOString(),

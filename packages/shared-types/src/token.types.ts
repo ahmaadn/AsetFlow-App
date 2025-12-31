@@ -1,9 +1,12 @@
-import { SimpleUser } from './user.types';
+import { SimpleUserType } from './user.types';
+
+// Response Types
+// -------------------------
 
 export interface AccessTokenResponse {
   accessToken: string;
   expiresIn: number;
-  user: SimpleUser;
+  user: SimpleUserType;
 }
 
 export interface PayloadTokenResponse {
