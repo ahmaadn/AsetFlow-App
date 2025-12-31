@@ -94,14 +94,6 @@ const envSchema = z.object({
     .default('asetflow')
     .describe('Cloudinary root folder for uploads'),
 
-  // Google OAuth Configuration
-  GOOGLE_CLIENT_ID: z.string().optional().describe('Google OAuth client ID'),
-
-  GOOGLE_CLIENT_SECRET: z
-    .string()
-    .optional()
-    .describe('Google OAuth client secret'),
-
   // Email Service Configuration
   MAIL_SERVICE_PROVIDER: z
     .enum(['google', 'smtp'])
