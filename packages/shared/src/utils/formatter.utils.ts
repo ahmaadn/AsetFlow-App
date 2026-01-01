@@ -20,8 +20,8 @@ export const formatDisplayDate = (dateInput: string | Date): string => {
   let result: string;
   if (diffMs > ONE_DAY_IN_MS) {
     // Format: DD-MM-YYYY
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = ('0' + date.getDate()).slice(-2);
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
     const year = date.getFullYear();
     result = `${day}-${month}-${year}`;
   } else {
