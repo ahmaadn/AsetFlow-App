@@ -1,0 +1,17 @@
+components:
+  schemas:
+    UpdateFolderRequest:
+      type: object
+      required:
+        - file
+        - filename
+      properties:
+        file:
+          type: string
+          format: binary
+        filename:
+          type: string
+          description: Ganti nama file saat disimpan
+        slug:
+          type: string
+          description: Slug kustom untuk file yang diunggah

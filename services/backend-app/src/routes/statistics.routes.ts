@@ -8,6 +8,22 @@ export function createStatisticsRoutes(): Router {
 
   router.use(authenticateUserWithRoles(['ADMIN', 'USER']));
 
+  /**
+   * @swagger
+   * /v1/statistics/dashboard:
+   *   get:
+   *     summary: Get user dashboard statistics
+   *     tags: [Statistics]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         $ref : '#/components/responses/UserDashboardStatisticsResponse'
+   *       4xx:
+   *        $ref : '#/components/responses/ApiError'
+   *       5xx:
+   *        $ref : '#/components/responses/ApiError'
+   */
   router.get(
     '/dashboard',
     statisticsController.getUserDashboardStatistics.bind(statisticsController)

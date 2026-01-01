@@ -25,36 +25,20 @@ export function createFolderRoutes(): Router {
    *     security:
    *       - bearerAuth: []
    *     parameters:
-   *       - in: query
-   *         name: page
-   *         schema:
-   *           type: integer
-   *         description: Page number for pagination
-   *       - in: query
-   *         name: per_page
-   *         schema:
-   *           type: integer
-   *         description: Number of items per page for pagination
-   *       - in: query
-   *         name: search
-   *         schema:
-   *           type: string
-   *         description: Search term for filtering folders
-   *       - in: query
-   *         name: sort_by
-   *         schema:
-   *           type: string
-   *         description: Field to sort by
-   *       - in: query
-   *         name: order
-   *         schema:
-   *           type: string
-   *           enum: [asc, desc]
-   *         description: Sort order (ascending or descending)
-   *
+   *       - $ref : '#/components/parameters/QueryPageParam'
+   *       - $ref : '#/components/parameters/QueryPerPageParam'
+   *       - $ref : '#/components/parameters/QuerySearchParam'
+   *       - $ref : '#/components/parameters/QueryFolderSortByParam'
+   *       - $ref : '#/components/parameters/QueryOrderParam'
    *     responses:
    *       200:
-   *         description: A list of folders
+   *         $ref : '#/components/responses/PaginationFolderResponse'
+   *       401:
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.get(
     '/',
@@ -75,20 +59,16 @@ export function createFolderRoutes(): Router {
    *       content:
    *         application/json:
    *           schema:
-   *             type: object
-   *             required:
-   *               - name
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 example: "Designs"
-   *               slug:
-   *                 type: string
-   *                 nullable: true
-   *                 example: "designs"
+   *             $ref: '#/components/schemas/CreateFolderItem'
    *    responses:
-   *      201:
-   *        description: Folder created successfully
+   *       201:
+   *         $ref : '#/components/responses/DetailFolderResponse'
+   *       401:
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.post(
     '/',
@@ -105,31 +85,22 @@ export function createFolderRoutes(): Router {
    *    security:
    *      - bearerAuth: []
    *    parameters:
-   *      - in: path
-   *        name: id
-   *        required: true
-   *        schema:
-   *         type: string
-   *         format: uuid
+   *      - $ref: '#/components/parameters/FolderIdParam'
    *    requestBody:
    *       required: true
    *       content:
    *         application/json:
    *           schema:
-   *             type: object
-   *             required:
-   *               - name
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 example: "Designs"
-   *               slug:
-   *                 type: string
-   *                 nullable: true
-   *                 example: "designs"
+   *             $ref: '#/components/schemas/UpdateFolderItem'
    *    responses:
-   *      201:
-   *        description: Folder updated successfully
+   *       200:
+   *         $ref : '#/components/responses/DetailFolderResponse'
+   *       401:
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.put(
     '/:id',
@@ -146,15 +117,16 @@ export function createFolderRoutes(): Router {
    *    security:
    *      - bearerAuth: []
    *    parameters:
-   *      - in: path
-   *        name: id
-   *        required: true
-   *        schema:
-   *         type: string
-   *         format: uuid
+   *      - $ref: '#/components/parameters/FolderIdParam'
    *    responses:
    *      204:
-   *        description: Folder deleted successfully
+   *        $ref : '#/components/responses/NoContentResponse'
+   *      401:
+   *        $ref : '#/components/responses/UnauthorizedError'
+   *      422:
+   *        $ref : '#/components/responses/ValidationError'
+   *      500:
+   *        $ref : '#/components/responses/ApiError'
    */
   router.delete(
     '/:id',
@@ -171,17 +143,18 @@ export function createFolderRoutes(): Router {
    *    security:
    *      - bearerAuth: []
    *    parameters:
-   *      - in: path
-   *        name: id
-   *        required: true
-   *        schema:
-   *         type: string
-   *         format: uuid
+   *      - $ref: '#/components/parameters/FolderIdParam'
    *    responses:
    *      200:
-   *        description: Folder exists
+   *        $ref : '#/components/responses/NoContentResponse'
+   *      401:
+   *        $ref : '#/components/responses/UnauthorizedError'
    *      404:
-   *        description: Folder not found
+   *        $ref : '#/components/responses/NoContentResponse'
+   *      422:
+   *        $ref : '#/components/responses/ValidationError'
+   *      500:
+   *        $ref : '#/components/responses/ApiError'
    */
   router.head(
     '/check/:id',
@@ -198,43 +171,21 @@ export function createFolderRoutes(): Router {
    *     security:
    *       - bearerAuth: []
    *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         schema:
-   *           type: string
-   *           format: uuid
-   *         description: ID folder
-   *       - in: query
-   *         name: page
-   *         schema:
-   *           type: integer
-   *         description: Page number for pagination
-   *       - in: query
-   *         name: per_page
-   *         schema:
-   *           type: integer
-   *         description: Number of items per page
-   *       - in: query
-   *         name: assetType
-   *         schema:
-   *           type: string
-   *         description: Filter by asset type (image, video, etc)
-   *       - in: query
-   *         name: sort_by
-   *         schema:
-   *           type: string
-   *           enum: [createdAt, name, size]
-   *         description: Field to sort by
-   *       - in: query
-   *         name: order
-   *         schema:
-   *           type: string
-   *           enum: [asc, desc]
-   *         description: Sort order
+   *       - $ref: '#/components/parameters/FolderIdParam'
+   *       - $ref: '#/components/parameters/QueryPageParam'
+   *       - $ref: '#/components/parameters/QueryPerPageParam'
+   *       - $ref: '#/components/parameters/QueryAssetTypeParam'
+   *       - $ref: '#/components/parameters/QueryAssetSortByParam'
+   *       - $ref: '#/components/parameters/QueryOrderParam'
    *     responses:
    *       200:
-   *         description: A list of assets
+   *         $ref : '#/components/responses/PaginationListAssetResponse'
+   *       401:
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.get(
     '/:id/assets',

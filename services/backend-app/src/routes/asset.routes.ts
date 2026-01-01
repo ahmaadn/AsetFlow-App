@@ -23,29 +23,22 @@ export function createAssetRoutes(): Router {
    *     security:
    *       - bearerAuth: []
    *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         schema:
-   *           type: string
-   *           format: uuid
-   *         description: ID asset
+   *       - $ref: '#/components/parameters/AssetIdParam'
    *     requestBody:
    *       required: true
    *       content:
    *         application/json:
    *           schema:
-   *             type: object
-   *             properties:
-   *               originalName:
-   *                 type: string
-   *                 example: "Updated Image Name"
-   *               slug:
-   *                 type: string
-   *                 example: "updated-image-name"
+   *             $ref: '#/components/schemas/UpdateAssetRequest'
    *     responses:
    *       200:
-   *         description: Asset updated successfully
+   *         $ref: '#/components/responses/AssetItemResponse'
+   *       401:
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.put(
     '/:id',
@@ -63,22 +56,16 @@ export function createAssetRoutes(): Router {
    *     security:
    *       - bearerAuth: []
    *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         schema:
-   *           type: string
-   *           format: uuid
-   *         description: ID of the asset to delete
+   *       - $ref: '#/components/parameters/AssetIdParam'
    *     responses:
    *       204:
-   *         description: Asset deleted successfully
+   *         $ref : '#/components/responses/NoContentResponse'
    *       401:
-   *         description: Unauthorized - User not authenticated
-   *       404:
-   *         description: Asset not found
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
    *       500:
-   *         description: Internal server error
+   *         $ref : '#/components/responses/ApiError'
    */
   router.delete(
     '/:id',
@@ -96,22 +83,16 @@ export function createAssetRoutes(): Router {
    *     security:
    *       - bearerAuth: []
    *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         schema:
-   *           type: string
-   *           format: uuid
-   *         description: ID of the asset to retrieve
+   *       - $ref: '#/components/parameters/AssetIdParam'
    *     responses:
-   *       204:
-   *         description: Asset deleted successfully
+   *       200:
+   *         $ref: '#/components/responses/AssetItemResponse'
    *       401:
-   *         description: Unauthorized - User not authenticated
-   *       404:
-   *         description: Asset not found
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
    *       500:
-   *         description: Internal server error
+   *         $ref : '#/components/responses/ApiError'
    */
   router.get(
     '/:id',
@@ -128,36 +109,20 @@ export function createAssetRoutes(): Router {
    *     security:
    *       - bearerAuth: []
    *     parameters:
-   *       - in: query
-   *         name: page
-   *         schema:
-   *           type: integer
-   *         description: Page number for pagination
-   *       - in: query
-   *         name: per_page
-   *         schema:
-   *           type: integer
-   *         description: Number of items per page
-   *       - in: query
-   *         name: assetType
-   *         schema:
-   *           type: string
-   *         description: Filter by asset type (image, video, etc)
-   *       - in: query
-   *         name: sort_by
-   *         schema:
-   *           type: string
-   *           enum: [createdAt, name, size]
-   *         description: Field to sort by
-   *       - in: query
-   *         name: order
-   *         schema:
-   *           type: string
-   *           enum: [asc, desc]
-   *         description: Sort order
+   *       - $ref: '#/components/parameters/QueryPageParam'
+   *       - $ref: '#/components/parameters/QueryPerPageParam'
+   *       - $ref: '#/components/parameters/QueryAssetTypeParam'
+   *       - $ref: '#/components/parameters/QueryAssetSortByParam'
+   *       - $ref: '#/components/parameters/QueryOrderParam'
    *     responses:
    *       200:
-   *         description: A list of assets
+   *         $ref : '#/components/responses/PaginationListAssetResponse'
+   *       401:
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.get(
     '',

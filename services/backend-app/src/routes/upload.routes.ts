@@ -21,43 +21,30 @@ export function createUploadRoutes(): Router {
    *     security:
    *       - bearerAuth: []
    *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         schema:
-   *           type: string
-   *         description: ID folder tujuan penyimpanan berkas
+   *       - $ref: '#/components/parameters/FolderIdParam'
    *     requestBody:
    *       required: true
    *       content:
    *         multipart/form-data:
    *           schema:
-   *             type: object
-   *             required:
-   *               - file
-   *             properties:
-   *               file:
-   *                 type: string
-   *                 format: binary
-   *               filename:
-   *                 type: string
-   *                 description: Ganti nama file saat disimpan
-   *               slug:
-   *                 type: string
-   *                 description: Slug kustom untuk file yang diunggah
+   *             $ref: '#/components/schemas/UpdateFolderRequest'
    *     responses:
-   *       '201':
-   *         description: Berhasil mengunggah file
-   *       '400':
+   *       201:
+   *         $ref: '#/components/responses/AssetItemResponse'
+   *       4xx:
+   *         $ref : '#/components/responses/ApiError'
+   *       400:
    *         description: Validasi gagal atau payload tidak sesuai
-   *       '401':
-   *         description: Tidak terotorisasi
-   *       '413':
+   *       401:
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       413:
    *         description: Ukuran file terlalu besar
-   *       '415':
+   *       415:
    *         description: Tipe media tidak didukung
-   *       '500':
-   *         description: Kesalahan server
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.post(
     '/:id/upload',

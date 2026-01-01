@@ -1,0 +1,145 @@
+components:
+  schemas:
+    SimpleFolderItem:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the folder
+        slug:
+          type: string
+          description: The slug for the folder
+      required:
+        - name
+        - slug
+
+    RecentFileType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the asset
+        name:
+          type: string
+          description: The name of the asset
+        slug:
+          type: string
+          description: The slug for the asset
+        mimeType:
+          type: string
+          description: The MIME type of the asset
+        url:
+          type: string
+          description: The URL where the asset is accessible
+        format:
+          type: string
+          description: The format of the asset
+        viewCount:
+          type: integer
+          description: The number of times the asset has been viewed
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the asset
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last update timestamp of the asset
+        folder:
+          $ref: '#/components/schemas/SimpleFolderItem'
+          description: The folder containing the asset
+      required:
+        - id
+        - name
+        - slug
+        - size
+        - mimeType
+        - url
+        - format
+        - viewCount
+        - createdAt
+        - folder
+    AssetDistributionType:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of asset distribution (e.g., image, video, audio)
+        count:
+          type: integer
+          description: The number of assets with this MIME type
+        percentage:
+          type: number
+          format: float
+          description: The percentage of assets with this MIME type
+      required:
+        - type
+        - count
+        - percentage
+    RecentUploadActivityType:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: The date of the upload activity
+        count:
+          type: integer
+          description: The number of files uploaded on that date
+      required:
+        - date
+        - count
+    UserDashboardStatistics:
+      type: object
+      properties:
+        totalAssets:
+          type: number
+          description: The total number of assets
+        totalFolders:
+          type: number
+          description: The total number of folders
+        totalUsers:
+          type: number
+          description: The total number of users
+        totalStorage:
+          type: string
+          description: The total storage used
+        storageBytes:
+          type: number
+          description: The total storage used in bytes
+        totalViews:
+          type: number
+          description: The total number of views across all assets
+        recentFiles:
+          type: array
+          description: A list of recently uploaded files
+          items:
+            $ref: '#/components/schemas/RecentFileType'
+        assetTypeDistribution:
+          type: array
+          description: Distribution of assets by MIME type
+          items:
+            $ref: '#/components/schemas/AssetDistributionType'
+        recentUploadActivity:
+          type: array
+          description: Recent upload activity over time
+          items:
+            $ref: '#/components/schemas/RecentUploadActivityType'
+      required:
+        - totalAssets
+        - totalFolders
+        - totalUsers
+        - totalStorage
+        - storageBytes
+        - totalViews
+        - recentFiles
+        - assetTypeDistribution
+        - recentUploadActivity
+  responses:
+    UserDashboardStatisticsResponse:
+      description: User dashboard statistics
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserDashboardStatistics'
