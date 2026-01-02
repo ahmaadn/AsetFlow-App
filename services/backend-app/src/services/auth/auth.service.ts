@@ -119,11 +119,18 @@ export class AuthService {
 
     const passwordHashed = await hashPassword(data.password);
 
+    // First registered user becomes ADMIN
+    const userRoleCount = await this.userRepository.userCount();
+    let role: 'USER' | 'ADMIN' = 'USER';
+    if (userRoleCount.ADMIN === 0 && userRoleCount.USER === 0) {
+      role = 'ADMIN';
+    }
+
     const newUser = await this.userRepository.create({
       name: data.name,
       email: data.email,
       password: passwordHashed,
-      role: 'USER',
+      role: role || 'USER',
     });
 
     logger.info(`New user registered: ${newUser.email}`);
