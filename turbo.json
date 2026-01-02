@@ -5,7 +5,7 @@
     "build": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".output/**"],
+      "outputs": ["dist/**", ".output/**", ".vercel/**"],
       "env": [
         "NUXT_PUBLIC_*",
         "DATABASE_URL",
