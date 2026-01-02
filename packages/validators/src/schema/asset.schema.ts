@@ -23,6 +23,11 @@ export const GetAssetsByTypeSchema = GetAssetsSchema.extend({
     .default('all'),
 });
 
+export const getAssetUrlSchema = z.object({
+  folderSlug: slugSchema,
+  assetSlug: slugSchema,
+});
+
 /**
  * Schema untuk update asset
  */
@@ -61,7 +66,12 @@ export const httpParamsAssetSchema = http({
   params: z.object({ id: UUIDv4Schema }),
 });
 
+export const httpGetAssetUrlSchema = http({
+  params: getAssetUrlSchema,
+});
+
 export type httpUpdateAssetInput = z.infer<typeof httpUpdateAssetSchema>;
+export type httpGetAssetsInput = z.infer<typeof httpGetAssetsSchema>;
 
 export type UpdateAssetInput = z.infer<typeof UpdateAssetSchema>;
 
@@ -69,4 +79,4 @@ export type GetAssetsInput = z.infer<typeof GetAssetsSchema>;
 
 export type GetAssetsByTypeInput = z.infer<typeof GetAssetsByTypeSchema>;
 
-export type httpGetAssetsInput = z.infer<typeof httpGetAssetsSchema>;
+export type GetAssetUrlInput = z.infer<typeof getAssetUrlSchema>;

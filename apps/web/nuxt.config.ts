@@ -29,12 +29,11 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     // Private server-side config
-    apiBaseServer: process.env.NUXT_API_BASE_SERVER || 'http://localhost:8000',
+    apiBaseServer: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000',
 
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/',
-      publicApiBase:
-        process.env.NUXT_PUBLIC_API_PUBLIC_BASE || 'http://localhost:8003/',
+
       jwtPublicKey: process.env.NUXT_PUBLIC_JWT_PUBLIC_KEY || '',
       jwtIssuer: process.env.NUXT_PUBLIC_JWT_ISSUER || 'asetflow-backend',
       jwtAudience: process.env.NUXT_PUBLIC_JWT_AUDIENCE || 'asetflow-app',

@@ -100,6 +100,23 @@ export interface IAssetRepository {
   getByTypeWithPagination(
     options: AssetPaginationOptionsDTO
   ): Promise<AssetModel[]>;
+
+  /**
+   * Get asset by folder ID and asset slug
+   * @param folderId ID folder
+   * @param assetSlug Slug asset
+   * @returns Asset found or null if not found
+   */
+  findByFolderAndSlug(
+    folderId: string,
+    assetSlug: string
+  ): Promise<AssetModel | null>;
+
+  /**
+   * Increment view count of an asset
+   * @param assetId Asset ID
+   */
+  incrementViewCount(assetId: string): Promise<void>;
 }
 
 class AssetRepository implements IAssetRepository {
@@ -211,6 +228,29 @@ class AssetRepository implements IAssetRepository {
       skip: offset,
       orderBy: {
         [sort_by || 'createdAt']: order || 'desc',
+      },
+    });
+  }
+
+  async findByFolderAndSlug(
+    folderId: string,
+    assetSlug: string
+  ): Promise<AssetModel | null> {
+    return await prisma.asset.findFirst({
+      where: {
+        folderId,
+        slug: assetSlug,
+      },
+    });
+  }
+
+  async incrementViewCount(assetId: string): Promise<void> {
+    await prisma.asset.update({
+      where: { id: assetId },
+      data: {
+        viewCount: {
+          increment: 1,
+        },
       },
     });
   }

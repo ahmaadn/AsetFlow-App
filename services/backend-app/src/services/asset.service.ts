@@ -13,6 +13,7 @@ import {
 
 import logger from '../configs/logger.config.js';
 import { type IAssetRepository } from '../repositories/asset.repository.js';
+import { IFolderRepository } from '../repositories/folder.repository.js';
 import { ConflictError, NotFoundError } from '../utils/api-error.js';
 
 /**
@@ -23,9 +24,14 @@ import { ConflictError, NotFoundError } from '../utils/api-error.js';
 
 export class AssetService {
   private assetRepository: IAssetRepository;
+  private folderRepository: IFolderRepository;
 
-  constructor(assetRepository: IAssetRepository) {
+  constructor(
+    assetRepository: IAssetRepository,
+    folderRepository: IFolderRepository
+  ) {
     this.assetRepository = assetRepository;
+    this.folderRepository = folderRepository;
   }
 
   /**
@@ -224,6 +230,10 @@ export class AssetService {
     };
   }
 
+  /**
+   * Delete asset by ID
+   * @param assetId ID Asset
+   */
   async deleteAsset(assetId: string): Promise<void> {
     const asset = await this.assetRepository.findById(assetId);
     if (!asset) {
@@ -232,5 +242,36 @@ export class AssetService {
 
     await this.assetRepository.deleteById(assetId);
     logger.info(`Deleted asset with ID '${assetId}'`);
+  }
+
+  /**
+   * Get asset URL by folder slug and asset slug
+   * @param folderSlug slug folder
+   * @param assetSlug slug asset
+   * @returns URL of the asset
+   */
+  async getAssetUrl(folderSlug: string, assetSlug: string) {
+    // Find folder
+    const folder = await this.folderRepository.findSlug(folderSlug);
+    if (!folder) {
+      logger.warn(`Folder not found: ${folderSlug}`);
+      return null;
+    }
+
+    // Find asset
+    const asset = await this.assetRepository.findByFolderAndSlug(
+      folder.id,
+      assetSlug
+    );
+    if (!asset) {
+      logger.warn(`Asset not found: ${assetSlug} in folder: ${folderSlug}`);
+      return null;
+    }
+
+    // Increment view count
+    await this.assetRepository.incrementViewCount(asset.id);
+    logger.info(`Asset viewed: ${asset.slug}, views: ${asset.viewCount + 1}`);
+
+    return asset.url;
   }
 }

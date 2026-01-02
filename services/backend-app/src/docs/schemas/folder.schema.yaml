@@ -119,3 +119,10 @@ components:
           - name
           - createdAt
         default: name
+    QueryFolderSlugParam:
+      name: folderSlug
+      in: query
+      description: Filter folders by slug
+      required: false
+      schema:
+        type: string

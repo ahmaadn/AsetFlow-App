@@ -130,6 +130,29 @@ export function createAssetRoutes(): Router {
     assetController.getAssetsByType.bind(assetController)
   );
 
+  /**
+   * @swagger
+   * /v1/assets/url/{folderSlug}/{assetSlug}:
+   *   get:
+   *     summary: Redirect to asset URL (Cloudinary)
+   *     description: Redirects to the Cloudinary URL for the specified asset.
+   *     tags: [Redirects]
+   *     parameters:
+   *       - $ref: '#/components/parameters/QueryFolderSlugParam'
+   *       - $ref: '#/components/parameters/QueryAssetSlugParam'
+   *     responses:
+   *       302:
+   *         description: Redirect to the asset URL
+   *       4xx:
+   *         $ref : '#/components/responses/ApiError'
+   *       5xx:
+   *         $ref : '#/components/responses/ApiError'
+   */
+  router.get(
+    '/url/:folderSlug/:assetSlug',
+    assetController.redirectToAsset.bind(assetController)
+  );
+
   return router;
 }
 

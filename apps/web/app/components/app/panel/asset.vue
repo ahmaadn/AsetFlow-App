@@ -26,8 +26,7 @@ const emit = defineEmits<Emits>();
 const assetStore = useAssetStore();
 const folderStore = useFolderStore();
 const toast = useToast();
-const { getPublicAssetUrl } = usePublicApi();
-
+const config = useRuntimeConfig();
 const isEditMode = ref(false);
 const isUpdating = ref(false);
 const editForm = ref<UpdateAssetInput>({
@@ -97,7 +96,7 @@ const currentFolder = computed(() => {
 
 const publicAssetUrl = computed(() => {
   if (!currentFolder.value) return '';
-  return getPublicAssetUrl(currentFolder.value.slug, props.asset.slug);
+  return `${config.public.apiBase}/assets/url/${currentFolder.value.slug}/${props.asset.slug}`;
 });
 </script>
 
