@@ -42,7 +42,7 @@ export class UploadService {
 
     // buat slug jika tidak ada
     // Gunakan format: nama-file-tanpa-ekstensi-timestamp
-    if (!slug) {
+    if (!slug || slug.trim() === '' || slug === undefined) {
       slug = generateSlug(filename + '-' + timeUpload);
     }
 
