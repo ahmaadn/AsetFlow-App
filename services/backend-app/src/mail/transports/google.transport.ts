@@ -76,9 +76,7 @@ export class GoogleTransport extends BaseMailTransport {
       await this.transporter.verify();
       this.isReady = true;
 
-      this.log('info', 'Google transport initialized successfully', {
-        user: this.config.auth.user,
-      });
+      this.log('info', 'Google transport initialized successfully');
 
       return true;
     } catch (error) {

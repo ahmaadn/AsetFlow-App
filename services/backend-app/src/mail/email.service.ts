@@ -25,11 +25,7 @@ export class EmailService {
     try {
       const installed = await this.transportManager.installTransport();
       if (installed) {
-        const driverInfo = this.transportManager.getTransportInfo();
-        logger.info('Email service initialized successfully', {
-          installedDriver: driverInfo.installedTransportName,
-          isReady: driverInfo.isReady,
-        });
+        logger.info('Email service initialized successfully');
       } else {
         logger.warn(
           'Email service initialized with fallback (no drivers available)'

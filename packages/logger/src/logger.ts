@@ -21,13 +21,14 @@ class Logger {
       transports.push(
         new winston.transports.Console({
           format: winston.format.combine(
-            winston.format.colorize(),
+            winston.format.colorize({ level: true }),
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+            winston.format.align(),
             winston.format.printf(({ timestamp, level, message, ...meta }) => {
               const metaStr = Object.keys(meta).length
                 ? `\n${JSON.stringify(meta, null, 2)}`
                 : '';
-              return `${timestamp} [${level}]: ${message}${metaStr}`;
+              return `${timestamp} ${level}: ${message}${metaStr}`;
             })
           ),
         })

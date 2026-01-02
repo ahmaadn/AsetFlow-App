@@ -163,21 +163,21 @@ const loadEnvironmentFiles = (): void => {
   const rootDir = path.resolve(__dirname, '../../');
   const nodeEnv = process.env.NODE_ENV;
 
-  console.log(`[CONFIG] NODE_ENV detected: ${nodeEnv || 'undefined'}`);
+  // console.log(`[CONFIG] NODE_ENV detected: ${nodeEnv || 'undefined'}`);
 
   // If no NODE_ENV is set, load only .env
   if (!nodeEnv) {
-    console.log('[CONFIG] No NODE_ENV set, loading .env only');
+    // console.log('[CONFIG] No NODE_ENV set, loading .env only');
     const envPath = path.join(rootDir, '.env');
     if (fileExists(envPath)) {
       dotenv.config({ path: envPath });
-      console.log('[CONFIG] ✓ Loaded .env');
+      // console.log('[CONFIG] ✓ Loaded .env');
     } else {
       dotenv.config(); // Load default .env behavior
-      console.log('[WARN] [CONFIG] ⚠ No .env file found');
-      console.log(
-        '[CONFIG] Default dotenv behavior applied, environment variables must be set externally'
-      );
+      // console.log('[WARN] [CONFIG] ⚠ No .env file found');
+      // console.log(
+      // //   '[CONFIG] Default dotenv behavior applied, environment variables must be set externally'
+      // );
     }
     return;
   }
@@ -187,50 +187,50 @@ const loadEnvironmentFiles = (): void => {
   // Define env files based on NODE_ENV
   if (nodeEnv === 'development') {
     envFiles = ['.env.local', '.env.development', '.env.dev', '.env'];
-    console.log(
-      '[CONFIG] Development mode - checking env files in order of priority'
-    );
+    // console.log(
+    //   '[CONFIG] Development mode - checking env files in order of priority'
+    // );
   } else if (nodeEnv === 'production') {
     envFiles = ['.env.production', '.env.prod', '.env'];
-    console.log(
-      '[CONFIG] Production mode - checking env files in order of priority'
-    );
+    // console.log(
+    //   '[CONFIG] Production mode - checking env files in order of priority'
+    // );
   } else {
     // For any other NODE_ENV (test, staging, etc.)
     envFiles = [`.env.${nodeEnv}`, '.env'];
-    console.log(
-      `[CONFIG] ${nodeEnv} mode - checking env files in order of priority`
-    );
+    // console.log(
+    //   `[CONFIG] ${nodeEnv} mode - checking env files in order of priority`
+    // );
   }
 
   // Load the first available env file
-  let loaded = false;
+  // let loaded = false;
   for (const envFile of envFiles) {
     const envPath = path.join(rootDir, envFile);
     if (fileExists(envPath)) {
       dotenv.config({ path: envPath });
-      console.log(`[CONFIG] ✓ Loaded ${envFile}`);
+      // console.log(`[CONFIG] ✓ Loaded ${envFile}`);
       // Check if we're using fallback .env in production
-      if (nodeEnv === 'production' && envFile === '.env') {
-        console.log(
-          '[WARN] [CONFIG] ⚠ Using fallback .env in production - consider using .env.production or .env.prod'
-        );
-      }
+      // if (nodeEnv === 'production' && envFile === '.env') {
+      //   console.log(
+      //     '[WARN] [CONFIG] ⚠ Using fallback .env in production - consider using .env.production or .env.prod'
+      //   );
+      // }
 
-      loaded = true;
+      // loaded = true;
       break;
     } else {
       dotenv.config();
-      console.log(`[CONFIG] ✗ ${envFile} not found`);
-      console.log(
-        '[CONFIG] Default dotenv behavior applied, environment variables must be set externally'
-      );
+      // console.log(`[CONFIG] ✗ ${envFile} not found`);
+      // console.log(
+      //   '[CONFIG] Default dotenv behavior applied, environment variables must be set externally'
+      // );
     }
   }
 
-  if (!loaded) {
-    console.log('[WARN] [CONFIG] ⚠ No environment files found');
-  }
+  // if (!loaded) {
+  //   console.log('[WARN] [CONFIG] ⚠ No environment files found');
+  // }
 };
 
 /**
@@ -249,7 +249,6 @@ const validateEnvironment = () => {
     throw new Error('Environment variable validation failed');
   }
 
-  console.log('[CONFIG] ✓ Environment variables validated successfully');
   return parsed.data;
 };
 
