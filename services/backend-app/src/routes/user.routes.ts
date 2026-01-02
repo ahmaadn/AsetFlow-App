@@ -13,17 +13,18 @@ export function createUserRoutes(): Router {
    *   get:
    *     summary: Get the profile of the logged-in user
    *     description: Retrieve the profile information of the authenticated user.
-   *     tags:
-   *       - User
+   *     tags: [Users]
    *     security:
    *       - bearerAuth: []
    *     responses:
    *       200:
-   *         description: Successfully retrieved user profile
-   *       401:
-   *         description: Unauthorized
-   *       404:
-   *         description: User not found
+   *         $ref: '#/components/responses/UserInfoResponse'
+   *       4xx:
+   *         $ref : '#/components/responses/ApiError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       5xx:
+   *         $ref : '#/components/responses/ApiError'
    */
   router.get('/me', userController.getUserProfile.bind(userController));
   return router;

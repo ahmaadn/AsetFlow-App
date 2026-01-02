@@ -18,3 +18,37 @@ components:
         - id
         - email
         - role
+    UserInfoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the user
+        name:
+          type: string
+          description: Full name of the user
+        email:
+          type: string
+          format: email
+          description: User's email address
+        role:
+          type: string
+          description: Role of the user in the system
+      required:
+        - id
+        - email
+        - role
+  responses:
+    UserInfoResponse:
+      description: Detailed information about a user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserInfoResponse'
+    SimpleUserResponse:
+      description: Basic information about a user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SimpleUserResponse'

@@ -7,6 +7,10 @@ interface CreateUserDTO {
   role?: UserRole;
 }
 
+type UserCountByRoleQuery = {
+  [K in UserRole]: number;
+};
+
 /**
  * User Repository Interface
  */
@@ -30,6 +34,18 @@ export interface IUserRepository {
    * @param newPassword New password string
    */
   updatePassword(userId: string, newPassword: string): Promise<void>;
+
+  /**
+   * Count total users
+   * @returns Number of users
+   */
+  userCount(): Promise<UserCountByRoleQuery>;
+
+  /**
+   * Get user info by ID
+   * @param userId User's ID
+   */
+  userInfo(userId: string): Promise<UserModel | null>;
 }
 
 /**
@@ -57,6 +73,32 @@ class UserRepository implements IUserRepository {
     await prisma.user.update({
       where: { id: userId },
       data: { password: newPassword },
+    });
+  }
+
+  async userCount(): Promise<UserCountByRoleQuery> {
+    return await prisma.user
+      .groupBy({
+        by: ['role'],
+        _count: {
+          role: true,
+        },
+      })
+      .then((results) => {
+        const countByRole: UserCountByRoleQuery = {
+          ADMIN: 0,
+          USER: 0,
+        };
+        results.forEach((result) => {
+          countByRole[result.role] = result._count.role;
+        });
+        return countByRole;
+      });
+  }
+
+  async userInfo(userId: string): Promise<UserModel | null> {
+    return await prisma.user.findUnique({
+      where: { id: userId },
     });
   }
 }
