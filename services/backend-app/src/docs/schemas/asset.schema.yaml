@@ -1,0 +1,241 @@
+components:
+  schemas:
+    UpdateAssetRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the asset
+        slug:
+          type: string
+          description: The slug for the asset
+    MetadataImage:
+      type: object
+      properties:
+        resource_type:
+          type: string
+          description: The type of resource (e.g., image, video)
+        width:
+          type: integer
+          description: The width of the image in pixels
+        height:
+          type: integer
+          description: The height of the image in pixels
+        version:
+          type: integer
+          description: The version number of the image
+      required:
+        - resource_type
+        - width
+        - height
+        - version
+    MetadataDocument:
+      type: object
+      properties:
+        resource_type:
+          type: string
+          description: The type of resource (e.g., document, pdf)
+        version:
+          type: integer
+          description: The version number of the document
+        pages:
+          type: integer
+          description: The number of pages in the document
+      required:
+        - resource_type
+        - version
+    MetadataVideo:
+      type: object
+      properties:
+        resource_type:
+          type: string
+          description: The type of resource (e.g., video)
+        width:
+          type: integer
+          description: The width of the video in pixels
+        height:
+          type: integer
+          description: The height of the video in pixels
+        duration:
+          type: number
+          description: The duration of the video in seconds
+        bit_rate:
+          type: integer
+          description: The bitrate of the video in kbps
+        frame_rate:
+          type: number
+          description: The frame rate of the video in fps
+        version:
+          type: integer
+          description: The version number of the video
+      required:
+        - resource_type
+        - width
+        - height
+        - duration
+        - bit_rate
+        - frame_rate
+        - version
+    MetadataAudio:
+      type: object
+      properties:
+        resource_type:
+          type: string
+          description: The type of resource (e.g., audio)
+        duration:
+          type: number
+          description: The duration of the audio in seconds
+        bit_rate:
+          type: integer
+          description: The bitrate of the audio in kbps
+        version:
+          type: integer
+          description: The version number of the audio
+      required:
+        - resource_type
+        - duration
+        - bit_rate
+        - version
+    AssetItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the asset
+        metadata:
+          oneOf:
+            - $ref: '#/components/schemas/MetadataImage'
+            - $ref: '#/components/schemas/MetadataDocument'
+            - $ref: '#/components/schemas/MetadataVideo'
+            - $ref: '#/components/schemas/MetadataAudio'
+          description: The metadata associated with the asset
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation timestamp of the asset
+        updatedAt:
+          type: string
+          format: date-time
+          description: The last update timestamp of the asset
+        folderId:
+          type: string
+          format: uuid
+          description: The unique identifier for the folder containing the asset
+        ownerId:
+          type: string
+          format: uuid
+          description: The unique identifier for the owner of the asset
+        publicId:
+          type: string
+          description: The public identifier for the asset
+        name:
+          type: string
+          description: The name of the asset
+        slug:
+          type: string
+          description: The slug for the asset
+        size:
+          type: integer
+          description: The size of the asset in bytes
+        mimeType:
+          type: string
+          description: The MIME type of the asset
+        url:
+          type: string
+          description: The URL where the asset is accessible
+        format:
+          type: string
+          description: The format of the asset
+        viewCount:
+          type: integer
+          description: The number of times the asset has been viewed
+      required:
+        - id
+        - metadata
+        - createdAt
+        - updatedAt
+        - folderId
+        - ownerId
+        - publicId
+        - name
+        - slug
+        - size
+        - mimeType
+        - url
+        - format
+        - viewCount
+    PaginationListAssetItem:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of assets
+        page:
+          type: integer
+          description: Current page number
+        per_page:
+          type: integer
+          description: Number of assets per page
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetItem'
+          description: List of assets for the current page
+      required:
+        - total
+        - page
+        - per_page
+        - items
+  responses:
+    AssetItemResponse:
+      description: Asset item response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AssetItem'
+    PaginationListAssetResponse:
+      description: Paginated list of asset items
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaginationListAssetItem'
+  parameters:
+    AssetIdParam:
+      name: assetId
+      in: path
+      description: The unique identifier for an asset
+      required: true
+      schema:
+        type: string
+        format: uuid
+    QueryAssetTypeParam:
+      name: asset_type
+      in: query
+      description: Filter assets by type (e.g., image, video, document, audio)
+      required: false
+      schema:
+        type: string
+        enum:
+          - image
+          - video
+          - document
+          - audio
+    QueryAssetSortByParam:
+      name: sort_by
+      in: query
+      description: Sort order for assets (e.g., 'createdAt', 'name', 'size')
+      required: false
+      schema:
+        type: string
+        enum:
+          - createdAt
+          - name
+          - size
+    QueryAssetSlugParam:
+      name: assetSlug
+      in: query
+      description: Filter assets by slug
+      required: false
+      schema:
+        type: string

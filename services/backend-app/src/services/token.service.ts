@@ -1,4 +1,4 @@
-import { AccessTokenResponse } from '@asetflow/shared-types';
+import type { AccessTokenResponse } from '@asetflow/shared-types';
 
 import type { IRefreshTokenRepository } from '../repositories/refresh-token.repository.js';
 import { jwtService } from '../utils/jwt.utils.js';

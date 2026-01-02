@@ -1,14 +1,7 @@
-export interface User {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  email: string;
-  emailVerified: boolean;
-  name: string;
-  image?: string | null;
-}
+// Types
+// -------------------------
 
-export interface SimpleUser {
+export interface SimpleUserType {
   id: string;
   email: string;
   role: string;

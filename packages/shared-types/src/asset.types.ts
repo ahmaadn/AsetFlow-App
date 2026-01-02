@@ -1,41 +1,11 @@
-import { PaginationResult } from './pagination.types';
+import { PaginationResponse } from './pagination.types';
 
-interface BaseMetadata {
+interface BaseMetadataType {
   resource_type: string;
   version: number;
 }
 
-export interface MetadataImage extends BaseMetadata {
-  width: number | null;
-  height: number | null;
-}
-
-export interface MetadataDocument extends BaseMetadata {
-  // Page count untuk dokumen pdf. sayangnya docs tidak terdeteksi otomatis
-  // oleh cloudinary
-  pages?: number | null;
-}
-
-export interface MetadataVideo extends BaseMetadata {
-  width: number;
-  height: number;
-  duration: number;
-  bit_rate: number;
-  frame_rate: number;
-}
-
-export interface MetadataAudio extends BaseMetadata {
-  duration: number;
-  bit_rate: number;
-}
-
-export type MetadataAsset =
-  | MetadataImage
-  | MetadataDocument
-  | MetadataVideo
-  | MetadataAudio;
-
-export interface AssetBase {
+interface AssetBaseType {
   folderId: string;
   ownerId: string;
   publicId: string;
@@ -48,18 +18,54 @@ export interface AssetBase {
   viewCount: number;
 }
 
-export type AssetCreate = Omit<AssetBase, 'viewCount'> & {
-  metadata?: MetadataAsset;
-};
+// Types
+// -------------------------
+export interface MetadataImageType extends BaseMetadataType {
+  width: number | null;
+  height: number | null;
+}
 
-export interface Asset extends AssetBase {
+export interface MetadataDocumentType extends BaseMetadataType {
+  // Page count untuk dokumen pdf. sayangnya docs tidak terdeteksi otomatis
+  // oleh cloudinary
+  pages?: number | null;
+}
+
+export interface MetadataVideoType extends BaseMetadataType {
+  width: number;
+  height: number;
+  duration: number;
+  bit_rate: number;
+  frame_rate: number;
+}
+
+export interface MetadataAudioType extends BaseMetadataType {
+  duration: number;
+  bit_rate: number;
+}
+
+export type MetadataAssetType =
+  | MetadataImageType
+  | MetadataDocumentType
+  | MetadataVideoType
+  | MetadataAudioType;
+
+export interface AssetType extends AssetBaseType {
   id: string;
-  metadata: MetadataAsset;
+  metadata: MetadataAssetType;
   createdAt: string;
   updatedAt: string;
 }
 
-export type AssetResponse = Asset;
-export type AssetItem = Asset;
+// DTO
+// -------------------------
 
-export type AssetListResponse = PaginationResult<Asset>;
+export type CreateAssetDTO = Omit<AssetBaseType, 'viewCount'> & {
+  metadata?: MetadataAssetType;
+};
+
+// Response types
+// -------------------------
+
+export type AssetResponse = AssetType;
+export type AssetListResponse = PaginationResponse<AssetType>;

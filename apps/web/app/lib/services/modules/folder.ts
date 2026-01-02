@@ -1,5 +1,11 @@
-import type { CreateFolderType, UpdateFolderType } from '@asetflow/validators';
-import type { FolderItem, PaginationResult } from '@asetflow/shared-types';
+import type {
+  CreateFolderInput,
+  UpdateFolderInput,
+} from '@asetflow/validators';
+import type {
+  FolderItemType,
+  PaginationResponse,
+} from '@asetflow/shared-types';
 import { API_CONFIG } from '../config';
 
 export interface QueryParams {
@@ -26,7 +32,7 @@ export class FolderService {
    * @returns A promise resolving to a paginated list of folders
    */
   getFolders(query: QueryParams, option: OptionFetch = {}) {
-    return this.api<PaginationResult<FolderItem>>(
+    return this.api<PaginationResponse<FolderItemType>>(
       `${API_CONFIG.VERSION}${API_CONFIG.ENDPOINTS.FOLDERS}`,
       {
         method: 'GET',
@@ -42,8 +48,8 @@ export class FolderService {
    * @param option Additional fetch options
    * @returns A promise resolving to the created folder
    */
-  createFolder(data: CreateFolderType, option: OptionFetch = {}) {
-    return this.api<FolderItem>(
+  createFolder(data: CreateFolderInput, option: OptionFetch = {}) {
+    return this.api<FolderItemType>(
       `${API_CONFIG.VERSION}${API_CONFIG.ENDPOINTS.FOLDERS}`,
       {
         method: 'POST',
@@ -62,10 +68,10 @@ export class FolderService {
    */
   updateFolder(
     folderId: string,
-    data: UpdateFolderType,
+    data: UpdateFolderInput,
     option: OptionFetch = {}
   ) {
-    return this.api<FolderItem>(
+    return this.api<FolderItemType>(
       `${API_CONFIG.VERSION}${API_CONFIG.ENDPOINTS.FOLDERS}/${folderId}`,
       {
         method: 'PUT',

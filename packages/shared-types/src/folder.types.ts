@@ -1,19 +1,25 @@
-import { SimpleTag } from './tag.types';
+import { SimpleTagType } from './tag.types';
 
-type BaseFolder = {
+interface BaseFolder {
   id: string;
   ownerId: string;
   name: string;
   slug: string;
   createdAt: string;
   updatedAt: string;
-};
+}
 
-export type FolderItem = BaseFolder & {
+// Types
+// -------------------------
+
+export interface FolderItemType extends BaseFolder {
   assetCount: number;
-  tags: SimpleTag[];
-};
+  tags: SimpleTagType[];
+}
 
-export type FolderDetailResponse = FolderItem;
+// Responses Types
+// -------------------------
+
+export type FolderDetailResponse = FolderItemType;
 
 export type SimpleFolderResponse = BaseFolder;

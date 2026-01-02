@@ -1,9 +1,12 @@
-import type { FolderItem } from '@asetflow/shared-types';
-import type { CreateFolderType, UpdateFolderType } from '@asetflow/validators';
+import type { FolderItemType } from '@asetflow/shared-types';
+import type {
+  CreateFolderInput,
+  UpdateFolderInput,
+} from '@asetflow/validators';
 import { FetchError } from 'ofetch';
 
 interface FolderState {
-  folders: FolderItem[];
+  folders: FolderItemType[];
   isLoading: boolean;
   searchQuery: string;
 }
@@ -16,7 +19,7 @@ export const useFolderStore = defineStore('folder', {
   }),
 
   getters: {
-    filteredFolders(state): FolderItem[] {
+    filteredFolders(state): FolderItemType[] {
       if (!state.searchQuery) {
         return state.folders;
       }
@@ -66,7 +69,7 @@ export const useFolderStore = defineStore('folder', {
         slug = name.toLowerCase().replace(/\s+/g, '-');
       }
 
-      const folderData: CreateFolderType = { name, slug };
+      const folderData: CreateFolderInput = { name, slug };
 
       toast.promise(folder.createFolder(folderData), {
         loading: 'Creating folder...',
@@ -86,7 +89,7 @@ export const useFolderStore = defineStore('folder', {
       this.isLoading = false;
     },
 
-    async updateFolder(folderId: string, data: UpdateFolderType) {
+    async updateFolder(folderId: string, data: UpdateFolderInput) {
       this.isLoading = true;
       const toast = useToast();
       const { folder } = useApi();
@@ -138,7 +141,7 @@ export const useFolderStore = defineStore('folder', {
       this.isLoading = false;
     },
 
-    findFolderById(folderId: string): FolderItem | null {
+    findFolderById(folderId: string): FolderItemType | null {
       const folder = this.folders.find((folder) => folder.id === folderId);
       return folder || null;
     },
@@ -146,7 +149,7 @@ export const useFolderStore = defineStore('folder', {
     /**
      * Set folders
      */
-    setFolders(folders: Array<FolderItem>) {
+    setFolders(folders: Array<FolderItemType>) {
       this.folders = folders;
     },
 

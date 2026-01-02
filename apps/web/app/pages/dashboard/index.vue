@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DashboardStatistics } from '@asetflow/shared-types';
+import type { DashboardStatisticsResponse } from '@asetflow/shared-types';
 
 definePageMeta({
   layout: 'dashboard',
@@ -8,7 +8,9 @@ definePageMeta({
 const auth = useAuth();
 const { statistics } = useRepository(useSecureFetchAPI);
 const { data } = statistics.getDashboardStatistics();
-const statisticsData = ref<DashboardStatistics | null>(data.value || null);
+const statisticsData = ref<DashboardStatisticsResponse | null>(
+  data.value || null
+);
 const isLoading = ref(true);
 
 // Get user name from auth with fallback

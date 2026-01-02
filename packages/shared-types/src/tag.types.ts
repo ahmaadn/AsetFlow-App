@@ -1,4 +1,7 @@
-export type SimpleTag = {
+// Types
+// -------------------------
+
+export interface SimpleTagType {
   id: string;
   name: string;
-};
+}

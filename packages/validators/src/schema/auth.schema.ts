@@ -6,14 +6,14 @@ import { http } from '../http';
  * Schema for authentication
  */
 
-export const loginSchema = z.object({
+export const LoginSchema = z.object({
   email: z.email({ message: 'Invalid email address' }),
   password: z
     .string()
     .min(6, { message: 'Password must be at least 6 characters long' }),
 });
 
-export const registerSchema = z
+export const RegisterSchema = z
   .object({
     name: z
       .string()
@@ -35,7 +35,7 @@ export const registerSchema = z
 /**
  * Scheme for forget password request
  */
-export const forgetPasswordSchema = z.object({
+export const ForgetPasswordSchema = z.object({
   email: z.email({ message: 'Invalid email address' }),
   redirectUrl: z.url({ message: 'Invalid redirect URL' }).optional(),
 });
@@ -43,7 +43,7 @@ export const forgetPasswordSchema = z.object({
 /**
  * Schema for reset password
  */
-export const resetPasswordSchema = z.object({
+export const ResetPasswordSchema = z.object({
   token: z.string().min(1, { message: 'Token is required' }),
   newPassword: z
     .string()
@@ -54,7 +54,7 @@ export const resetPasswordSchema = z.object({
 /**
  * Common password validation schema
  */
-export const passwordValidationSchema = z
+export const PasswordValidationSchema = z
   .object({
     password: z
       .string()
@@ -72,20 +72,20 @@ export const passwordValidationSchema = z
 /**
  * Schema for HTTP request/response validation
  */
-export const httpLoginSchema = http({ body: loginSchema });
-export const httpRegisterSchema = http({ body: registerSchema });
+export const httpLoginSchema = http({ body: LoginSchema });
+export const httpRegisterSchema = http({ body: RegisterSchema });
 
 export const httpForgetPasswordSchema = http({
-  body: forgetPasswordSchema,
+  body: ForgetPasswordSchema,
 });
 export const httpResetPasswordSchema = http({
-  body: resetPasswordSchema,
+  body: ResetPasswordSchema,
 });
 
 /**
  * Types Schema
  */
-export type LoginInput = z.infer<typeof loginSchema>;
-export type RegisterInput = z.infer<typeof registerSchema>;
-export type forgetPasswordInput = z.infer<typeof forgetPasswordSchema>;
-export type resetPasswordInput = z.infer<typeof resetPasswordSchema>;
+export type LoginInput = z.infer<typeof LoginSchema>;
+export type RegisterInput = z.infer<typeof RegisterSchema>;
+export type ForgetPasswordInput = z.infer<typeof ForgetPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;

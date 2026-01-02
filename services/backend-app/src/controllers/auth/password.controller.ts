@@ -1,4 +1,4 @@
-import type { forgetPasswordInput } from '@asetflow/validators';
+import type { ForgetPasswordInput } from '@asetflow/validators';
 import type { NextFunction, Request, Response } from 'express';
 
 import logger from '../../configs/logger.config.js';
@@ -47,7 +47,7 @@ export class PasswordController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email, redirectUrl } = req.body as forgetPasswordInput;
+      const { email, redirectUrl } = req.body as ForgetPasswordInput;
       logger.info(`Password reset requested for email: ${email}`);
       await this.passwordService.sendResetPasswordEmail(
         email,
@@ -63,5 +63,5 @@ export class PasswordController {
   }
 }
 
-const passwordController = new PasswordController();
-export { passwordController };
+export const passwordController = new PasswordController();
+export default passwordController;

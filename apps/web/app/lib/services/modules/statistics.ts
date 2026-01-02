@@ -1,26 +1,26 @@
-import type { DashboardStatistics } from '@asetflow/shared-types';
+import type { DashboardStatisticsResponse } from '@asetflow/shared-types';
 import type { UseFetchOptions } from 'nuxt/app';
 import { API_CONFIG } from '../config';
 
-// Define option types for different fetch functions
-type FetchOptions<T> = T extends typeof useFetch
-  ? UseFetchOptions<unknown>
-  : T extends typeof $fetch
-    ? Parameters<typeof $fetch>[1]
-    : unknown;
+type Fetcher = typeof useFetch | typeof $fetch;
 
-// Define return types for different fetch functions
+type FetchOptions<T, R> = T extends typeof useFetch
+  ? UseFetchOptions<R>
+  : T extends typeof $fetch
+    ? Omit<Parameters<typeof $fetch>[1], 'method'>
+    : never;
+
 type FetchReturnType<T, R> = T extends typeof useFetch
   ? ReturnType<typeof useFetch<R>>
   : T extends typeof $fetch
     ? Promise<R>
-    : unknown;
+    : never;
 
-export class StatisticsService<T extends typeof useFetch | typeof $fetch> {
-  fetch: T;
+export class StatisticsService<T extends Fetcher> {
+  private fetcher: T;
 
   constructor(fetcher: T) {
-    this.fetch = fetcher;
+    this.fetcher = fetcher;
   }
 
   /**
@@ -29,22 +29,13 @@ export class StatisticsService<T extends typeof useFetch | typeof $fetch> {
    * @returns Dashboard statistics based on fetch type
    */
   getDashboardStatistics(
-    options: FetchOptions<T> = {} as FetchOptions<T>
-  ): FetchReturnType<T, DashboardStatistics> {
+    options?: FetchOptions<T, DashboardStatisticsResponse>
+  ): FetchReturnType<T, DashboardStatisticsResponse> {
     const url = `${API_CONFIG.VERSION}/statistics/dashboard`;
 
-    // Handle useFetch (reactive)
-    if (typeof this.fetch === 'function' && this.fetch.name === 'useFetch') {
-      return (this.fetch as any)(url, {
-        method: 'GET',
-        ...options,
-      });
-    }
-
-    // Handle $fetch or other fetch functions (promise-based)
-    return (this.fetch as any)(url, {
+    return this.fetcher<DashboardStatisticsResponse>(url, {
       method: 'GET',
       ...options,
-    }) as FetchReturnType<T, DashboardStatistics>;
+    });
   }
 }

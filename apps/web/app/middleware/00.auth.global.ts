@@ -25,7 +25,7 @@ const DEFAULT_AUTHENTICATED_REDIRECT: string = '/dashboard';
 /**
  * Global authentication middleware.
  */
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuth();
 
   if (PUBLIC_ROUTES.includes(to.path)) {

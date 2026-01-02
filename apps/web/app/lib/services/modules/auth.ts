@@ -1,6 +1,6 @@
 import type { PayloadTokenResponse } from '@asetflow/shared-types';
 import { API_CONFIG } from '../config';
-import type { RegisterInput, resetPasswordInput } from '@asetflow/validators';
+import type { RegisterInput, ResetPasswordInput } from '@asetflow/validators';
 
 export class AuthService {
   api: typeof $fetch;
@@ -53,7 +53,7 @@ export class AuthService {
     );
   }
 
-  async resetPassword(data: resetPasswordInput) {
+  async resetPassword(data: ResetPasswordInput) {
     return this.api<boolean>(
       `${API_CONFIG.VERSION}${API_CONFIG.ENDPOINTS.AUTH}/reset-password`,
       {

@@ -1,5 +1,4 @@
 import type { AssetResponse } from '@asetflow/shared-types';
-import { API_CONFIG } from '../config';
 
 type OptionFetch = Omit<Parameters<typeof $fetch>[1], 'method'>;
 

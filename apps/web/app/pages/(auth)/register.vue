@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { registerSchema } from '@asetflow/validators';
+import { RegisterSchema } from '@asetflow/validators';
 
 definePageMeta({
   layout: 'auth',
@@ -15,7 +15,7 @@ const { values, errors, handleSubmit } = useForm({
     password: '',
     confirmPassword: '',
   },
-  validationSchema: registerSchema,
+  validationSchema: RegisterSchema,
   onSubmit: async (values) => {
     isLoading.value = true;
     try {

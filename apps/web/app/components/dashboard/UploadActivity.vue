@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RecentUploadActivity } from '@asetflow/shared-types';
+import type { RecentUploadActivityType } from '@asetflow/shared-types';
 import {
   VisXYContainer,
   VisAxis,
@@ -10,7 +10,7 @@ import {
 import { StackedBar } from '@unovis/ts';
 
 interface Props {
-  data?: RecentUploadActivity[];
+  data?: RecentUploadActivityType[];
   isLoading?: boolean;
 }
 
@@ -20,8 +20,8 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Unovis bar chart configuration
-const x = (d: RecentUploadActivity, i: number) => i;
-const y = (d: RecentUploadActivity) => d.count;
+const x = (d: RecentUploadActivityType, i: number) => i;
+const y = (d: RecentUploadActivityType) => d.count;
 
 const getDayName = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -44,7 +44,7 @@ const getFullDate = (dateStr: string) => {
 };
 
 const triggers = {
-  [StackedBar.selectors.bar]: (d: RecentUploadActivity) => {
+  [StackedBar.selectors.bar]: (d: RecentUploadActivityType) => {
     return `
       <div style="padding: 12px; border-radius: 8px;  min-width: 180px;">
         <div style="font-weight: 600; color: var(--color-base-content); font-size: 14px; margin-bottom: 8px;">

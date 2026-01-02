@@ -88,11 +88,7 @@ export class SMTPTransport extends BaseMailTransport {
       await this.transporter.verify();
       this.isReady = true;
 
-      this.log('info', 'SMTP transport initialized successfully', {
-        host: this.config.host,
-        port: this.config.port,
-        user: this.config.auth.user,
-      });
+      this.log('info', 'SMTP transport initialized successfully');
 
       return true;
     } catch (error) {

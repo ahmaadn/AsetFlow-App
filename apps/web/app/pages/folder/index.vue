@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { FolderItem } from '@asetflow/shared-types';
+import type { FolderItemType } from '@asetflow/shared-types';
 import { formatDisplayDate } from '@asetflow/shared';
 
 const folderState = useFolderStore();
 
 const isCreateFolder = ref(false);
-const selectedFolder = ref<FolderItem | null>(null);
+const selectedFolder = ref<FolderItemType | null>(null);
 const isModalDeleteOpen = ref(false);
 const isModalEditOpen = ref(false);
 const isLoading = ref(false);
@@ -38,7 +38,7 @@ const createFolder = async (name: string) => {
   isCreateFolder.value = false;
 };
 
-const openModalDelete = (folder: FolderItem) => {
+const openModalDelete = (folder: FolderItemType) => {
   selectedFolder.value = folder;
   isModalDeleteOpen.value = true;
 };
@@ -50,12 +50,12 @@ const onDelete = async () => {
   selectedFolder.value = null;
 };
 
-const openModalUpdate = (folder: FolderItem) => {
+const openModalUpdate = (folder: FolderItemType) => {
   selectedFolder.value = folder;
   isModalEditOpen.value = true;
 };
 
-const onUpdate = async (newData: FolderItem) => {
+const onUpdate = async (newData: FolderItemType) => {
   if (!selectedFolder.value && !isModalEditOpen.value) return;
   const { id, name, slug } = newData;
   await folderState.updateFolder(id, { name, slug });
@@ -162,13 +162,13 @@ onMounted(refresh);
           <div class="flex flex-wrap gap-2 flex-col md:flex-row">
             <button
               class="btn btn-sm btn-square btn-warning"
-              @click="openModalUpdate(row as FolderItem)"
+              @click="openModalUpdate(row as FolderItemType)"
             >
               <Icon name="ri:edit-line" class="size-5" />
             </button>
             <button
               class="btn btn-sm btn-square btn-error"
-              @click="openModalDelete(row as FolderItem)"
+              @click="openModalDelete(row as FolderItemType)"
             >
               <Icon name="ri:delete-bin-4-line" class="size-5" />
             </button>

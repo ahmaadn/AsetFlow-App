@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { loginSchema } from '@asetflow/validators';
+import { LoginSchema } from '@asetflow/validators';
 
 definePageMeta({
   layout: 'auth',
@@ -16,7 +16,7 @@ const { values, errors, handleSubmit } = useForm({
     email: '',
     password: '',
   },
-  validationSchema: loginSchema,
+  validationSchema: LoginSchema,
   onSubmit: async (values) => {
     console.log('Submitting login form with values:', values);
     try {
