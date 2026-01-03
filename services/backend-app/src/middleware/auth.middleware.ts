@@ -4,7 +4,7 @@ import type { NextFunction, Request, Response } from 'express';
 import logger from '../configs/logger.config.js';
 import { userRepository } from '../repositories/user.repository.js';
 import { ForbiddenError, UnauthorizedError } from '../utils/api-error.js';
-import { jwtService } from '../utils/jwt.utils.js';
+import * as JwtUtils from '../utils/jwt.utils.js';
 
 /**
  * Extract token from Authorization header or cookies
@@ -44,7 +44,7 @@ export async function authenticateJWT(
     }
 
     // verify token
-    const payload = await jwtService.verifyAccessToken(token);
+    const payload = await JwtUtils.verifyAccessToken(token);
     if (!payload) {
       throw new UnauthorizedError({
         message: 'Invalid token',
@@ -53,7 +53,7 @@ export async function authenticateJWT(
     }
 
     // cek expired token
-    const isExpired = jwtService.isTokenExpired(payload);
+    const isExpired = JwtUtils.isTokenExpired(payload);
     if (isExpired) {
       throw new UnauthorizedError({
         message: 'Token expired',

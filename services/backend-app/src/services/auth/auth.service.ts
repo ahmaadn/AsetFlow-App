@@ -7,7 +7,7 @@ import logger from '../../configs/logger.config.js';
 import type { IRefreshTokenRepository } from '../../repositories/refresh-token.repository.js';
 import type { IUserRepository } from '../../repositories/user.repository.js';
 import { BadRequestError } from '../../utils/api-error.js';
-import { jwtService } from '../../utils/jwt.utils.js';
+import * as JwtUtils from '../../utils/jwt.utils.js';
 import { hashPassword, verifyPassword } from '../../utils/password-helper.js';
 
 export interface TokenPair {
@@ -16,6 +16,7 @@ export interface TokenPair {
   expiresIn: number;
   refreshExpiresIn: number;
 }
+
 /**
  * Authentication Service
  */
@@ -32,7 +33,7 @@ export class AuthService {
   }
 
   async createTokenPair(
-    user: Pick<UserModel, 'id' | 'email' | 'role'>,
+    user: Pick<UserModel, 'id' | 'email' | 'role' | 'name'>,
     userAgent?: string
   ): Promise<TokenPair> {
     const expiresAt = new Date();
@@ -45,12 +46,18 @@ export class AuthService {
       userAgent,
     });
 
-    // Generate JWT tokens
-    const tokens = await jwtService.generateTokenPair({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      tokenId: refreshToken.id,
+    // Generate JWT tokens with new payload structure
+    const tokens = await JwtUtils.createTokenPair({
+      access: {
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      refresh: {
+        userId: user.id,
+        tokenId: refreshToken.id,
+      },
     });
 
     await this.tokenRepository.update({
@@ -95,6 +102,7 @@ export class AuthService {
     const tokens = await this.createTokenPair(
       {
         id: user.id,
+        name: user.name,
         email: user.email,
         role: user.role,
       },

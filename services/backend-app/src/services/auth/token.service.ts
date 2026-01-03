@@ -1,7 +1,7 @@
 import type { AccessTokenResponse } from '@asetflow/shared-types';
 
-import type { IRefreshTokenRepository } from '../repositories/refresh-token.repository.js';
-import { jwtService } from '../utils/jwt.utils.js';
+import type { IRefreshTokenRepository } from '../../repositories/refresh-token.repository.js';
+import * as JwtUtils from '../../utils/jwt.utils.js';
 
 /**
  * Authentication Token Service
@@ -20,7 +20,7 @@ export class AuthTokenService {
     refreshToken: string
   ): Promise<AccessTokenResponse | null> {
     // Verify JWT first
-    const payload = await jwtService.verifyRefreshToken(refreshToken);
+    const payload = await JwtUtils.verifyRefreshToken(refreshToken);
     if (!payload) {
       return null;
     }
@@ -36,7 +36,8 @@ export class AuthTokenService {
     }
 
     // Generate new access token
-    const accessToken = await jwtService.generateAccessToken({
+    const accessToken = await JwtUtils.createAccessToken({
+      name: dbToken.user.name,
       userId: dbToken.user.id,
       email: dbToken.user.email,
       role: dbToken.user.role,
@@ -47,6 +48,7 @@ export class AuthTokenService {
       expiresIn: 15 * 60, // 15 minutes
       user: {
         id: dbToken.user.id,
+        name: dbToken.user.name,
         email: dbToken.user.email,
         role: dbToken.user.role,
       },
@@ -58,7 +60,7 @@ export class AuthTokenService {
    */
   async revokeRefreshToken(refreshToken: string): Promise<boolean> {
     try {
-      const payload = await jwtService.verifyRefreshToken(refreshToken);
+      const payload = await JwtUtils.verifyRefreshToken(refreshToken);
       if (!payload) {
         return false;
       }
