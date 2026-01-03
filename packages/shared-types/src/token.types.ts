@@ -1,4 +1,4 @@
-import { SimpleUserType } from './user.types';
+import { UserInfoResponses } from './user.types';
 
 // Response Types
 // -------------------------
@@ -6,7 +6,7 @@ import { SimpleUserType } from './user.types';
 export interface AccessTokenResponse {
   accessToken: string;
   expiresIn: number;
-  user: SimpleUserType;
+  user: UserInfoResponses;
 }
 
 export interface PayloadTokenResponse {

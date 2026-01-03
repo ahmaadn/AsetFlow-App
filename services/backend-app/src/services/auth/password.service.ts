@@ -4,7 +4,7 @@ import logger from '../../configs/logger.config.js';
 import { emailService } from '../../mail/index.js';
 import { IUserRepository } from '../../repositories/user.repository.js';
 import { IVerificationRepository } from '../../repositories/verification.repository.js';
-import { jwtService } from '../../utils/jwt.utils.js';
+import * as JwtUtils from '../../utils/jwt.utils.js';
 import { hashPassword } from '../../utils/password-helper.js';
 
 export class PasswordService {
@@ -31,7 +31,7 @@ export class PasswordService {
 
     // Generate reset token and send email logic goes here
     const tokenType = VerificationType.PASSWORD_RESET;
-    const genToken = await jwtService.generateVerificationToken(tokenType, {
+    const genToken = await JwtUtils.generateVerificationToken(tokenType, {
       userId: user.id,
       email: user.email,
     });
@@ -57,7 +57,7 @@ export class PasswordService {
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
-      const isValid = await jwtService.verifyVerificationToken(
+      const isValid = await JwtUtils.verifyVerificationToken(
         token,
         VerificationType.PASSWORD_RESET
       );
@@ -67,13 +67,13 @@ export class PasswordService {
         return;
       }
 
-      const isExpired = jwtService.isTokenExpired(token);
+      const isExpired = JwtUtils.isTokenExpired(token);
       if (isExpired) {
         logger.warn('Expired password reset token used');
         return;
       }
 
-      const payload = jwtService.decodeToken<{ userId: string; email: string }>(
+      const payload = JwtUtils.decodeToken<{ userId: string; email: string }>(
         token
       );
       if (!payload) {
