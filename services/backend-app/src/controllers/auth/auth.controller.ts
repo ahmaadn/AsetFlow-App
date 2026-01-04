@@ -74,7 +74,7 @@ export class AuthController {
       const result = await this.tokenService.refreshAccessToken(refreshToken);
       if (!result) {
         throw new UnauthorizedError({
-          message: 'Invalid or expired refresh token',
+          message: 'Not valid refresh token',
           errorCode: ErrorCode.TOKEN_EXPIRED,
         });
       }

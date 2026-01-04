@@ -57,15 +57,10 @@ export class PasswordService {
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
-      const isValid = await JwtUtils.verifyVerificationToken(
+      await JwtUtils.verifyVerificationToken(
         token,
         VerificationType.PASSWORD_RESET
       );
-
-      if (!isValid) {
-        logger.warn('Invalid or expired password reset token used');
-        return;
-      }
 
       const isExpired = JwtUtils.isTokenExpired(token);
       if (isExpired) {

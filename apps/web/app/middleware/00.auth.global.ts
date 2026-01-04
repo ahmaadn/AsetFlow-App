@@ -51,6 +51,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       // tidak lagi menyimpan access dan refresh token
       await auth.refresh();
       isRefresh = true;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // ada 2 kondisi disini, error fetch dan error response dari api
       // jika fetch error misal network error, biarkan user di halaman sekarang
@@ -61,19 +62,19 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   const config = useRuntimeConfig();
-  // verify again after refresh
+  // Cek ulang token yang sudah di refresh
   // IMPORTANT: di frontend hanya melakukan pengecekan access token saja
   // untuk refresh token pengecekan dilakukan di backend
   if (auth.isAuthenticated.value && isRefresh) {
-    const isValid = await verifyJWT({
-      publicKey: config.public.jwtPublicKey,
-      token: auth.accessToken.value!,
-      expectedIssuer: config.public.jwtIssuer,
-      expectedAudience: config.public.jwtAudience,
-    });
-
-    // if trying to access auth routes while authenticated, redirect to dashboard
-    if (!isValid) {
+    try {
+      await verifyJWT({
+        publicKey: config.public.jwtPublicKey,
+        token: auth.accessToken.value!,
+        expectedIssuer: config.public.jwtIssuer,
+        expectedAudience: config.public.jwtAudience,
+      });
+    } catch (error) {
+      // If verification fails, log out the user
       return navigateTo('/logout');
     }
   }

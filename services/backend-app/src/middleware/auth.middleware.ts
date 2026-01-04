@@ -45,12 +45,6 @@ export async function authenticateJWT(
 
     // verify token
     const payload = await JwtUtils.verifyAccessToken(token);
-    if (!payload) {
-      throw new UnauthorizedError({
-        message: 'Invalid token',
-        errorCode: ErrorCode.UNAUTHORIZED,
-      });
-    }
 
     // cek expired token
     const isExpired = JwtUtils.isTokenExpired(payload);
@@ -62,8 +56,8 @@ export async function authenticateJWT(
     }
 
     // cek user ada atau tidak di database
-    const cuurentUser = await userRepository.findByEmail(payload.email);
-    if (!cuurentUser) {
+    const currentUser = await userRepository.findByEmail(payload.email);
+    if (!currentUser) {
       throw new UnauthorizedError({
         message: 'User not found',
         errorCode: ErrorCode.USER_NOT_FOUND,
@@ -72,19 +66,14 @@ export async function authenticateJWT(
 
     // Add user info to request
     req.user = {
-      id: cuurentUser.id,
-      name: cuurentUser.name,
-      email: cuurentUser.email,
-      role: cuurentUser.role,
+      id: currentUser.id,
+      name: currentUser.name,
+      email: currentUser.email,
+      role: currentUser.role,
     };
     next();
   } catch (error) {
-    logger.error('Authentication error:', error);
-
-    throw new UnauthorizedError({
-      message: 'Invalid or expired token.',
-      errorCode: ErrorCode.UNAUTHORIZED,
-    });
+    return next(error);
   }
 }
 

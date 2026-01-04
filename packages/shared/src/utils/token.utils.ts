@@ -80,20 +80,15 @@ export async function verifyJWT<T>({
   expectedIssuer = DEFAULT_ISS,
   expectedAudience = DEFAULT_AUD,
   alg = ALGORITM,
-}: TokenDetails): Promise<T | false> {
-  try {
-    // Check signature and standard claims
-    const key = await jose.importSPKI(publicKey, alg);
-    const { payload } = await jose.jwtVerify(token, key, {
-      issuer: expectedIssuer,
-      audience: expectedAudience,
-    });
+}: TokenDetails): Promise<T> {
+  // Check signature and standard claims
+  const key = await jose.importSPKI(publicKey, alg);
+  const { payload } = await jose.jwtVerify(token, key, {
+    issuer: expectedIssuer,
+    audience: expectedAudience,
+  });
 
-    return payload as T;
-  } catch (error) {
-    console.error('JWT verification failed', error);
-    return false;
-  }
+  return payload as T;
 }
 
 /**

@@ -2,6 +2,7 @@ import type { AccessTokenResponse } from '@asetflow/shared-types';
 
 import type { IRefreshTokenRepository } from '../../repositories/refresh-token.repository.js';
 import * as JwtUtils from '../../utils/jwt.utils.js';
+import logger from '../../configs/logger.config.js';
 
 /**
  * Authentication Token Service
@@ -21,9 +22,6 @@ export class AuthTokenService {
   ): Promise<AccessTokenResponse | null> {
     // Verify JWT first
     const payload = await JwtUtils.verifyRefreshToken(refreshToken);
-    if (!payload) {
-      return null;
-    }
 
     // Check if refresh token exists in database and is not revoked
     const dbToken = await this.refreshTokenRepository.findActiveByToken(
@@ -61,13 +59,11 @@ export class AuthTokenService {
   async revokeRefreshToken(refreshToken: string): Promise<boolean> {
     try {
       const payload = await JwtUtils.verifyRefreshToken(refreshToken);
-      if (!payload) {
-        return false;
-      }
-
       await this.refreshTokenRepository.revokeToken(payload, refreshToken);
+      logger.info('Refresh token revoked successfully');
       return true;
     } catch {
+      logger.error('Error revoking refresh token');
       return false;
     }
   }

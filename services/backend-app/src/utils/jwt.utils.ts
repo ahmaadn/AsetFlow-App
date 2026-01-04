@@ -1,7 +1,15 @@
-import { verifyJWT, signJWT, decodeJWT, isExpired } from '@asetflow/shared';
+import {
+  verifyJWT,
+  signJWT,
+  decodeJWT,
+  isExpired,
+  ErrorCode,
+} from '@asetflow/shared';
 import type { AccessTokenPayload, RefreshTokenPayload } from '@asetflow/shared';
 import type { JWTPayload } from 'jose';
+import { JWTExpired, JWTInvalid } from 'jose/errors';
 
+import { UnauthorizedError } from './api-error.js';
 import { jwtConfig } from '../configs/jwt.config.js';
 import logger from '../configs/logger.config.js';
 
@@ -86,7 +94,7 @@ export async function createTokenPair<
  */
 export async function verifyAccessToken<T extends AccessTokenCredentials>(
   token: string
-): Promise<AccessTokenPayload<T> | false> {
+): Promise<AccessTokenPayload<T>> {
   try {
     const payload = await verifyJWT<AccessTokenPayload<T>>({
       token,
@@ -97,15 +105,29 @@ export async function verifyAccessToken<T extends AccessTokenCredentials>(
 
     logger.debug('Verified access token payload');
 
-    if (!payload || payload.type !== 'access') {
+    if (payload.type !== 'access') {
       logger.warn('Access token type mismatch or invalid payload');
-      return false;
+      throw new UnauthorizedError({
+        message: 'Invalid token type',
+        errorCode: ErrorCode.UNAUTHORIZED,
+      });
     }
 
     return payload;
   } catch (error) {
+    if (error instanceof JWTExpired) {
+      logger.error('Access token has expired');
+      throw new UnauthorizedError({
+        message: 'Token expired',
+        errorCode: ErrorCode.TOKEN_EXPIRED,
+      });
+    }
     logger.error('Error verifying access token:', error);
-    return false;
+    // re-throw as UnauthorizedError
+    throw new UnauthorizedError({
+      message: 'Invalid or expired token',
+      errorCode: ErrorCode.UNAUTHORIZED,
+    });
   }
 }
 
@@ -119,7 +141,7 @@ export async function verifyRefreshToken<
     userId: string;
     tokenId: string;
   },
->(token: string): Promise<RefreshTokenPayload<T> | false> {
+>(token: string): Promise<RefreshTokenPayload<T>> {
   try {
     const payload = await verifyJWT<RefreshTokenPayload<T>>({
       token,
@@ -127,14 +149,22 @@ export async function verifyRefreshToken<
       expectedIssuer: jwtConfig.issuer,
       expectedAudience: jwtConfig.audience,
     });
+    logger.debug('Verified refresh token payload');
 
-    if (!payload || payload.type !== 'refresh') {
-      return false;
+    if (payload.type !== 'refresh') {
+      throw new UnauthorizedError({
+        message: 'Invalid or expired token',
+        errorCode: ErrorCode.UNAUTHORIZED,
+      });
     }
 
     return payload;
   } catch {
-    return false;
+    // re-throw as UnauthorizedError
+    throw new UnauthorizedError({
+      message: 'Invalid or expired token',
+      errorCode: ErrorCode.UNAUTHORIZED,
+    });
   }
 }
 
@@ -200,14 +230,17 @@ export async function verifyVerificationToken(
 
     logger.debug('Verified access token payload');
 
-    if (!payload || payload.type !== expectedType) {
+    if (payload.type !== expectedType) {
       logger.warn('Access token type mismatch or invalid payload');
-      return false;
+      throw new UnauthorizedError({
+        message: 'Invalid token type',
+        errorCode: ErrorCode.UNAUTHORIZED,
+      });
     }
 
     return payload;
   } catch (error) {
     logger.error('Error verifying access token:', error);
-    return false;
+    throw error;
   }
 }
