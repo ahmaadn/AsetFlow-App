@@ -1,6 +1,5 @@
 import { ErrorCode } from '@asetflow/shared';
 import type { UseFetchOptions } from 'nuxt/app';
-// import type { FetchError } from 'ofetch';
 
 export function useFetchAPI<T>(
   url: string | (() => string),
@@ -11,31 +10,44 @@ export function useFetchAPI<T>(
     $fetch: useNuxtApp().$api,
   });
 }
-export function useSecureFetchAPI<T>(
+export function useAuthFetch<T>(
   url: string | (() => string),
   options?: UseFetchOptions<T>
-): ReturnType<typeof useFetch<T>> {
+) {
   const auth = useAuth();
+
+  let isRefreshing = false;
+  let refreshPromise: Promise<void> | null = null;
+
+  const refreshAccessToken = async () => {
+    if (isRefreshing && refreshPromise) {
+      return refreshPromise;
+    }
+
+    isRefreshing = true;
+    refreshPromise = (async () => {
+      try {
+        await auth.refresh();
+      } finally {
+        isRefreshing = false;
+        refreshPromise = null;
+      }
+    })();
+    return refreshPromise;
+  };
 
   // Add authentication headers and error handling to options
   const secureOptions: UseFetchOptions<T> = {
     ...options,
-    onResponseError: async ({ response, options: fetchOptions }) => {
-      // Handle 401 token expired error
+    onResponseError: async ({ response, options: fetchOptions, ...rest }) => {
       if (
         response.status === 401 &&
+        // @ts-expect-error sudah di pastikan errorCode ada
         response._data?.errorCode === ErrorCode.TOKEN_EXPIRED
       ) {
         try {
-          await auth.refresh();
-          const $api = useNuxtApp().$api;
-          // Retry the request with refreshed token
-          return await $api(fetchOptions.url, {
-            ...fetchOptions,
-            headers: {
-              ...fetchOptions.headers,
-            },
-          });
+          await refreshAccessToken();
+          return await useFetchAPI(url, options);
         } catch (error) {
           auth.clearTokens();
           throw error;
@@ -44,7 +56,12 @@ export function useSecureFetchAPI<T>(
 
       // Call original error handler if provided
       if (options?.onResponseError) {
-        return options.onResponseError({ response, options: fetchOptions });
+        // @ts-expect-error TODO: fix latter
+        return options.onResponseError({
+          response,
+          options: fetchOptions,
+          ...rest,
+        });
       }
     },
   };
