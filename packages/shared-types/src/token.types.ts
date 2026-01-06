@@ -1,12 +1,9 @@
-import { UserInfoResponses } from './user.types';
-
 // Response Types
 // -------------------------
 
 export interface AccessTokenResponse {
   accessToken: string;
   expiresIn: number;
-  user: UserInfoResponses;
 }
 
 export interface PayloadTokenResponse {
@@ -16,3 +13,15 @@ export interface PayloadTokenResponse {
   refreshExpiresIn: number;
   tokenType: 'Bearer';
 }
+
+export type AccessTokenCredentials = {
+  name: string;
+  userId: string;
+  email: string;
+  role: string;
+};
+
+export type RefreshTokenCredentials = {
+  userId: string;
+  tokenId: string;
+};

@@ -104,8 +104,6 @@ components:
         expiresIn:
           type: integer
           description: New expiration time in seconds
-        user:
-          $ref: '#/components/schemas/SimpleUserResponse'
       required:
         - accessToken
         - refreshToken

@@ -1,8 +1,8 @@
 import type { AccessTokenResponse } from '@asetflow/shared-types';
 
+import logger from '../../configs/logger.config.js';
 import type { IRefreshTokenRepository } from '../../repositories/refresh-token.repository.js';
 import * as JwtUtils from '../../utils/jwt.utils.js';
-import logger from '../../configs/logger.config.js';
 
 /**
  * Authentication Token Service
@@ -44,12 +44,6 @@ export class AuthTokenService {
     return {
       accessToken,
       expiresIn: 15 * 60, // 15 minutes
-      user: {
-        id: dbToken.user.id,
-        name: dbToken.user.name,
-        email: dbToken.user.email,
-        role: dbToken.user.role,
-      },
     };
   }
 
