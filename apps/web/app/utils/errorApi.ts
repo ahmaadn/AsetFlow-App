@@ -14,6 +14,6 @@ export const returnErrorMessage = (errorCode: string): string => {
   return 'An unexpected error occurred.';
 };
 
-export function isFetchError<T>(error: any): error is FetchError<T> {
+export function isFetchError<T>(error: unknown): error is FetchError<T> {
   return error instanceof FetchError;
 }

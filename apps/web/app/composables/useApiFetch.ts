@@ -10,6 +10,7 @@ export function useFetchAPI<T>(
     $fetch: useNuxtApp().$api,
   });
 }
+
 export function useAuthFetch<T>(
   url: string | (() => string),
   options?: UseFetchOptions<T>

@@ -6,50 +6,16 @@ definePageMeta({
 });
 
 const auth = useAuth();
-const { statistics } = useRepository(useSecureFetchAPI);
-const { data } = statistics.getDashboardStatistics();
-const statisticsData = ref<DashboardStatisticsResponse | null>(
-  data.value || null
-);
-const isLoading = ref(true);
+const userName = computed(() => auth.user.value?.name || 'User');
 
-// Get user name from auth with fallback
-const userName = computed(() => auth.user.value?.email);
-
-// Fetch dashboard data in one call
-const loadDashboardData = async () => {
-  isLoading.value = true;
-  const { data, error } = await statistics.getDashboardStatistics();
-  if (data.value) {
-    statisticsData.value = data.value;
-  }
-  if (error.value) {
-    console.error('Error loading dashboard statistics:', error);
-  }
-  isLoading.value = false;
-};
-
-// Wait for authentication to be ready before loading dashboard data
-watchEffect(async () => {
-  if (auth.isAuthenticated.value && auth.user.value) {
-    await loadDashboardData();
-  }
-});
-
-// Fallback for mounted hook
-onMounted(async () => {
-  // Only load if auth is ready
-  if (auth.isAuthenticated.value) {
-    await loadDashboardData();
-  }
-});
+const { data: statisticsData, pending: isLoading } =
+  await useAuthFetch<DashboardStatisticsResponse>('/v1/statistics/dashboard');
 </script>
 
 <template>
   <div class="p-4 w-full space-y-6">
     <!-- Welcome Banner -->
     <dashboard-welcome-banner :user-name="userName" />
-
     <!-- Statistics Cards -->
     <ui-stat-group class="w-full bg-base-200 shadow-md">
       <ui-stat-item

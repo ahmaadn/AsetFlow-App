@@ -14,7 +14,7 @@ export interface FormField<T> {
 }
 
 export function useForm<T extends object>({
-  initialValues,
+  initialValues = {} as T,
   validationSchema,
   onSubmit,
 }: UseFormOptions<T>) {
@@ -131,11 +131,10 @@ export function useForm<T extends object>({
     }
   };
 
-  // Helper function untuk mendapatkan field props
   const getFieldProps = <K extends keyof T>(fieldName: K) => {
     return {
-      value: (values as T)[fieldName],
-      error: errors[fieldName as string] ? errors[fieldName as string] : null,
+      value: computed(() => (values as T)[fieldName]),
+      error: computed(() => errors[fieldName as string] || null),
       onChange: (value: T[K]) => handleChange(fieldName, value),
       setError: (errorMessage: string | null) => {
         errors[fieldName as string] = errorMessage;

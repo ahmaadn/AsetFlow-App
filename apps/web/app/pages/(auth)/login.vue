@@ -1,44 +1,13 @@
 <script setup lang="ts">
+import type { ApiErrorResponse } from '@asetflow/shared';
+import type { PayloadTokenResponse } from '@asetflow/shared-types';
 import { LoginSchema } from '@asetflow/validators';
 
 definePageMeta({
   layout: 'auth',
 });
 
-const { auth: authApi } = useApi();
-const auth = useAuth();
-const toast = useToast();
-const isLoading = ref(false);
-const route = useRoute();
-
-const { values, errors, handleSubmit } = useForm({
-  initialValues: {
-    email: '',
-    password: '',
-  },
-  validationSchema: LoginSchema,
-  onSubmit: async (values) => {
-    console.log('Submitting login form with values:', values);
-    try {
-      isLoading.value = true;
-      const response = await authApi.login(values.email, values.password);
-      console.log('Login response:', response);
-      auth.setTokens(response);
-      toast.success('Login successful! Redirecting...');
-      navigateTo('/');
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error(
-        error.response?.data?.message ||
-          'An error occurred during login. Please try again.'
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  },
-});
-
-const loginFeatures = [
+const FEATURES = [
   {
     icon: 'ri:checkbox-circle-fill',
     title: 'Secure Storage',
@@ -55,19 +24,46 @@ const loginFeatures = [
     description: 'Quick search and instant previews for all your files',
   },
 ];
+const auth = useAuth();
+const toast = useToast();
 
-onMounted(async () => {
-  if (route.query.error) {
-    const errorMessages: Record<string, string> = {
-      google_signin_failed: 'Google sign-in failed. Please try again.',
-      // Add more error codes and messages here as needed
-    };
-    const errorMessage =
-      errorMessages[route.query.error as string] ||
-      'An unknown error occurred during login.';
-    toast.error(errorMessage);
-  }
+const { values, errors, handleSubmit } = useForm({
+  initialValues: {
+    email: '',
+    password: '',
+  },
+  validationSchema: LoginSchema,
+  onSubmit: async () => {
+    await execute();
+  },
 });
+
+const { execute, pending: isLoading } = useFetchAPI<PayloadTokenResponse>(
+  '/v1/auth/login',
+  {
+    method: 'POST',
+    immediate: false,
+    watch: false,
+    body: values,
+    async onResponse({ response }) {
+      console.log('Login response:', response);
+      if (response.ok) {
+        auth.setTokens(response._data!);
+        toast.success('Login successful! Redirecting...');
+        await navigateTo('/');
+      }
+    },
+    onResponseError({ response }) {
+      const errorData = response._data as unknown as ApiErrorResponse;
+      if (errorData && errorData.message) {
+        toast.error(
+          errorData.message ||
+            'An error occurred during login. Please try again.'
+        );
+      }
+    },
+  }
+);
 </script>
 
 <template>
@@ -75,7 +71,7 @@ onMounted(async () => {
     <auth-sidebar
       title="Manage Your Digital Assets with Ease"
       subtitle="Organize, store, and share your media files efficiently with our powerful asset management platform."
-      :features="loginFeatures"
+      :features="FEATURES"
       class="lg:col-span-2"
     />
 

@@ -69,6 +69,10 @@ export const PasswordValidationSchema = z
     path: ['confirmPassword'],
   });
 
+export const RequestEmailSchema = z.object({
+  email: z.email({ message: 'Invalid email address' }),
+});
+
 /**
  * Schema for HTTP request/response validation
  */
@@ -89,3 +93,4 @@ export type LoginInput = z.infer<typeof LoginSchema>;
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type ForgetPasswordInput = z.infer<typeof ForgetPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
+export type RequestEmailInput = z.infer<typeof RequestEmailSchema>;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { z } from 'zod';
+import type { ApiErrorResponse } from '@asetflow/shared';
+import { RequestEmailSchema } from '@asetflow/validators';
 
 definePageMeta({
   layout: 'auth',
@@ -10,13 +11,28 @@ interface ResendState {
   email?: string;
 }
 
-const { auth: authService } = useApi();
-const toast = useToast();
-const isLoading = ref(false);
+const FEATURES = [
+  {
+    icon: 'ri:mail-send-line',
+    title: 'Email Recovery',
+    description: 'Receive a secure password reset link in your email',
+  },
+  {
+    icon: 'ri:shield-check-line',
+    title: 'Secure Process',
+    description: 'Your account security is protected throughout the process',
+  },
+  {
+    icon: 'ri:time-line',
+    title: 'Quick Recovery',
+    description: 'Reset your password in just a few simple steps',
+  },
+];
 const RESEND_COOLDOWN = 60;
+const toast = useToast();
 const resendCooldown = ref(0);
-const canSend = computed(() => resendCooldown.value === 0 && !isLoading.value);
 const lastEmailSent = ref('');
+const canSend = computed(() => resendCooldown.value === 0 && !isLoading.value);
 
 const resendState = useLocalStorage<ResendState | null>(
   'forgot-password-cooldown',
@@ -43,6 +59,65 @@ const {
   controls: true,
   immediate: false,
 });
+
+// Save cooldown state (global, not email-specific)
+const saveCooldownState = (email?: string) => {
+  resendState.value = {
+    timestamp: Date.now(),
+    ...(email && { email }),
+  };
+};
+
+// Start countdown timer
+const startCountdown = () => {
+  if (resendCooldown.value > 0) {
+    resume();
+  }
+};
+
+const { values, errors, handleSubmit, getFieldProps } = useForm({
+  initialValues: {
+    email: '',
+  },
+  validationSchema: RequestEmailSchema,
+  onSubmit: async () => {
+    await execute();
+  },
+});
+
+const { value: email } = getFieldProps('email');
+
+const { execute, pending: isLoading } = useFetchAPI(
+  '/v1/auth/forget-password',
+  {
+    method: 'POST',
+    immediate: false,
+    watch: false,
+    body: {
+      email,
+      redirectUrl: `${useRequestURL().origin}/reset-password`,
+    },
+    onResponse({ response }) {
+      if (response.ok) {
+        toast.success(
+          'Password reset link has been sent to your email address.'
+        );
+        resendCooldown.value = RESEND_COOLDOWN;
+        lastEmailSent.value = values.email;
+        saveCooldownState(values.email);
+        startCountdown();
+      }
+    },
+    onResponseError({ response }) {
+      const errorData = response._data as unknown as ApiErrorResponse;
+      if (errorData && errorData.message) {
+        toast.error(
+          errorData.message || 'Failed to send reset link. Please try again.'
+        );
+      }
+    },
+  }
+);
 
 // Watch countdown for resend timer
 watch(countdown, () => {
@@ -76,73 +151,6 @@ onMounted(() => {
     }
   }
 });
-
-// Save cooldown state (global, not email-specific)
-const saveCooldownState = (email?: string) => {
-  resendState.value = {
-    timestamp: Date.now(),
-    ...(email && { email }), // Save email only if provided
-  };
-};
-
-// Start countdown timer
-const startCountdown = () => {
-  if (resendCooldown.value > 0) {
-    resume();
-  }
-};
-
-const forgotPasswordSchema = z.object({
-  email: z.email({ message: 'Invalid email address' }),
-});
-
-// Send password reset function
-const sendPasswordReset = async (email: string) => {
-  try {
-    await authService.forgetPassword({
-      email: email,
-      redirectUrl: `${useRequestURL().origin}/reset-password`,
-    });
-    toast.success('Password reset link has been sent to your email address.');
-    // Start global cooldown timer
-    resendCooldown.value = RESEND_COOLDOWN;
-    lastEmailSent.value = email;
-    saveCooldownState(email);
-    startCountdown();
-  } catch (error) {
-    console.error('Forgot password error:', error);
-    toast.error('Failed to send reset link. Please try again.');
-    isLoading.value = false;
-  }
-};
-
-const { values, errors, handleSubmit } = useForm({
-  initialValues: {
-    email: '',
-  },
-  validationSchema: forgotPasswordSchema,
-  onSubmit: async (values) => {
-    await sendPasswordReset(values.email);
-  },
-});
-
-const forgotPasswordFeatures = [
-  {
-    icon: 'ri:mail-send-line',
-    title: 'Email Recovery',
-    description: 'Receive a secure password reset link in your email',
-  },
-  {
-    icon: 'ri:shield-check-line',
-    title: 'Secure Process',
-    description: 'Your account security is protected throughout the process',
-  },
-  {
-    icon: 'ri:time-line',
-    title: 'Quick Recovery',
-    description: 'Reset your password in just a few simple steps',
-  },
-];
 </script>
 
 <template>
@@ -150,7 +158,7 @@ const forgotPasswordFeatures = [
     <auth-sidebar
       title="Forgot Your Password?"
       subtitle="Don't worry! It happens to the best of us. Enter your email address and we'll send you a link to reset your password."
-      :features="forgotPasswordFeatures"
+      :features="FEATURES"
       class="lg:col-span-2"
     />
 
