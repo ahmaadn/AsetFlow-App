@@ -8,14 +8,20 @@ definePageMeta({
 const auth = useAuth();
 const userName = computed(() => auth.user.value?.name || 'User');
 
-const { data: statisticsData, pending: isLoading } =
-  await useAuthFetch<DashboardStatisticsResponse>('/v1/statistics/dashboard');
+const {
+  data: statisticsData,
+  pending: isLoading,
+  refresh,
+} = await useFetchAPI<DashboardStatisticsResponse>('/v1/statistics/dashboard');
 </script>
 
 <template>
   <div class="p-4 w-full space-y-6">
     <!-- Welcome Banner -->
     <dashboard-welcome-banner :user-name="userName" />
+    <button class="btn btn-sm btn-outline btn-info" @click="() => refresh()">
+      Refresh
+    </button>
     <!-- Statistics Cards -->
     <ui-stat-group class="w-full bg-base-200 shadow-md">
       <ui-stat-item

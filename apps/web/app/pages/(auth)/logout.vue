@@ -1,17 +1,20 @@
 <script setup lang="ts">
 const auth = useAuth();
-useFetchAPI('/v1/auth/logout', {
-  method: 'POST',
-  body: {
-    refreshToken: auth.refreshToken.value,
-  },
-  async onResponse() {
-    useToast().success('You have been logged out successfully.');
-    auth.setRefreshToken(null);
-    auth.setAccessToken(null);
-    await navigateTo('/login');
-  },
-});
+const $api = useNuxtApp().$api;
+try {
+  await $api('/v1/auth/logout', {
+    method: 'POST',
+    body: {
+      refreshToken: auth.refreshToken.value,
+    },
+  });
+} catch (error) {
+  console.error('Logout failed:', error);
+  // Handle error if needed
+}
+auth.setRefreshToken(null);
+auth.setAccessToken(null);
+await navigateTo('/login');
 </script>
 <template>
   <div

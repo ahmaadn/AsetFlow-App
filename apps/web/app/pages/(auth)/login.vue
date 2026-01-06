@@ -50,7 +50,7 @@ const { execute, pending: isLoading } = useFetchAPI<PayloadTokenResponse>(
       if (response.ok) {
         auth.setTokens(response._data!);
         toast.success('Login successful! Redirecting...');
-        await navigateTo('/');
+        await navigateTo('/dashboard');
       }
     },
     onResponseError({ response }) {
