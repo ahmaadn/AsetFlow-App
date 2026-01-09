@@ -40,6 +40,12 @@ export class FolderService {
       `Fetching folders for user ID: ${user_id}, Page: ${page}, Per Page: ${per_page}, Search: "${search}", Sort By: ${sort_by}, Order: ${order}`
     );
 
+    logger.debug(`type of page: ${typeof page}`);
+    logger.debug(`type of per_page: ${typeof per_page}`);
+    logger.debug(`type of search: ${typeof search}`);
+    logger.debug(`type of sort_by: ${typeof sort_by}`);
+    logger.debug(`type of order: ${typeof order}`);
+
     // Mengambil folder dari repository
     const folders = await this.folderRepository.getByFilter({
       where: {

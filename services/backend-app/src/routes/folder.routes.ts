@@ -43,7 +43,7 @@ export function createFolderRoutes(): Router {
   router.get(
     '/',
     validate(httpFoldersQuerySchema),
-    folderController.getAllFolder.bind(folderController)
+    folderController.getAllFolders.bind(folderController)
   );
 
   /**

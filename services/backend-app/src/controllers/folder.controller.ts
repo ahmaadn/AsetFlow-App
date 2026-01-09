@@ -10,7 +10,7 @@ export class FolderController {
   constructor() {
     this.folderService = new FolderService(folderRepository);
 
-    this.getAllFolder = this.getAllFolder.bind(this);
+    this.getAllFolders = this.getAllFolders.bind(this);
     this.createFolder = this.createFolder.bind(this);
     this.updateFolder = this.updateFolder.bind(this);
     this.deleteFolder = this.deleteFolder.bind(this);
@@ -20,13 +20,14 @@ export class FolderController {
   /**
    * Mengambil semua folder.
    */
-  async getAllFolder(req: Request, res: Response, next: NextFunction) {
+  async getAllFolders(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req.user;
       if (!user) {
         throw new UnauthorizedError({ message: 'User not authenticated' });
       }
-      const queryParams = req.query as Partial<GetFolderInput>;
+      const queryParams = req.resultValidation
+        ?.query as Partial<GetFolderInput>;
       const result = await this.folderService.getAllFolders(
         user.id,
         queryParams
