@@ -160,7 +160,7 @@ onUnmounted(stopIntersection);
       @update="onUpdateAsset"
     />
 
-    <AppModalDelete
+    <!-- <AppModalDelete
       v-if="selectedAsset && isModalDeleteOpen"
       v-model="isModalDeleteOpen"
       :confirm-text="selectedAsset.slug"
@@ -173,7 +173,7 @@ onUnmounted(stopIntersection);
           {{ selectedAsset.name }}</span
         >? Tindakan ini tidak dapat dibatalkan.
       </p>
-    </AppModalDelete>
+    </AppModalDelete> -->
 
     <BackToTop />
   </div>

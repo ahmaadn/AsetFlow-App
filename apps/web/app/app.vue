@@ -15,6 +15,5 @@ onMounted(async () => {
     <div id="overlay"></div>
     <UiModalContainer class="z-50" />
     <UiToastContainer class="fixed z-100" position="top-right" />
-    <UiUploadedToast />
   </div>
 </template>

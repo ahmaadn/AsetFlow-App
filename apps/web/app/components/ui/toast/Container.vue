@@ -46,7 +46,9 @@ const btnColor = {
         positionClasses[props.position],
       ]"
     >
-      <div id="toast-upload"></div>
+      <div id="toast-upload">
+        <UiToastUploaded />
+      </div>
       <TransitionGroup name="toast" tag="div" class="flex flex-col gap-2">
         <div
           v-for="toast in toasts"
