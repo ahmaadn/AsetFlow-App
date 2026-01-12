@@ -19,7 +19,6 @@ export const GetFoldersSchema = z.object({
  */
 export const CreateFolderSchema = z.object({
   name: z.string().min(1).max(255),
-  slug: slugSchema.optional(),
 });
 
 /**

@@ -1,44 +1,45 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, unknown>">
 import { ref, computed } from 'vue';
 
-type ColumnType = {
-  key: string;
+type ColumnType<TRow = Record<string, unknown>> = {
+  key: keyof TRow | string;
   label: string;
   sortable?: boolean;
   width?: string;
 };
 
-type RowType = Record<string, unknown>;
-
-interface Props {
-  columns: ColumnType[];
-  rows: RowType[];
-  rowKey?: string;
+interface Props<TRow extends Record<string, unknown>> {
+  columns: ColumnType<TRow>[];
+  rows: TRow[];
+  rowKey?: keyof TRow;
   loading?: boolean;
   emptyMessage?: string;
   selectedRowKey?: string | number | null;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  rowKey: 'id',
+interface Emits {
+  'row-click': [row: T];
+  'double-click': [row: T];
+  'sort-change': [key: string | null, dir: 'asc' | 'desc' | null];
+}
+
+const props = withDefaults(defineProps<Props<T>>(), {
+  rowKey: 'id' as keyof T,
   loading: false,
   emptyMessage: 'No data available.',
   selectedRowKey: null,
 });
 
-const emit = defineEmits<{
-  (e: 'row-click', row: RowType): void;
-  (e: 'sort-change', key: string | null, dir: 'asc' | 'desc' | null): void;
-}>();
+const emit = defineEmits<Emits>();
 
-const sortKey = ref<string | null>(null);
+const sortKey = ref<keyof T | string | null>(null);
 const sortDir = ref<'asc' | 'desc' | null>(null);
 
-function onHeaderClick(col: ColumnType): void {
+function onHeaderClick(col: ColumnType<T>): void {
   if (!col.sortable) return;
 
   if (sortKey.value !== col.key) {
-    sortKey.value = col.key;
+    sortKey.value = String(col.key);
     sortDir.value = 'asc';
   } else {
     switch (sortDir.value) {
@@ -57,13 +58,13 @@ function onHeaderClick(col: ColumnType): void {
   emit('sort-change', sortKey.value, sortDir.value);
 }
 
-const sortedRows = computed(() => {
+const sortedRows = computed<T[]>(() => {
   if (!sortKey.value || !sortDir.value) return props.rows;
 
-  const key = sortKey.value;
+  const key = sortKey.value as keyof T;
   const multiplier = sortDir.value === 'asc' ? 1 : -1;
 
-  return [...props.rows].sort((a, b) => {
+  return [...props.rows].sort((a: T, b: T): number => {
     const valueA = a[key];
     const valueB = b[key];
 
@@ -90,16 +91,20 @@ const sortedRows = computed(() => {
   });
 });
 
-function onRowClick(row: RowType): void {
+function onRowClick(row: T): void {
   emit('row-click', row);
 }
 
-function getRowKey(row: RowType): string | number {
+function onRowDoubleClick(row: T): void {
+  emit('double-click', row);
+}
+
+function getRowKey(row: T): string | number {
   const key = row[props.rowKey];
   return typeof key === 'string' || typeof key === 'number' ? key : String(key);
 }
 
-function getSortIcon(columnKey: string): string {
+function getSortIcon(columnKey: keyof T | string): string {
   if (sortKey.value !== columnKey) {
     return 'ri:arrow-up-down-line';
   }
@@ -108,15 +113,15 @@ function getSortIcon(columnKey: string): string {
     : 'ri:arrow-down-double-line';
 }
 
-function getSortIconClass(columnKey: string): string {
+function getSortIconClass(columnKey: keyof T | string): string {
   const isActive = sortKey.value === columnKey;
   return isActive ? 'opacity-100' : 'opacity-40 group-hover:opacity-60';
 }
 </script>
 
 <template>
-  <div class="overflow-x-auto relative rounded-lg">
-    <table class="table w-full">
+  <div class="overflow-auto relative rounded-lg">
+    <table class="table w-full table-md">
       <thead>
         <slot name="first-head-row" />
         <tr>
@@ -153,6 +158,15 @@ function getSortIconClass(columnKey: string): string {
       </thead>
       <tbody>
         <slot name="first-row" />
+        <template v-if="props.loading && props.rows.length === 0">
+          <tr v-for="i in 5" :key="`skeleton-${i}`" class="animate-pulse">
+            <td v-for="col in props.columns" :key="col.key">
+              <slot :name="`skeleton-${col.key}`">
+                <div class="h-4 bg-base-300 rounded-md w-full"></div>
+              </slot>
+            </td>
+          </tr>
+        </template>
         <template v-if="props.rows.length === 0 && !props.loading">
           <tr>
             <td :colspan="props.columns.length" class="text-center py-4">
@@ -183,6 +197,7 @@ function getSortIconClass(columnKey: string): string {
               'bg-base-200': props.selectedRowKey === getRowKey(row),
             }"
             @click="onRowClick(row)"
+            @dblclick="onRowDoubleClick(row)"
           >
             <td v-for="col in props.columns" :key="col.key">
               <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
@@ -194,27 +209,5 @@ function getSortIconClass(columnKey: string): string {
         <slot name="last-row" />
       </tbody>
     </table>
-    <Transition
-      enter-active-class="transition-opacity duration-200"
-      leave-active-class="transition-opacity duration-200"
-      enter-from-class="opacity-0"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="props.loading"
-        class="absolute inset-0 bg-base-100/80 backdrop-blur-sm"
-        role="status"
-        aria-live="polite"
-      >
-        <slot name="loading-overlay">
-          <div
-            class="flex items-center justify-center h-full font-medium gap-x-2"
-          >
-            <Icon name="ri:loader-5-line" class="animate-spin size-10" />
-            <span>Loading...</span>
-          </div>
-        </slot>
-      </div>
-    </Transition>
   </div>
 </template>

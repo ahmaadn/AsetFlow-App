@@ -34,7 +34,7 @@ export interface ModalConfig {
 }
 
 export interface Modal extends Required<
-  Omit<ModalConfig, 'buttons' | 'html' | 'onConfirm' | 'onCancel' | 'onClose'>
+  Omit<ModalConfig, 'buttons' | 'onConfirm' | 'onCancel' | 'onClose'>
 > {
   buttons: ModalButton[];
 
@@ -136,47 +136,70 @@ export function useModal() {
   };
 
   // Modal dengan konfirmasi
-  const confirm = (
-    config: Omit<ModalConfig, 'type' | 'onConfirm' | 'onCancel'>
-  ): Promise<boolean> => {
+  const confirm = (config: Omit<ModalConfig, 'type'>): Promise<boolean> => {
     return new Promise((resolve) => {
       open({
         ...config,
         type: 'confirm',
-        onConfirm: () => resolve(true),
-        onCancel: () => resolve(false),
+        onConfirm: () => {
+          if (config.onConfirm) {
+            config.onConfirm();
+          }
+          resolve(true);
+        },
+        onCancel: () => {
+          if (config.onCancel) {
+            config.onCancel();
+          }
+          resolve(false);
+        },
       });
     });
   };
 
   // Modal dengan input
   const input = (
-    config: WithRequired<
-      Omit<ModalConfig, 'type' | 'onConfirm' | 'onCancel'>,
-      'inputRequiredValue'
-    >
+    config: WithRequired<Omit<ModalConfig, 'type'>, 'inputRequiredValue'>
   ): Promise<string | null> => {
     return new Promise((resolve) => {
       open({
         ...config,
         type: 'input',
-        onConfirm: (value) => resolve(value || null),
-        onCancel: () => resolve(null),
+        onConfirm: (value) => {
+          if (config.onConfirm) {
+            config.onConfirm();
+          }
+          resolve(value || null);
+        },
+        onCancel: () => {
+          if (config.onCancel) {
+            config.onCancel();
+          }
+          resolve(null);
+        },
       });
     });
   };
 
   // Modal dengan timer
-  const timer = (
-    config: Omit<ModalConfig, 'type' | 'onConfirm' | 'onCancel'>
-  ): Promise<boolean> => {
+  const timer = (config: Omit<ModalConfig, 'type'>): Promise<boolean> => {
     return new Promise((resolve) => {
       open({
         ...config,
         type: 'timer',
         confirmDelay: config.confirmDelay || 3,
-        onConfirm: () => resolve(true),
-        onCancel: () => resolve(false),
+        onConfirm: () => {
+          if (config.onConfirm) {
+            config.onConfirm();
+          }
+          resolve(true);
+        },
+        onCancel: () => {
+          if (config.onCancel) {
+            config.onCancel();
+          }
+          resolve(false);
+        },
       });
     });
   };

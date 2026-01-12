@@ -64,9 +64,9 @@ const triggers = {
 </script>
 
 <template>
-  <div class="card bg-base-100 shadow-md">
+  <div class="card bg-base-100 shadow-md rounded-md">
     <div class="card-body">
-      <h2 class="card-title text-lg flex items-center gap-2">
+      <h2 class="card-title text-lg flex items-center gap-2 flex-none">
         <Icon name="ri:pie-chart-2-line" class="w-5 h-5" />
         Asset Type Distribution
       </h2>
@@ -75,19 +75,24 @@ const triggers = {
         <span class="loading loading-spinner loading-md text-primary" />
       </div>
 
-      <div v-else-if="props.data.length === 0" class="py-8 text-center">
-        <Icon
-          name="ri:pie-chart-line"
-          class="w-12 h-12 mx-auto text-base-content/30 mb-2"
-        />
-        <p class="text-sm text-base-content/60">No data available</p>
+      <div
+        v-else-if="props.data.length === 0"
+        class="py-8 text-center flex-1 flex justify-center items-center w-full"
+      >
+        <div class="flex flex-col items-center gap-2 w-full">
+          <Icon
+            name="ri:pie-chart-line"
+            class="w-12 h-12 mx-auto text-base-content/30 mb-2"
+          />
+          <p class="text-sm text-base-content/60 h-fit">No data available</p>
+        </div>
       </div>
 
       <div v-else class="flex flex-col md:flex-row items-center gap-6 py-4">
         <!-- Donut Chart -->
 
         <ClientOnly>
-          <div class="flex-shrink-0 w-48 h-48">
+          <div class="shrink-0 w-48 h-48">
             <VisSingleContainer
               :data="chartData"
               :height="200"

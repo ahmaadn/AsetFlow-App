@@ -1,7 +1,6 @@
 import type { GeneralAssetType } from '@asetflow/shared';
 
 type AssetType = 'image' | 'video' | 'audio' | 'document' | 'all';
-type ViewMode = 'grid' | 'list';
 
 interface MenuItem {
   label: string;
@@ -15,7 +14,7 @@ interface MenuItem {
 }
 
 interface MenuSection {
-  title: string;
+  title?: string;
   items: MenuItem[];
 }
 
@@ -31,4 +30,11 @@ interface StaggingFile {
   isUploading: boolean;
 }
 
-export type { AssetType, MenuItem, MenuSection, ViewMode, StaggingFile };
+export const ViewMode = {
+  GRID: 'grid',
+  LIST: 'list',
+} as const;
+
+export type ViewMode = (typeof ViewMode)[keyof typeof ViewMode];
+
+export type { AssetType, MenuItem, MenuSection, StaggingFile };

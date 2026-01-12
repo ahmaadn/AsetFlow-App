@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <div class="card bg-base-100 shadow-md">
+  <div class="card bg-base-100 shadow-md rounded-md">
     <div class="card-body">
       <h2 class="card-title text-lg flex items-center gap-2">
         <Icon name="ri:file-list-3-line" class="w-5 h-5" />

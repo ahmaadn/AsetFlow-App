@@ -1,3 +1,10 @@
+<script setup lang="ts">
+const { getUser } = useAuth();
+
+onMounted(async () => {
+  await getUser();
+});
+</script>
 <template>
   <div>
     <div class="main-content relative">
@@ -5,9 +12,8 @@
         <NuxtPage />
       </NuxtLayout>
     </div>
-    <div id="modal-container" class="fixed z-50">
-      <AppModalContainer />
-    </div>
+    <div id="overlay"></div>
+    <AppModalContainer class="z-50" />
     <UiToastContainer class="fixed z-100" position="top-right" />
     <UiUploadedToast />
   </div>

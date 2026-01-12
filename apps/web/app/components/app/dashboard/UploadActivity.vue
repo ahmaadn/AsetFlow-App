@@ -63,7 +63,7 @@ const triggers = {
 </script>
 
 <template>
-  <div class="card bg-base-100 shadow-md">
+  <div class="card bg-base-100 shadow-md rounded-md">
     <div class="card-body">
       <h2 class="card-title text-lg flex items-center gap-2">
         <Icon name="ri:upload-cloud-2-line" class="w-5 h-5" />
@@ -82,7 +82,7 @@ const triggers = {
         <p class="text-sm text-base-content/60">No recent uploads</p>
       </div>
 
-      <div v-else class="py-4">
+      <div v-else class="pt-4">
         <client-only>
           <div class="h-56 mb-4 pointer-events-auto">
             <VisXYContainer :data="props.data" :height="200" class="bar-chart">
@@ -99,9 +99,7 @@ const triggers = {
           </div>
         </client-only>
 
-        <div
-          class="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-200"
-        >
+        <div class="stats stats-horizontal shadow w-full bg-base-200">
           <div class="stat py-3">
             <div class="stat-title text-xs">Total Uploads</div>
             <div class="stat-value text-2xl text-primary">
@@ -110,7 +108,7 @@ const triggers = {
           </div>
           <div class="stat py-3">
             <div class="stat-title text-xs">Daily Average</div>
-            <div class="stat-value text-2xl text-secondary">
+            <div class="stat-value text-2xl text-primary">
               {{
                 Math.round(
                   props.data.reduce((sum, d) => sum + d.count, 0) /
@@ -121,7 +119,7 @@ const triggers = {
           </div>
           <div class="stat py-3">
             <div class="stat-title text-xs">Peak Day</div>
-            <div class="stat-value text-2xl text-accent">
+            <div class="stat-value text-2xl text-primary">
               {{ Math.max(...props.data.map((d) => d.count)) }}
             </div>
           </div>

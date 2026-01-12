@@ -4,13 +4,14 @@ import type { AssetType } from '~/types';
 definePageMeta({
   title: 'Media Library',
   async validate(route) {
-    const { folder } = useApi();
+    const { $api } = useNuxtApp();
 
     try {
-      await folder.checkFolder(route.params.id as string);
+      await $api(`/v1/folders/check/${route.params.folderId}`, {
+        method: 'HEAD',
+      });
       return true;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_) {
+    } catch {
       return false;
     }
   },
@@ -21,7 +22,7 @@ const router = useRouter();
 const assetStore = useAssetStore();
 const toast = useToast();
 
-const folderId = computed(() => route.params.id as string);
+const folderId = computed(() => route.params.folderId as string);
 const selectedAssetType = ref<AssetType>('all');
 
 const assets = computed(() => assetStore.getAssetsByFolder(folderId.value));
@@ -30,7 +31,7 @@ const isLoading = computed(() => assetStore.isLoadingFolder(folderId.value));
 const error = computed(() => assetStore.getError(folderId.value));
 
 const handleBack = () => {
-  router.push('/folder');
+  router.back();
 };
 
 const handleRefresh = async () => {

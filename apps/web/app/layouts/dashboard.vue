@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const { menuSections } = useMenu();
 const sidebarRef = ref();
 
 const pageTitle = computed(() => {
@@ -8,12 +7,10 @@ const pageTitle = computed(() => {
 </script>
 
 <template>
-  <app-sidebar
-    id="dashboard-drawer"
-    ref="sidebarRef"
-    :menu-sections="menuSections"
-  >
+  <app-sidebar id="dashboard-drawer" ref="sidebarRef">
     <app-navbar drawer-id="dashboard-drawer" :title="pageTitle" />
-    <slot />
+    <div class="p-6 md:p-8 pb-20">
+      <slot />
+    </div>
   </app-sidebar>
 </template>

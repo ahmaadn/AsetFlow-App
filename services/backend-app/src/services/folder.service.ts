@@ -48,15 +48,19 @@ export class FolderService {
 
     // Mengambil folder dari repository
     const folders = await this.folderRepository.getByFilter({
-      where: {
-        ownerId: user_id,
-        ...(search && { name: { $like: `%${search}%` } }),
-      },
+      ownerId: user_id,
+      searchQuery: search,
       limit: per_page,
       offset: (page - 1) * per_page,
       sort_by,
       order,
     });
+
+    const totalFolders = await this.folderRepository.countFoldersByOwner({
+      ownerId: user_id,
+      searchQuery: search,
+    });
+    logger.info(`Total folders for user ID ${user_id}: ${totalFolders}`);
 
     // Mapping ke response type
     return {
@@ -67,7 +71,8 @@ export class FolderService {
         assetCount: _count.assets,
         tags: [],
       })),
-      total: folders.length,
+
+      total: totalFolders,
       page,
       per_page,
     };

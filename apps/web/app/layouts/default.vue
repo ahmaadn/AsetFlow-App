@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const { menuSections } = useMenu();
 const sidebarRef = ref();
 const pageTitle = computed(() => {
   return sidebarRef.value?.activeMenuItem?.label || 'Dashboard';
@@ -7,11 +6,7 @@ const pageTitle = computed(() => {
 </script>
 
 <template>
-  <app-sidebar
-    id="dashboard-drawer"
-    ref="sidebarRef"
-    :menu-sections="menuSections"
-  >
+  <app-sidebar id="dashboard-drawer" ref="sidebarRef">
     <app-navbar drawer-id="dashboard-drawer" :title="pageTitle" />
     <slot />
   </app-sidebar>
