@@ -149,7 +149,7 @@ onUnmounted(stopIntersection);
         </div>
         <div class="flex-1 overflow-auto h-full">
           <!-- List View -->
-          <FolderList
+          <AppFolderList
             v-if="viewMode === 'list'"
             :folders="folderState.folders"
             :loading="isLoading"
@@ -158,7 +158,7 @@ onUnmounted(stopIntersection);
           />
 
           <!-- Grid View -->
-          <FolderGrid
+          <AppFolderGrid
             v-else
             :folders="folderState.folders"
             :loading="isLoading"
@@ -175,13 +175,13 @@ onUnmounted(stopIntersection);
           </div>
         </div>
 
-        <FolderModelCreate
+        <AppFolderModelCreate
           v-if="isCreateFolder"
           v-model="isCreateFolder"
           @submit="createFolder"
         />
 
-        <FolderModalEdit
+        <AppFolderModalEdit
           v-if="selectedFolder && isOpenModalEdit"
           v-model="isOpenModalEdit"
           :folder-item="selectedFolder"
@@ -189,7 +189,7 @@ onUnmounted(stopIntersection);
         />
 
         <!-- Folder Panel -->
-        <FolderPanel
+        <AppFolderPanel
           v-if="selectedFolder"
           :folder="selectedFolder"
           @close="selectedFolder = null"

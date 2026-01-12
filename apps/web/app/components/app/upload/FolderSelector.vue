@@ -52,7 +52,7 @@ const model = defineModel<FolderOption | null>();
                 </div>
               </template>
             </UiComboBox>
-            <FolderForm
+            <AppFolderForm
               v-else
               size="md"
               @close="select(0)"

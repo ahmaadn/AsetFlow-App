@@ -29,11 +29,11 @@ const emit = defineEmits<{
     >
       <template v-if="loading && folders.length === 0">
         <!-- Loading Skeletons -->
-        <FolderCardSkeleton v-for="i in 8" :key="`skeleton-${i}`" />
+        <AppFolderCardSkeleton v-for="i in 8" :key="`skeleton-${i}`" />
       </template>
 
       <template v-else>
-        <FolderCard
+        <AppFolderCard
           v-for="folder in folders"
           :key="folder.id"
           :folder="folder"
@@ -50,7 +50,7 @@ const emit = defineEmits<{
       v-if="loading && folders.length > 0"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4"
     >
-      <FolderCardSkeleton v-for="i in 4" :key="`loading-more-${i}`" />
+      <AppFolderCardSkeleton v-for="i in 4" :key="`loading-more-${i}`" />
     </div>
 
     <!-- Empty State -->
