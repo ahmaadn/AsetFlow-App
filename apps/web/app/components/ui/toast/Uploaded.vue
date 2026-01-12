@@ -107,7 +107,7 @@ onUnmounted(pauseAutoClose);
               @click="toggleCollapse"
             >
               <div class="flex items-center gap-3 flex-1">
-                <div class="flex-shrink-0">
+                <div class="shrink-0">
                   <Icon
                     v-if="!$uploadQueue.isCompleted.value"
                     name="ri:loader-5-line"
@@ -256,7 +256,7 @@ onUnmounted(pauseAutoClose);
                             upload.status === 'uploading' ||
                             upload.status === 'pending'
                           "
-                          class="flex-shrink-0 p-1 opacity-0 group-hover:opacity-100 hover:bg-red-100 rounded transition-all"
+                          class="shrink-0 p-1 opacity-0 group-hover:opacity-100 hover:bg-red-100 rounded transition-all"
                           title="Cancel upload"
                           @click="$uploadQueue.cancelUpload(upload.id)"
                         >

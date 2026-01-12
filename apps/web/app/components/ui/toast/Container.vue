@@ -73,7 +73,7 @@ const btnColor = {
           <button
             v-if="toast.closable"
             :class="[
-              'flex-shrink-0 hover:opacity-80 transition-opacity btn btn-square btn-ghost btn-xs absolute top-1 right-1',
+              'shrink-0 hover:opacity-80 transition-opacity btn btn-square btn-ghost btn-xs absolute top-1 right-1',
               btnColor[toast.type],
             ]"
             aria-label="Close"

@@ -192,7 +192,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
 <template>
   <div ref="root" class="relative w-full" @keydown.stop.prevent="onKeydown">
     <div
-      class="input flex items-center justify-between w-full h-auto min-h-[var(--size)]"
+      class="input flex items-center justify-between w-full h-auto min-h-(--size)"
       role="combobox"
       :aria-expanded="isOpen"
       @click="open"
@@ -222,7 +222,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
             </button>
           </div>
         </div>
-        <div class="flex-1 min-w-[100px]">
+        <div class="flex-1 min-w-25">
           <input
             :id="`combo-box-input-${localId}`"
             ref="inputRef"

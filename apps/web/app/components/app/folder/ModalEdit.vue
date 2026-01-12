@@ -56,7 +56,7 @@ function onCancel() {
     <UiModalContent>
       <p>
         Perbaharui folder
-        <span class="font-semibold text-base-content/100">{{
+        <span class="font-semibold text-base-content">{{
           props.folderItem.name
         }}</span>
         di bawah ini:
