@@ -44,7 +44,7 @@ function onCancel() {
 </script>
 
 <template>
-  <UiModalContainer v-model="isOpen" :teleport-to="props.teleportTo">
+  <UiModalOverlay v-model="isOpen" :teleport-to="props.teleportTo">
     <UiModalTitle>Buat Folder Baru </UiModalTitle>
     <UiModalContent>
       <form @submit="handleSubmit">
@@ -65,5 +65,5 @@ function onCancel() {
         </UiModalAction>
       </form>
     </UiModalContent>
-  </UiModalContainer>
+  </UiModalOverlay>
 </template>

@@ -51,7 +51,7 @@ function onCancel() {
 </script>
 
 <template>
-  <UiModalContainer v-model="isOpen" :teleport-to="props.teleportTo">
+  <UiModalOverlay v-model="isOpen" :teleport-to="props.teleportTo">
     <UiModalTitle>Edit Folder</UiModalTitle>
     <UiModalContent>
       <p>
@@ -90,5 +90,5 @@ function onCancel() {
         </UiModalAction>
       </form>
     </UiModalContent>
-  </UiModalContainer>
+  </UiModalOverlay>
 </template>
