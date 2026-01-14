@@ -2,6 +2,15 @@
 import type { FolderItemType } from '@asetflow/shared-types';
 import type { TabItem } from '~/components/ui/Tabs.vue';
 import type { ViewMode } from '~/types';
+import type { ActivityItem } from '~/components/ui/activity/Timeline.vue';
+
+interface FolderDetail extends FolderItemType {
+  size?: string;
+  owner?: {
+    name: string;
+    avatar?: string;
+  };
+}
 
 definePageMeta({
   layout: 'dashboard',
@@ -9,6 +18,9 @@ definePageMeta({
 
 const folderState = useFolderStore();
 const selectedFolder = ref<FolderItemType | null>(null);
+const folderDetail = ref<FolderDetail | null>(null);
+const activities = ref<ActivityItem[]>([]);
+const isPanelLoading = ref(false);
 const isCreateFolder = ref(false);
 const { folderViewMode, setViewFolderMode } = useAppState();
 const isOpenModalEdit = ref(false);
@@ -30,6 +42,75 @@ const viewTabs: TabItem[] = [
 ];
 
 await folderState.loadFolders();
+
+// Dummy data for folder detail
+const dummyFolderDetail: Partial<FolderDetail> = {
+  size: '1.2 GB',
+  owner: {
+    name: 'John Doe',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=john',
+  },
+};
+
+// Dummy activity data
+const dummyActivities: ActivityItem[] = [
+  {
+    id: '1',
+    action: 'uploaded 3 files',
+    user: 'Jane Doe',
+    date: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // 2 mins ago
+  },
+  {
+    id: '2',
+    action: "changed status to 'Public'",
+    user: 'Mike S.',
+    date: new Date(Date.now() - 60 * 60 * 1000).toISOString(), // 1 hour ago
+  },
+  {
+    id: '3',
+    action: 'added tags',
+    user: 'Jane Doe',
+    date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+  },
+  {
+    id: '4',
+    action: 'renamed folder',
+    user: 'John Doe',
+    date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+  },
+  {
+    id: '5',
+    action: 'moved folder to Drive',
+    user: 'John Doe',
+    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+  },
+];
+
+// Fetch folder detail
+const fetchFolderDetail = async (folder: FolderItemType) => {
+  isPanelLoading.value = true;
+
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // Merge folder with dummy detail data
+  folderDetail.value = {
+    ...folder,
+    ...dummyFolderDetail,
+  };
+
+  // Set activities with folder creation as the last item
+  activities.value = [
+    ...dummyActivities,
+    {
+      id: 'created',
+      action: 'Folder created',
+      date: folder.createdAt,
+    },
+  ];
+
+  isPanelLoading.value = false;
+};
 
 const { stop: stopIntersection } = useIntersectionObserver(
   loadMoreRef,
@@ -63,10 +144,27 @@ const openModalUpdate = (folder: FolderItemType) => {
   isOpenModalEdit.value = true;
 };
 
-const onUpdate = async ({ id, name, slug }: FolderItemType) => {
+const onUpdate = async (folder: FolderItemType) => {
   if (!selectedFolder.value && !isOpenModalEdit.value) return;
-  await folderState.updateFolder(id, { name, slug });
-  selectedFolder.value = null;
+  await folderState.updateFolder(folder.id, {
+    name: folder.name,
+    slug: folder.slug,
+  });
+  isOpenModalEdit.value = false;
+
+  if (selectedFolder.value?.id === folder.id) {
+    const updatedFolder = {
+      ...selectedFolder.value,
+      name: folder.name,
+      slug: folder.slug,
+    };
+    selectedFolder.value = updatedFolder;
+  }
+};
+
+const onSortChange = async (key: string | null, dir: 'asc' | 'desc' | null) => {
+  folderState.setSorting(key as 'name' | 'createdAt', dir === 'desc');
+  await refresh();
 };
 
 const handleModalDelete = (folder: FolderItemType) => {
@@ -84,7 +182,7 @@ const handleModalDelete = (folder: FolderItemType) => {
   });
 };
 
-async function doubleClickFolder(folder: FolderItemType) {
+async function onDoubleClick(folder: FolderItemType) {
   await navigateTo(`/drive/${folder.id}`);
 }
 
@@ -94,6 +192,16 @@ async function refresh() {
   await new Promise((resolve) => setTimeout(resolve, 500));
   await folderState.loadFolders();
 }
+
+watch(selectedFolder, async (newFolder) => {
+  if (newFolder) {
+    await fetchFolderDetail(newFolder);
+  } else {
+    folderDetail.value = null;
+    activities.value = [];
+    isPanelLoading.value = false;
+  }
+});
 
 onUnmounted(stopIntersection);
 </script>
@@ -136,7 +244,6 @@ onUnmounted(stopIntersection);
                   type="search"
                   class="grow"
                   placeholder="Search folders..."
-                  :disabled="isLoading"
                 />
               </label>
             </div>
@@ -154,7 +261,8 @@ onUnmounted(stopIntersection);
             :folders="folderState.folders"
             :loading="isLoading"
             @click="(folder) => (selectedFolder = folder)"
-            @double-click="doubleClickFolder"
+            @double-click="onDoubleClick"
+            @sort-change="onSortChange"
           />
 
           <!-- Grid View -->
@@ -163,7 +271,7 @@ onUnmounted(stopIntersection);
             :folders="folderState.folders"
             :loading="isLoading"
             @click="(folder) => (selectedFolder = folder)"
-            @double-click="doubleClickFolder"
+            @double-click="onDoubleClick"
           />
 
           <div
@@ -175,12 +283,14 @@ onUnmounted(stopIntersection);
           </div>
         </div>
 
+        <!-- Modal Create -->
         <AppFolderModelCreate
           v-if="isCreateFolder"
           v-model="isCreateFolder"
           @submit="createFolder"
         />
 
+        <!-- Modal update -->
         <AppFolderModalEdit
           v-if="selectedFolder && isOpenModalEdit"
           v-model="isOpenModalEdit"
@@ -191,9 +301,12 @@ onUnmounted(stopIntersection);
         <!-- Folder Panel -->
         <AppFolderPanel
           v-if="selectedFolder"
-          :folder="selectedFolder"
+          v-model="selectedFolder"
+          :folder-detail="folderDetail"
+          :activities="activities"
+          :is-loading="isPanelLoading"
           @close="selectedFolder = null"
-          @open="doubleClickFolder"
+          @open="onDoubleClick"
           @delete="handleModalDelete"
           @rename="openModalUpdate"
         />

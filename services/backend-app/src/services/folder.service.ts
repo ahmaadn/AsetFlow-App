@@ -88,13 +88,8 @@ export class FolderService {
     user_id: string,
     data: CreateFolderInput
   ): Promise<FolderDetailResponse> {
-    let slug = data.slug;
-    if (typeof data.slug !== 'string') {
-      // Buat slug dari nama dengan mengganti spasi menjadi '-'
-      slug = data.name.trim().toLowerCase().replace(/\s+/g, '-');
-    } else {
-      slug = data.slug.trim().toLowerCase();
-    }
+    const slug =
+      data.name.trim().toLowerCase().replace(/\s+/g, '-') + `-${Date.now()}`;
 
     // cek slug sudah dipakai atau belum
     const existingFolder = await this.folderRepository.findSlug(slug);

@@ -5,7 +5,10 @@ import type { ActivityItem } from '~/components/ui/activity/Timeline.vue';
 import type { PropertyItem } from '~/components/ui/PropertiesPanel.vue';
 
 interface Props {
-  folder: FolderItemType;
+  modelValue: FolderItemType;
+  folderDetail: FolderDetail | null;
+  activities: ActivityItem[];
+  isLoading: boolean;
 }
 
 interface FolderDetail extends FolderItemType {
@@ -27,34 +30,31 @@ const emit = defineEmits<Emits>();
 const activityTimelineRef = ref<InstanceType<
   typeof import('~/components/ui/activity/Timeline.vue').default
 > | null>(null);
-const isLoading = ref(true);
-const folderDetail = ref<FolderDetail | null>(null);
-const activities = ref<ActivityItem[]>([]);
 
 // Computed properties for PropertiesPanel
 const folderProperties = computed<PropertyItem[]>(() => {
-  if (!folderDetail.value) return [];
+  if (!props.folderDetail) return [];
 
   return [
     {
       key: 'name',
       label: 'Name',
-      value: folderDetail.value.name,
+      value: props.folderDetail.name,
     },
     {
       key: 'size',
       label: 'Size',
-      value: folderDetail.value.size,
+      value: props.folderDetail.size,
       emptyText: '-',
     },
     {
       key: 'owner',
       label: 'Owner',
       type: 'avatar',
-      value: folderDetail.value.owner?.name,
+      value: props.folderDetail.owner?.name,
       avatar: {
-        src: folderDetail.value.owner?.avatar,
-        alt: folderDetail.value.owner?.name,
+        src: props.folderDetail.owner?.avatar,
+        alt: props.folderDetail.owner?.name,
         fallbackIcon: 'ri:user-line',
       },
       emptyText: '-',
@@ -62,96 +62,27 @@ const folderProperties = computed<PropertyItem[]>(() => {
     {
       key: 'assets',
       label: 'Assets',
-      value: `${folderDetail.value.assetCount} items`,
+      value: `${props.folderDetail.assetCount} items`,
     },
     {
       key: 'slug',
       label: 'Slug',
-      value: folderDetail.value.slug,
+      value: props.folderDetail.slug,
     },
     {
       key: 'created',
       label: 'Created',
-      value: formatDisplayDate(folderDetail.value.createdAt),
+      value: formatDisplayDate(props.folderDetail.createdAt),
     },
     {
       key: 'tags',
       label: 'Tags',
       type: 'tags',
-      tags: folderDetail.value.tags,
+      tags: props.folderDetail.tags,
       emptyText: 'No tags',
     },
   ];
 });
-
-// Dummy data for folder detail
-const dummyFolderDetail: Partial<FolderDetail> = {
-  size: '1.2 GB',
-  owner: {
-    name: 'John Doe',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=john',
-  },
-};
-
-// Dummy activity data
-const dummyActivities: ActivityItem[] = [
-  {
-    id: '1',
-    action: 'uploaded 3 files',
-    user: 'Jane Doe',
-    date: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // 2 mins ago
-  },
-  {
-    id: '2',
-    action: "changed status to 'Public'",
-    user: 'Mike S.',
-    date: new Date(Date.now() - 60 * 60 * 1000).toISOString(), // 1 hour ago
-  },
-  {
-    id: '3',
-    action: 'added tags',
-    user: 'Jane Doe',
-    date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-  },
-  {
-    id: '4',
-    action: 'renamed folder',
-    user: 'John Doe',
-    date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-  },
-  {
-    id: '5',
-    action: 'moved folder to Drive',
-    user: 'John Doe',
-    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-  },
-];
-
-// Simulate API call for folder detail
-const fetchFolderDetail = async () => {
-  isLoading.value = true;
-
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Merge props.folder with dummy detail data
-  folderDetail.value = {
-    ...props.folder,
-    ...dummyFolderDetail,
-  };
-
-  // Set activities with folder creation as the last item
-  activities.value = [
-    ...dummyActivities,
-    {
-      id: 'created',
-      action: 'Folder created',
-      date: props.folder.createdAt,
-    },
-  ];
-
-  isLoading.value = false;
-};
 
 // Toggle history expansion
 const toggleHistory = () => {
@@ -160,7 +91,7 @@ const toggleHistory = () => {
 
 // Open folder handler
 const handleOpen = () => {
-  emit('open', props.folder);
+  emit('open', props.modelValue);
 };
 
 // Close panel handler
@@ -169,24 +100,12 @@ const handleClose = () => {
 };
 
 const handleRename = () => {
-  emit('rename', props.folder);
+  emit('rename', props.modelValue);
 };
 
 const handleDelete = () => {
-  emit('delete', props.folder);
+  emit('delete', props.modelValue);
 };
-
-// Watch for folder changes to refetch
-watch(
-  () => props.folder.id,
-  () => {
-    if (activityTimelineRef.value) {
-      activityTimelineRef.value.isExpanded = false;
-    }
-    fetchFolderDetail();
-  },
-  { immediate: true }
-);
 </script>
 
 <template>
@@ -237,7 +156,7 @@ watch(
           <div class="p-5 flex border-b border-base-200">
             <button
               class="btn btn-primary btn-sm w-full"
-              :disabled="isLoading"
+              :disabled="props.isLoading"
               @click="handleOpen"
             >
               <Icon name="ri:folder-open-line" class="size-4" />
@@ -249,13 +168,13 @@ watch(
           <div class="p-5 border-b border-base-200">
             <UiPropertiesPanel
               :properties="folderProperties"
-              :loading="isLoading"
+              :loading="props.isLoading"
               :skeleton-count="7"
             />
           </div>
 
           <!-- Quick Actions Skeleton -->
-          <div v-if="isLoading" class="p-5 border-b border-base-200">
+          <div v-if="props.isLoading" class="p-5 border-b border-base-200">
             <div class="skeleton h-3 w-24 mb-4"></div>
             <div class="space-y-2">
               <div v-for="i in 2" :key="i" class="skeleton h-8 w-full"></div>
@@ -297,8 +216,8 @@ watch(
             </h4>
             <UiActivityTimeline
               ref="activityTimelineRef"
-              :activities="activities"
-              :loading="isLoading"
+              :activities="props.activities"
+              :loading="props.isLoading"
               :initial-count="2"
               :skeleton-count="2"
             />
@@ -309,7 +228,7 @@ watch(
         <div class="p-4 border-t border-base-200 bg-base-200/50">
           <button
             class="btn btn-ghost btn-sm w-full text-base-content/60 hover:text-base-content"
-            :disabled="isLoading"
+            :disabled="props.isLoading"
             @click="toggleHistory"
           >
             <Icon name="ri:history-line" class="size-4" />

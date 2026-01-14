@@ -10,8 +10,14 @@ export const GetFoldersSchema = z.object({
   page: z.coerce.number().min(1).default(1),
   per_page: z.coerce.number().min(1).max(100).default(20),
   search: z.string().optional().default(''),
-  sort_by: z.enum(['createdAt', 'name']).default('createdAt'),
-  order: z.enum(['asc', 'desc']).default('desc'),
+  sort_by: z.preprocess(
+    (val) => (val === '' ? undefined : val),
+    z.enum(['createdAt', 'name', 'updatedAt']).optional().default('name')
+  ),
+  order: z.preprocess(
+    (val) => (val === '' ? undefined : val),
+    z.enum(['asc', 'desc']).optional().default('desc')
+  ),
 });
 
 /**

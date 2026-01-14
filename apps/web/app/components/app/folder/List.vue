@@ -7,12 +7,14 @@ interface Props {
   loading?: boolean;
 }
 
-defineProps<Props>();
-
-const emit = defineEmits<{
+interface Emits {
   click: [folder: FolderItemType];
   'double-click': [folder: FolderItemType];
-}>();
+  'sort-change': [key: string | null, dir: 'asc' | 'desc' | null];
+}
+
+defineProps<Props>();
+const emit = defineEmits<Emits>();
 
 const columns = [
   { key: 'name', label: 'Name', sortable: true },
@@ -28,10 +30,12 @@ const columns = [
       :columns="columns"
       :rows="folders"
       :loading="loading"
+      :disable-internal-sort="false"
       row-key="id"
       class="w-full flex-1 h-full bg-base-100 rounded-md"
       @row-click="(row) => emit('click', row)"
       @double-click="(row) => emit('double-click', row)"
+      @sort-change="(key, dir) => emit('sort-change', key, dir)"
     >
       <template #cell-name="{ row }">
         <div class="flex items-center gap-3 min-w-md">
@@ -64,9 +68,7 @@ const columns = [
       </template>
 
       <template #cell-updatedAt="{ row }">
-        <div class="text-neutral/80 text-nowrap">
-          {{ formatDisplayDate((row as FolderItemType).updatedAt) }}
-        </div>
+        {{ formatDisplayDate(row.updatedAt) }}
       </template>
 
       <template #cell-assetCount="{ row }">

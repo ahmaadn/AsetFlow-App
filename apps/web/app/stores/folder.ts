@@ -239,5 +239,10 @@ export const useFolderStore = defineStore('folder', {
     setLoading(isLoading: boolean) {
       this.isLoading = isLoading;
     },
+
+    setSorting(sortBy: 'name' | 'createdAt', sortDesc: boolean) {
+      this.sortBy = sortBy;
+      this.sortDesc = sortDesc;
+    },
   },
 });

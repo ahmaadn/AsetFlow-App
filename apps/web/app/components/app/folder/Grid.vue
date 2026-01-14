@@ -3,22 +3,22 @@ import type { FolderItemType } from '@asetflow/shared-types';
 import type { AssetPreview } from './Card.vue';
 
 export interface FolderWithPreviews extends FolderItemType {
-  /** Asset previews for this folder */
   previews?: AssetPreview[];
-  /** Total folder size */
   size?: string;
 }
 
-defineProps<{
+interface Props {
   folders: FolderWithPreviews[];
   loading?: boolean;
-}>();
+}
 
-const emit = defineEmits<{
+interface Emits {
   click: [folder: FolderItemType];
   'double-click': [folder: FolderItemType];
-  'menu-click': [folder: FolderItemType, event: MouseEvent];
-}>();
+}
+defineProps<Props>();
+
+const emit = defineEmits<Emits>();
 </script>
 
 <template>
@@ -40,7 +40,6 @@ const emit = defineEmits<{
           :previews="folder.previews"
           @click="emit('click', folder)"
           @double-click="emit('double-click', folder)"
-          @menu-click="(f, e) => emit('menu-click', f, e)"
         />
       </template>
     </div>

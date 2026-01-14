@@ -13,15 +13,16 @@ export interface FolderCardProps {
   previews?: AssetPreview[];
 }
 
+export interface Emits {
+  click: [folder: FolderItemType];
+  'double-click': [folder: FolderItemType];
+}
+
 const props = withDefaults(defineProps<FolderCardProps>(), {
   previews: () => [],
 });
 
-const emit = defineEmits<{
-  click: [folder: FolderItemType];
-  'double-click': [folder: FolderItemType];
-  'menu-click': [folder: FolderItemType, event: MouseEvent];
-}>();
+const emit = defineEmits<Emits>();
 
 // Main preview (largest)
 const mainPreview = computed<AssetPreview | null>(
@@ -40,11 +41,6 @@ function onImageError(id: string) {
 
 function hasImageError(id: string) {
   return imageErrors.value.has(id);
-}
-
-function onMenuClick(event: MouseEvent) {
-  event.stopPropagation();
-  emit('menu-click', props.folder, event);
 }
 </script>
 
@@ -75,14 +71,6 @@ function onMenuClick(event: MouseEvent) {
             +{{ folder.tags.length - 2 }}
           </span>
         </div>
-
-        <!-- Menu Button -->
-        <button
-          class="absolute top-3 right-3 btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity z-10"
-          @click="onMenuClick"
-        >
-          <Icon name="ri:more-2-fill" class="size-4" />
-        </button>
 
         <!-- Preview Grid Layout -->
         <div class="absolute inset-3 top-10 flex gap-2">

@@ -176,6 +176,11 @@ const handleDelete = () => {
   emit('delete', props.folder);
 };
 
+// Refetch folder detail (exposed for parent component)
+const refetch = async () => {
+  await fetchFolderDetail();
+};
+
 // Watch for folder changes to refetch
 watch(
   () => props.folder.id,
@@ -187,6 +192,9 @@ watch(
   },
   { immediate: true }
 );
+
+// Expose refetch method for parent component
+defineExpose({ refetch });
 </script>
 
 <template>

@@ -2,23 +2,23 @@
 import type { FolderItemType } from '@asetflow/shared-types';
 import { UpdateFolderSchema } from '@asetflow/validators';
 
-const props = withDefaults(
-  defineProps<{
-    modelValue: boolean;
-    folderItem: FolderItemType;
-    teleportTo?: string | HTMLElement | null;
-  }>(),
-  {
-    folderName: 'Laporan Bulanan',
-    teleportTo: '#modal-container',
-  }
-);
+interface Props {
+  modelValue: boolean;
+  folderItem: FolderItemType;
+  teleportTo?: string | HTMLElement | null;
+}
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'cancel'): void;
-  (e: 'update', folderItem: FolderItemType): void;
-}>();
+interface Emits {
+  'update:modelValue': [value: boolean];
+  cancel: [];
+  update: [folderItem: FolderItemType];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  teleportTo: '#modal-container',
+});
+
+const emit = defineEmits<Emits>();
 
 const isOpen = computed({
   get: () => props.modelValue,
