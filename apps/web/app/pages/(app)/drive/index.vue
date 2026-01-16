@@ -93,16 +93,11 @@ const dummyActivities: ActivityItem[] = [
 const fetchFolderDetail = async (folder: FolderItemType) => {
   isPanelLoading.value = true;
 
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Merge folder with dummy detail data
   folderDetail.value = {
     ...folder,
     ...dummyFolderDetail,
   };
 
-  // Set activities with folder creation as the last item
   activities.value = [
     ...dummyActivities,
     {
@@ -123,23 +118,36 @@ const { stop: stopIntersection } = useIntersectionObserver(
       folderState.hasMore &&
       !folderState.isLoading
     ) {
-      await new Promise((resolve) => setTimeout(resolve, 500)); // slight delay for better UX
       await folderState.loadMoreFolders();
     }
   },
   {
-    rootMargin: '0px 0px 0px 0px',
+    rootMargin: '100px 0px 100px 0px',
+    threshold: 0.1,
   }
 );
 
-watch(
-  searchQuery,
-  async (newQuery) => {
-    folderState.setSearchQuery((newQuery as string) || '');
-    await folderState.searchFolders((newQuery as string) || '');
-  },
-  { immediate: true }
-);
+const debouncedSearch = useDebounceFn(async (query: string) => {
+  folderState.setSearchQuery(query);
+  await folderState.searchFolders(query);
+}, 300);
+
+watch(searchQuery, (newQuery) => {
+  debouncedSearch(newQuery || '');
+});
+
+onMounted(async () => {
+  const initialSearchQuery = searchQuery.value;
+
+  if (initialSearchQuery) {
+    // If there's a search query from URL, perform search
+    folderState.setSearchQuery(initialSearchQuery);
+    await folderState.searchFolders(initialSearchQuery);
+  } else if (!folderState.folders.length) {
+    // Otherwise load folders normally
+    await folderState.loadFolders();
+  }
+});
 
 const createFolder = async (name: string) => {
   await folderState.createFolder({ name });
@@ -152,26 +160,30 @@ const openModalUpdate = (folder: FolderItemType) => {
 };
 
 const onUpdate = async (folder: FolderItemType) => {
-  if (!selectedFolder.value && !isOpenModalEdit.value) return;
+  if (!selectedFolder.value || !isOpenModalEdit.value) return;
+
   await folderState.updateFolder(folder.id, {
     name: folder.name,
     slug: folder.slug,
   });
+
   isOpenModalEdit.value = false;
 
-  if (selectedFolder.value?.id === folder.id) {
-    const updatedFolder = {
+  if (selectedFolder.value.id === folder.id) {
+    selectedFolder.value = {
       ...selectedFolder.value,
       name: folder.name,
       slug: folder.slug,
     };
-    selectedFolder.value = updatedFolder;
   }
 };
 
 const onSortChange = async (key: string | null, dir: 'asc' | 'desc' | null) => {
-  folderState.setSorting(key as 'name' | 'createdAt', dir === 'desc');
-  await refresh();
+  if (key) {
+    folderState.setSorting(key as 'name' | 'createdAt', dir === 'desc');
+    folderState.resetPagination();
+    await folderState.loadFolders();
+  }
 };
 
 const handleModalDelete = (folder: FolderItemType) => {
@@ -195,15 +207,13 @@ async function onDoubleClick(folder: FolderItemType) {
 
 async function refresh() {
   folderState.resetPagination();
-  folderState.setLoading(true);
-  await new Promise((resolve) => setTimeout(resolve, 500));
   await folderState.loadFolders();
 }
 
-watch(selectedFolder, async (newFolder) => {
-  if (newFolder) {
+watch(selectedFolder, async (newFolder, oldFolder) => {
+  if (newFolder && newFolder.id !== oldFolder?.id) {
     await fetchFolderDetail(newFolder);
-  } else {
+  } else if (!newFolder) {
     folderDetail.value = null;
     activities.value = [];
     isPanelLoading.value = false;
