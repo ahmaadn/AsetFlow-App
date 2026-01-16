@@ -9,7 +9,7 @@ const pageTitle = computed(() => {
 <template>
   <app-sidebar id="dashboard-drawer" ref="sidebarRef">
     <app-navbar drawer-id="dashboard-drawer" :title="pageTitle" />
-    <div class="p-6 md:p-8 pb-20">
+    <div class="m-6 md:m-8 mb-20 min-h-[calc(100dvh-4.5rem)]">
       <slot />
     </div>
   </app-sidebar>

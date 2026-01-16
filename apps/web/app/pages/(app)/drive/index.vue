@@ -3,6 +3,7 @@ import type { FolderItemType } from '@asetflow/shared-types';
 import type { TabItem } from '~/components/ui/Tabs.vue';
 import type { ViewMode } from '~/types';
 import type { ActivityItem } from '~/components/ui/activity/Timeline.vue';
+import type { ComboBoxOption } from '~/components/ui/combo/state';
 
 interface FolderDetail extends FolderItemType {
   size?: string;
@@ -16,19 +17,23 @@ definePageMeta({
   layout: 'dashboard',
 });
 
+const route = useRoute();
 const folderState = useFolderStore();
+const { folderViewMode, setViewFolderMode } = useAppState();
 const selectedFolder = ref<FolderItemType | null>(null);
 const folderDetail = ref<FolderDetail | null>(null);
 const activities = ref<ActivityItem[]>([]);
 const isPanelLoading = ref(false);
 const isCreateFolder = ref(false);
-const { folderViewMode, setViewFolderMode } = useAppState();
 const isOpenModalEdit = ref(false);
-const isLoading = computed(() => folderState.isLoading);
-const searchQuery = computed({
-  get: () => folderState.searchQuery,
-  set: (val: string) => folderState.setSearchQuery(val),
-});
+const filterQuery = ref<ComboBoxOption[]>([]);
+const filterOptions: ComboBoxOption[] = [
+  { label: 'Important', value: 'important' },
+  { label: 'Work', value: 'work' },
+  { label: 'Personal', value: 'personal' },
+];
+const searchQuery = ref((route.query.s as string) || '');
+
 const loadMoreRef = ref<HTMLElement | null>(null);
 const modal = useModal();
 
@@ -40,8 +45,6 @@ const viewTabs: TabItem[] = [
   { key: 'list', icon: 'ri:list-check' },
   { key: 'grid', icon: 'ri:layout-grid-fill' },
 ];
-
-await folderState.loadFolders();
 
 // Dummy data for folder detail
 const dummyFolderDetail: Partial<FolderDetail> = {
@@ -115,7 +118,11 @@ const fetchFolderDetail = async (folder: FolderItemType) => {
 const { stop: stopIntersection } = useIntersectionObserver(
   loadMoreRef,
   async ([entry]) => {
-    if (entry?.isIntersecting && folderState.hasMore && !isLoading.value) {
+    if (
+      entry?.isIntersecting &&
+      folderState.hasMore &&
+      !folderState.isLoading
+    ) {
       await new Promise((resolve) => setTimeout(resolve, 500)); // slight delay for better UX
       await folderState.loadMoreFolders();
     }
@@ -125,14 +132,14 @@ const { stop: stopIntersection } = useIntersectionObserver(
   }
 );
 
-// Handle search with debounce
-const debouncedSearch = useDebounceFn(async (query: string) => {
-  await folderState.searchFolders(query);
-}, 500);
-
-watch(searchQuery, (newQuery) => {
-  debouncedSearch(newQuery);
-});
+watch(
+  searchQuery,
+  async (newQuery) => {
+    folderState.setSearchQuery((newQuery as string) || '');
+    await folderState.searchFolders((newQuery as string) || '');
+  },
+  { immediate: true }
+);
 
 const createFolder = async (name: string) => {
   await folderState.createFolder({ name });
@@ -223,43 +230,106 @@ onUnmounted(stopIntersection);
           </button>
         </div>
       </AppBanner>
-      <div class="h-full overflow-auto space-y-6 w-full">
-        <div
-          class="flex md:items-center md:justify-between py-1 gap-6 flex-wrap md:flex-row flex-col"
-        >
-          <div class="flex-1 flex gap-x-4 w-full">
-            <UiTabs
-              v-model="viewMode"
-              :tabs="viewTabs"
-              variant="box"
-              size="sm"
-              class-tabs="bg-base-300"
-              icon-only
-            />
-            <div class="flex-1 flex items-center space-x-4">
-              <label class="input w-full md:w-72">
-                <Icon name="ri:search-line" class="size-5 opacity-50" />
-                <input
-                  v-model="searchQuery"
-                  type="search"
-                  class="grow"
-                  placeholder="Search folders..."
-                />
-              </label>
+      <div class="h-full overflow-auto w-full space-y-4">
+        <div class="flex flex-col md:flex-row gap-4 md:items-center">
+          <div class="flex-1 md:flex-none">
+            <label class="input w-full md:min-w-72">
+              <Icon name="ri:search-line" class="h-[1em] opacity-50"></Icon>
+              <input
+                v-model="searchQuery"
+                type="text"
+                class="grow"
+                placeholder="Search folders "
+              />
+            </label>
+          </div>
+          <div class="flex-1 flex items-center justify-between py-1 flex-wrap">
+            <!-- Left side: Item count -->
+            <div class="flex items-center gap-4">
+              <!-- Filter ComboBox for Tags -->
+              <UiComboBox
+                v-model="filterQuery"
+                class="w-auto"
+                multiple
+                :options="filterOptions"
+              >
+                <template #display="{ modelValue, isOpen, open }">
+                  <button
+                    class="btn bg-base-100 btn-sm gap-2"
+                    :class="{
+                      'btn-active':
+                        isOpen ||
+                        (Array.isArray(modelValue) && modelValue.length > 0),
+                    }"
+                    @click="open"
+                  >
+                    <Icon name="ri:filter-3-line" class="size-4" />
+                    Filter
+                    <Icon
+                      :name="
+                        isOpen ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'
+                      "
+                      class="size-4"
+                    />
+                  </button>
+                </template>
+              </UiComboBox>
+
+              <!-- Sort Button -->
+              <UiComboBox
+                class="w-auto"
+                :options="[
+                  { label: 'Name', value: 'name' },
+                  { label: 'Date Created', value: 'createdAt' },
+                  { label: 'Last Modified', value: 'updatedAt' },
+                ]"
+                @update:model-value="
+                  (val: any) => onSortChange(val?.value, 'asc')
+                "
+              >
+                <template #display="{ modelValue, isOpen, open }">
+                  <button
+                    class="btn bg-base-100 btn-sm gap-2"
+                    :class="{ 'btn-active': isOpen || modelValue }"
+                    @click="open"
+                  >
+                    <Icon name="ri:sort-desc" class="size-4" />
+                    Sort
+                    <Icon
+                      :name="
+                        isOpen ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'
+                      "
+                      class="size-4"
+                    />
+                  </button>
+                </template>
+              </UiComboBox>
+            </div>
+
+            <!-- Right side: View mode tabs -->
+            <div class="flex items-center divide-x divide-base-300 gap-x-4">
+              <p class="text-sm text-base-content/80 pr-4">
+                {{ folderState.folders.length }} Items
+              </p>
+
+              <UiTabs
+                v-model="viewMode"
+                :tabs="viewTabs"
+                variant="box"
+                size="sm"
+                class-tabs="bg-base-300"
+                icon-only
+              />
             </div>
           </div>
-          <div class="flex-none align-middle">
-            <p class="text-sm text-base-content/80">
-              Showing <strong>{{ folderState.folders.length }}</strong> folders
-            </p>
-          </div>
         </div>
+
         <div class="flex-1 overflow-auto h-full">
           <!-- List View -->
           <AppFolderList
             v-if="viewMode === 'list'"
             :folders="folderState.folders"
-            :loading="isLoading"
+            :loading="folderState.isLoading"
             @click="(folder) => (selectedFolder = folder)"
             @double-click="onDoubleClick"
             @sort-change="onSortChange"
@@ -269,7 +339,7 @@ onUnmounted(stopIntersection);
           <AppFolderGrid
             v-else
             :folders="folderState.folders"
-            :loading="isLoading"
+            :loading="folderState.isLoading"
             @click="(folder) => (selectedFolder = folder)"
             @double-click="onDoubleClick"
           />
