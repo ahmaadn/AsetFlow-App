@@ -199,8 +199,8 @@ export class FolderService {
    * @param folderId ID folder yang akan diambil
    * @returns Folder yang ditemukan
    */
-  async getFolderById(folderId: string) {
-    const folder = await this.folderRepository.findById(folderId);
+  async getFolderById(folderId: string): Promise<FolderDetailResponse> {
+    const folder = await this.folderRepository.findDetailById(folderId);
     if (!folder) {
       throw new NotFoundError({
         message: `Folder with ID "${folderId}" does not exist.`,
@@ -208,6 +208,15 @@ export class FolderService {
       });
     }
 
-    return folder;
+    return {
+      ...folder,
+      createdAt: folder.createdAt.toISOString(),
+      updatedAt: folder.updatedAt.toISOString(),
+      assetCount: folder._count.assets,
+      tags: folder.tags.map(({ tag }) => ({
+        id: tag.id,
+        name: tag.name,
+      })),
+    };
   }
 }

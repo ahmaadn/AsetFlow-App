@@ -3,18 +3,8 @@ import type { AssetType } from '~/types';
 
 definePageMeta({
   title: 'Media Library',
-  async validate(route) {
-    const { $api } = useNuxtApp();
-
-    try {
-      await $api(`/v1/folders/check/${route.params.folderId}`, {
-        method: 'HEAD',
-      });
-      return true;
-    } catch {
-      return false;
-    }
-  },
+  layout: 'dashboard',
+  middleware: ['folder'],
 });
 
 const route = useRoute();

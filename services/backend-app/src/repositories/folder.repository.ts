@@ -29,6 +29,14 @@ interface FolderWithAssetCountQuery extends FolderModel {
     assets: number;
   };
 }
+interface FolderWithAssetCountAndTagsQuery extends FolderWithAssetCountQuery {
+  tags: {
+    tag: {
+      id: string;
+      name: string;
+    };
+  }[];
+}
 
 interface FolderQueryOptionsDTO {
   ownerId: string;
@@ -92,6 +100,13 @@ export interface IFolderRepository {
    * @returns The found folder or null
    */
   findById(id: string): Promise<FolderModel | null>;
+
+  /**
+   * Find folder detail by ID including asset count and tags.
+   * @param id Folder ID
+   * @returns The found folder with details or null
+   */
+  findDetailById(id: string): Promise<FolderWithAssetCountAndTagsQuery | null>;
 
   /**
    * Count folders by owner ID.
@@ -191,6 +206,31 @@ class FolderRepository implements IFolderRepository {
       where: {
         ownerId,
         ...(searchQuery ? { name: { contains: searchQuery } } : {}),
+      },
+    });
+  }
+
+  async findDetailById(
+    id: string
+  ): Promise<FolderWithAssetCountAndTagsQuery | null> {
+    return await prisma.folder.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        _count: {
+          select: { assets: true },
+        },
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
   }

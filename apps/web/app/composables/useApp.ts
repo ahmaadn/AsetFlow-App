@@ -10,6 +10,11 @@ export const useAppState = () => {
 
   const headerTitle = useState('header-title', () => 'Dashboard');
 
+  const isModalCreateOpen = useState('is-modal-create-open', () => false);
+  const setModalCreateOpen = (value: boolean) => {
+    isModalCreateOpen.value = value;
+  };
+
   const setHeaderTitle = (title: string) => {
     headerTitle.value = title;
   };
@@ -89,5 +94,8 @@ export const useAppState = () => {
     setViewFolderMode,
     viewModeAssets,
     setViewModeAssets,
+    // Modals
+    isModalCreateOpen,
+    setModalCreateOpen,
   };
 };

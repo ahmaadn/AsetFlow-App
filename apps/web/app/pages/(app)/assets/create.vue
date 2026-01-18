@@ -5,6 +5,11 @@ type FolderOption = {
   [key: string]: unknown;
 };
 
+definePageMeta({
+  title: 'Upload Assets',
+  layout: 'dashboard',
+});
+
 const toast = useToast();
 const { $uploadQueue } = useNuxtApp();
 const folderStore = useFolderStore();
@@ -14,6 +19,8 @@ const folderIdParam = useUrlSearchParams('history').folderId;
 const tempFiles = ref<File[] | null>(null);
 const targetFolder = ref<FolderOption | null>(null);
 const isUploadSuccess = ref(false);
+const loadingFolders = computed(() => folderStore.isLoading);
+const hasMoreFolders = computed(() => folderStore.hasMore);
 
 const folders = computed<FolderOption[]>(() =>
   folderStore.folders.map((f) => ({
@@ -76,6 +83,14 @@ function onUpdateStagingFile() {
   debouncedValidate();
 }
 
+async function loadMoreFolders() {
+  await folderStore.loadMoreFolders();
+}
+
+async function handleAddFolder() {
+  await folderStore.createFolder({ name: '' });
+}
+
 // Debounced validation
 const debouncedValidate = useDebounceFn(() => {
   sFilesStore.reValidateStagingFile();
@@ -109,42 +124,79 @@ onMounted(async () => {
   targetFolder.value =
     folders.value.find((f) => f.value === sFilesStore.targetFolderId) || null;
 });
+
+const modal = useModal();
+
+const handleClearAll = async () => {
+  const confirm = await modal.timer({
+    title: 'Clear All Files',
+    message: 'Are you sure you want to remove all files from pending uploads?',
+    variant: 'error',
+    confirmText: 'Clear All',
+    cancelText: 'Cancel',
+  });
+
+  if (confirm) {
+    sFilesStore.clearStagingFiles();
+  }
+};
 </script>
 
 <template>
-  <div class="p-6 md:p-8 space-y-8">
-    <AppUploadFolderSelector
-      v-model="targetFolder"
-      :folders="folders"
-      @add-folder="folderStore.createFolder"
+  <div class="space-y-8">
+    <AppBanner
+      title="Upload Assets"
+      subtitle="Add files to your digital asset library. You can rename and tag them before finalizing."
     />
-    <AppUploadFileUploader v-model="tempFiles" :show="!!targetFolder" />
-    <AppStagingList
-      :length="sFilesStore.totalFiles"
-      :show="!!targetFolder && sFilesStore.totalFiles > 0"
-      :has-error="sFilesStore.hasErrors"
-      :is-uploading="sFilesStore.isUploading"
-      @upload="uploadFiles"
-      @clear-all="sFilesStore.clearStagingFiles"
-    >
-      <AppStagingFile
-        v-for="(item, index) in sFilesStore.stagingFiles"
-        :key="`staging-${index}`"
-        v-model="sFilesStore.stagingFiles[index]!"
-        :index="index"
-        @update:model-value="onUpdateStagingFile"
-        @delete="sFilesStore.deleteStagingFile(index)"
+    <section>
+      <ui-file-select v-model="tempFiles" />
+    </section>
+    <div v-if="!!sFilesStore.totalFiles" class="flex flex-col gap-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="font-semibold text-base-content">
+            Pending Uploads
+            <span class="text-base-content/60"
+              >({{ sFilesStore.totalFiles }} files)</span
+            >
+          </h3>
+          <p class="text-sm text-base-content/70">
+            Review and manage your files before uploading to the selected
+            folder.
+          </p>
+        </div>
+        <button class="btn btn-sm btn-ghost btn-error" @click="handleClearAll">
+          <Icon name="ri:close-circle-line" class="size-4" />
+          Clear all
+        </button>
+      </div>
+      <AppUploadFolderSelector
+        v-model="targetFolder"
+        :folders="folders"
+        :loading="loadingFolders"
+        :has-more="hasMoreFolders"
+        @add-folder="handleAddFolder"
+        @load-more="loadMoreFolders"
       />
-    </AppStagingList>
-    <AppUploadSuccessCard
-      :show="isUploadSuccess && sFilesStore.totalFiles === 0"
-      :folder-name="targetFolder?.label || ''"
-      :folder-id="targetFolder?.value || ''"
-      @close="isUploadSuccess = false"
-      @reset="sFilesStore.clear"
-      @navigate="navigateToFolder"
-    />
-
+      <AppUploadPendingList
+        :items="sFilesStore.stagingFiles"
+        :has-error="sFilesStore.hasErrors"
+        :is-uploading="sFilesStore.isUploading"
+        @upload="uploadFiles"
+        @clear-all="sFilesStore.clearStagingFiles"
+        @add-more="tempFiles = null"
+        @update-item="onUpdateStagingFile"
+        @delete-item="(index: number) => sFilesStore.deleteStagingFile(index)"
+      />
+      <AppUploadSuccessCard
+        :show="isUploadSuccess && sFilesStore.totalFiles === 0"
+        :folder-name="targetFolder?.label || ''"
+        :folder-id="targetFolder?.value || ''"
+        @close="isUploadSuccess = false"
+        @reset="sFilesStore.clear"
+        @navigate="navigateToFolder"
+      />
+    </div>
     <BackToTop />
   </div>
 </template>

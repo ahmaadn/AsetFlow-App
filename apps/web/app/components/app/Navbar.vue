@@ -101,8 +101,13 @@ const breadcrumbs = computed(() => {
     </div> -->
 
     <!-- Right: Actions -->
-    <!-- <div class="flex-none flex items-center gap-2">
-      <button class="btn btn-ghost btn-circle btn-sm">
+    <div class="flex-none flex items-center gap-2">
+      <NuxtLink class="btn btn-primary" to="/assets/create">
+        <Icon name="ri:upload-2-line" class="size-5"></Icon>
+        Upload
+      </NuxtLink>
+
+      <!-- <button class="btn btn-ghost btn-circle btn-sm">
         <div class="indicator">
           <Icon
             name="ri:notification-3-line"
@@ -112,7 +117,7 @@ const breadcrumbs = computed(() => {
             class="badge badge-xs badge-error indicator-item border-base-100"
           ></span>
         </div>
-      </button>
-    </div> -->
+      </button> -->
+    </div>
   </div>
 </template>

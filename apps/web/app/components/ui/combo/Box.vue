@@ -18,14 +18,26 @@ const props = withDefaults(
     placeholder?: string;
     id?: string;
     name?: string;
+    infiniteScroll?: boolean;
+    pageSize?: number;
+    loading?: boolean;
+    hasMore?: boolean;
   }>(),
   {
     multiple: false,
     placeholder: 'Select...',
     id: '',
     name: '',
+    infiniteScroll: false,
+    pageSize: 20,
+    loading: false,
+    hasMore: false,
   }
 );
+
+const emit = defineEmits<{
+  'load-more': [];
+}>();
 
 const modelValue = defineModel<ComboBoxValue>({
   default: null,
@@ -36,7 +48,7 @@ const root = ref<HTMLElement | null>(null);
 const displayRef = ref<InstanceType<typeof UiComboDisplay> | null>(null);
 const dropdownRef = ref<InstanceType<typeof UiComboDropdown> | null>(null);
 
-const localId = Math.random().toString(36).slice(2, 9);
+const localId = props.id || useId();
 
 // Normalize options
 const normalizedOptions = computed<ComboBoxOption[]>(() =>
@@ -125,8 +137,13 @@ const displaySlotProps = computed<ComboBoxDisplaySlotProps>(() => ({
       :options="filteredOptions"
       :highlighted-index="highlightedIndex"
       :is-selected="isSelected"
+      :infinite-scroll="infiniteScroll"
+      :page-size="pageSize"
+      :loading="loading"
+      :has-more="hasMore"
       @select="selectOption"
       @update:highlighted-index="highlightedIndex = $event"
+      @load-more="emit('load-more')"
     >
       <template #option="{ option }">
         <slot name="option" :option="option">

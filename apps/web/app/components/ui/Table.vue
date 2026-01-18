@@ -4,6 +4,7 @@ type ColumnType<TRow = Record<string, unknown>> = {
   label: string;
   sortable?: boolean;
   width?: string;
+  className?: string;
 };
 
 interface Props<TRow extends Record<string, unknown>> {
@@ -122,6 +123,7 @@ function getSortIconClass(columnKey: keyof T | string): string {
             :class="[
               col.sortable ? 'cursor-pointer select-none group' : '',
               col.width ? `w-[${col.width}]` : '',
+              col.className ? col.className : '',
             ]"
             :aria-sort="
               sortKey === col.key

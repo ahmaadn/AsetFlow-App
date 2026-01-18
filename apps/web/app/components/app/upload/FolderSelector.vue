@@ -8,64 +8,71 @@ type FolderOption = {
 interface Props {
   folders: FolderOption[];
   modelValue: FolderOption | null;
+  loading?: boolean;
+  hasMore?: boolean;
 }
 
 interface Emits {
-  'add-folder': [folder: string];
+  'add-folder': [];
+  'load-more': [];
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  loading: false,
+  hasMore: false,
+});
 const emits = defineEmits<Emits>();
 const model = defineModel<FolderOption | null>();
 </script>
 
 <template>
-  <section>
-    <h2 class="text-lg font-semibold text-base-content mb-2">
-      Langkah 1: Pilih Folder Tujuan
-    </h2>
-    <p class="text-sm text-base-content/60 mb-4">
-      Pilih folder di mana aset baru akan disimpan.
-    </p>
-    <div class="bg-base-100 rounded-lg border border-base-300">
-      <ui-tabs :tabs="['Pilih Folder', 'Buat Folder Baru']" class-tabs="px-2">
-        <template #default="{ selected, select }">
-          <div class="p-6">
-            <UiComboBox
-              v-if="selected === 0"
-              v-model="model"
-              :options="props.folders"
-              placeholder="Pilih folder tujuan"
-            >
-              <template #option="{ option }">
-                <div class="flex flex-row items-center gap-3">
-                  <Icon
-                    name="ri:folder-fill"
-                    class="min-h-5 min-w-5 size-5 text-amber-500"
-                  />
-                  <div class="flex flex-col">
-                    <p class="font-medium">{{ option.label }}</p>
-                    <p class="text-sm text-base-content/60">
-                      {{ option.slug }}
-                    </p>
-                  </div>
+  <section class="bg-base-100 p-4 flex flex-row gap-4 rounded-md items-start">
+    <div class="flex-none">
+      <div
+        class="bg-amber-500/20 flex items-center justify-center p-4 rounded-md"
+      >
+        <Icon name="ri:folder-fill" class="size-5 text-amber-500"></Icon>
+      </div>
+    </div>
+    <div class="flex-1 flex flex-wrap md:contents flex-col gap-2">
+      <div class="flex-1">
+        <h2 class="font-semibold text-base-content mb-2 text-sm">
+          Pilih Folder Tujuan
+        </h2>
+        <div class="bg-base-100 rounded-lg border border-base-300">
+          <UiComboBox
+            v-model="model"
+            :options="props.folders"
+            :loading="props.loading"
+            :has-more="props.hasMore"
+            infinite-scroll
+            :page-size="10"
+            placeholder="Pilih folder tujuan"
+            @load-more="emits('load-more')"
+          >
+            <template #option="{ option }">
+              <div class="flex flex-row items-center gap-3">
+                <Icon
+                  name="ri:folder-fill"
+                  class="min-h-5 min-w-5 size-5 text-amber-500"
+                />
+                <div class="flex flex-col">
+                  <p class="font-medium">{{ option.label }}</p>
                 </div>
-              </template>
-            </UiComboBox>
-            <AppFolderForm
-              v-else
-              size="md"
-              @close="select(0)"
-              @submit="
-                async (name: string) => {
-                  emits('add-folder', name);
-                  select(0);
-                }
-              "
-            />
-          </div>
-        </template>
-      </ui-tabs>
+              </div>
+            </template>
+          </UiComboBox>
+        </div>
+      </div>
+      <div class="flex-none">
+        <button
+          class="btn btn-ghost btn-primary btn-sm"
+          @click="emits('add-folder')"
+        >
+          <Icon name="ri:add-line" class="size-5" />
+          New Folder
+        </button>
+      </div>
     </div>
   </section>
 </template>

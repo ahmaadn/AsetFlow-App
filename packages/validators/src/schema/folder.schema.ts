@@ -27,6 +27,10 @@ export const CreateFolderSchema = z.object({
   name: z.string().min(1).max(255),
 });
 
+export const GetFolderDetailSchema = z.object({
+  id: UUIDv4Schema,
+});
+
 /**
  * Schema untuk memperbarui folder.
  */
@@ -51,6 +55,10 @@ export const httpUpdateFolderSchema = http({
 });
 
 export const httpCheckFolderSchema = http({
+  params: z.object({ id: UUIDv4Schema }),
+});
+
+export const httpGetFolderDetailSchema = http({
   params: z.object({ id: UUIDv4Schema }),
 });
 
