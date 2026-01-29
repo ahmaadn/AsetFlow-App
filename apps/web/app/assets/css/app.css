@@ -37,7 +37,7 @@
   --size-field: 0.25rem;
   --border: 1px;
   --depth: 1;
-  --noise: 1;
+  --noise: 0;
 }
 
 @theme {
@@ -56,7 +56,7 @@ body {
 
 
 .main-content {
-  @apply relative overflow-auto max-h-screen;
+  @apply relative overflow-auto max-h-screen bg-base-200;
 }
 
 

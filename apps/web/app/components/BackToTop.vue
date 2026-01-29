@@ -18,6 +18,7 @@ const { y } = useWindowScroll();
 
 watch(y, (newY) => {
   isVisible.value = newY > props.threshold;
+  console.log('Scroll Y:', newY);
 
   const windowHeight = window.innerHeight;
   const documentHeight = document.documentElement.scrollHeight;

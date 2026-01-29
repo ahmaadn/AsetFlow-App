@@ -1,54 +1,12 @@
 <script setup lang="ts">
+import type { ApiErrorResponse } from '@asetflow/shared';
 import { PasswordValidationSchema } from '@asetflow/validators';
 
 definePageMeta({
   layout: 'auth',
 });
 
-const route = useRoute();
-const toast = useToast();
-const isLoading = ref(false);
-const { auth: authService } = useApi();
-const token = route.query.token as string;
-
-// Redirect to forgot password if no token
-if (!token) {
-  throw createError({
-    statusCode: 400,
-    statusMessage:
-      'Invalid reset token. Please request a new password reset link.',
-  });
-}
-
-const { values, errors, handleSubmit } = useForm({
-  initialValues: {
-    password: '',
-    confirmPassword: '',
-  },
-  validationSchema: PasswordValidationSchema,
-  onSubmit: async (values) => {
-    if (isLoading.value) return;
-    try {
-      await authService.resetPassword({
-        newPassword: values.password,
-        token,
-      });
-      toast.success(
-        'Password has been successfully reset! You can now login with your new password.'
-      );
-      navigateTo('/login');
-    } catch (error) {
-      console.error('Reset password error:', error);
-      toast.error(
-        'Failed to reset password. The link may be expired or invalid.'
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  },
-});
-
-const resetPasswordFeatures = [
+const FEATURES = [
   {
     icon: 'ri:lock-password-line',
     title: 'New Password',
@@ -65,6 +23,55 @@ const resetPasswordFeatures = [
     description: 'Just one more step to regain access to your account',
   },
 ];
+const route = useRoute();
+const toast = useToast();
+const token = route.query.token as string;
+
+if (!token) {
+  throw createError({
+    statusCode: 400,
+    statusMessage:
+      'Invalid reset token. Please request a new password reset link.',
+  });
+}
+
+const { values, errors, handleSubmit, getFieldProps } = useForm({
+  initialValues: {
+    password: '',
+    confirmPassword: '',
+  },
+  validationSchema: PasswordValidationSchema,
+  onSubmit: async () => {
+    await execute();
+  },
+});
+
+const { execute, pending: isLoading } = useFetchAPI('/v1/auth/reset-password', {
+  method: 'POST',
+  immediate: false,
+  watch: false,
+  body: {
+    newPassword: getFieldProps('password').value,
+    token,
+  },
+  async onResponse({ response }) {
+    if (response.ok) {
+      toast.success(
+        'Password has been successfully reset! You can now login with your new password.'
+      );
+      await navigateTo('/login');
+    }
+  },
+  onResponseError({ response }) {
+    const errorData = response._data as unknown as ApiErrorResponse;
+    if (errorData && errorData.message) {
+      toast.error(
+        errorData.message ||
+          'Failed to reset password. The link may be expired or invalid.'
+      );
+    }
+  },
+});
 </script>
 
 <template>
@@ -72,7 +79,7 @@ const resetPasswordFeatures = [
     <auth-sidebar
       title="Create New Password"
       subtitle="Your password reset link is valid. Please enter your new password below to complete the reset process."
-      :features="resetPasswordFeatures"
+      :features="FEATURES"
       class="lg:col-span-2"
     />
 

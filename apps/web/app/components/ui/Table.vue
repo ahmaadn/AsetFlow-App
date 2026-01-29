@@ -1,88 +1,77 @@
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-
-type ColumnType = {
-  key: string;
+<script setup lang="ts" generic="T extends Record<string, any>">
+type ColumnType<TRow = Record<string, unknown>> = {
+  key: keyof TRow | string;
   label: string;
   sortable?: boolean;
   width?: string;
+  className?: string;
 };
 
-type RowType = Record<string, unknown>;
-
-interface Props {
-  columns: ColumnType[];
-  rows: RowType[];
-  rowKey?: string;
+interface Props<TRow extends Record<string, unknown>> {
+  columns: ColumnType<TRow>[];
+  rows: TRow[];
+  rowKey?: keyof TRow;
   loading?: boolean;
   emptyMessage?: string;
   selectedRowKey?: string | number | null;
+  customSort?: (
+    rows: TRow[],
+    key: keyof TRow | string,
+    dir: 'asc' | 'desc'
+  ) => TRow[];
+  disableInternalSort?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  rowKey: 'id',
+interface Emits {
+  'row-click': [row: T];
+  'double-click': [row: T];
+  'sort-change': [key: string | null, dir: 'asc' | 'desc' | null];
+}
+
+const props = withDefaults(defineProps<Props<T>>(), {
+  rowKey: 'id' as keyof T,
   loading: false,
   emptyMessage: 'No data available.',
   selectedRowKey: null,
+  customSort: undefined,
+  disableInternalSort: false,
 });
 
-const emit = defineEmits<{
-  (e: 'row-click', row: RowType): void;
-  (e: 'sort-change', key: string | null, dir: 'asc' | 'desc' | null): void;
-}>();
+const emit = defineEmits<Emits>();
 
-const sortKey = ref<string | null>(null);
+const sortKey = ref<keyof T | string | null>(null);
 const sortDir = ref<'asc' | 'desc' | null>(null);
 
-function onHeaderClick(col: ColumnType): void {
-  if (!col.sortable) return;
-
-  if (sortKey.value !== col.key) {
-    sortKey.value = col.key;
-    sortDir.value = 'asc';
-  } else {
-    switch (sortDir.value) {
-      case 'asc':
-        sortDir.value = 'desc';
-        break;
-      case 'desc':
-        sortKey.value = null;
-        sortDir.value = null;
-        break;
-      default:
-        sortDir.value = 'asc';
-    }
+const sortedRows = computed<T[]>(() => {
+  if (props.disableInternalSort || !sortKey.value || !sortDir.value) {
+    return props.rows;
   }
 
-  emit('sort-change', sortKey.value, sortDir.value);
-}
+  const key = sortKey.value as keyof T;
 
-const sortedRows = computed(() => {
-  if (!sortKey.value || !sortDir.value) return props.rows;
+  if (props.customSort) {
+    return props.customSort(props.rows, key, sortDir.value);
+  }
 
-  const key = sortKey.value;
   const multiplier = sortDir.value === 'asc' ? 1 : -1;
 
-  return [...props.rows].sort((a, b) => {
+  return [...props.rows].sort((a: T, b: T): number => {
     const valueA = a[key];
     const valueB = b[key];
 
-    // Handle null/undefined values
     if (valueA == null && valueB == null) return 0;
     if (valueA == null) return 1;
     if (valueB == null) return -1;
 
-    // Numeric comparison
     if (typeof valueA === 'number' && typeof valueB === 'number') {
       return (valueA - valueB) * multiplier;
     }
 
-    // Date comparison
+    // @ts-expect-error This is valid
     if (valueA instanceof Date && valueB instanceof Date) {
       return (valueA.getTime() - valueB.getTime()) * multiplier;
     }
 
-    // String comparison (case-insensitive)
     const stringA = String(valueA).toLowerCase();
     const stringB = String(valueB).toLowerCase();
 
@@ -90,33 +79,41 @@ const sortedRows = computed(() => {
   });
 });
 
-function onRowClick(row: RowType): void {
-  emit('row-click', row);
+function onHeaderClick(col: ColumnType<T>): void {
+  if (!col.sortable) return;
+
+  if (sortKey.value !== col.key) {
+    sortKey.value = String(col.key);
+    sortDir.value = 'asc';
+  } else {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : null;
+    if (!sortDir.value) sortKey.value = null;
+  }
+
+  emit('sort-change', sortKey.value, sortDir.value);
 }
 
-function getRowKey(row: RowType): string | number {
-  const key = row[props.rowKey];
+function getRowKey(row: T): string | number {
+  const key = row[props.rowKey as keyof T];
   return typeof key === 'string' || typeof key === 'number' ? key : String(key);
 }
 
-function getSortIcon(columnKey: string): string {
-  if (sortKey.value !== columnKey) {
-    return 'ri:arrow-up-down-line';
-  }
+function getSortIcon(columnKey: keyof T | string): string {
+  if (sortKey.value !== columnKey) return 'ri:arrow-up-down-line';
   return sortDir.value === 'asc'
     ? 'ri:arrow-up-double-line'
     : 'ri:arrow-down-double-line';
 }
 
-function getSortIconClass(columnKey: string): string {
+function getSortIconClass(columnKey: keyof T | string): string {
   const isActive = sortKey.value === columnKey;
   return isActive ? 'opacity-100' : 'opacity-40 group-hover:opacity-60';
 }
 </script>
 
 <template>
-  <div class="overflow-x-auto relative rounded-lg">
-    <table class="table w-full">
+  <div class="overflow-auto relative rounded-lg">
+    <table class="table w-full table-md">
       <thead>
         <slot name="first-head-row" />
         <tr>
@@ -126,6 +123,7 @@ function getSortIconClass(columnKey: string): string {
             :class="[
               col.sortable ? 'cursor-pointer select-none group' : '',
               col.width ? `w-[${col.width}]` : '',
+              col.className ? col.className : '',
             ]"
             :aria-sort="
               sortKey === col.key
@@ -153,6 +151,15 @@ function getSortIconClass(columnKey: string): string {
       </thead>
       <tbody>
         <slot name="first-row" />
+        <template v-if="props.loading && props.rows.length === 0">
+          <tr v-for="i in 5" :key="`skeleton-${i}`" class="animate-pulse">
+            <td v-for="col in props.columns" :key="col.key">
+              <slot :name="`skeleton-${String(col.key)}`">
+                <div class="h-4 bg-base-300 rounded-md w-full"></div>
+              </slot>
+            </td>
+          </tr>
+        </template>
         <template v-if="props.rows.length === 0 && !props.loading">
           <tr>
             <td :colspan="props.columns.length" class="text-center py-4">
@@ -180,12 +187,21 @@ function getSortIconClass(columnKey: string): string {
             :key="getRowKey(row)"
             class="hover:cursor-pointer hover:bg-base-300 transition-colors"
             :class="{
-              'bg-base-200': props.selectedRowKey === getRowKey(row),
+              'bg-base-300': props.selectedRowKey === getRowKey(row),
             }"
-            @click="onRowClick(row)"
+            @click="emit('row-click', row)"
+            @dblclick="emit('double-click', row)"
           >
-            <td v-for="col in props.columns" :key="col.key">
-              <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
+            <td
+              v-for="col in props.columns"
+              :key="col.key"
+              :class="col.className"
+            >
+              <slot
+                :name="`cell-${String(col.key)}`"
+                :row="row"
+                :value="row[col.key]"
+              >
                 {{ row[col.key] ?? '-' }}
               </slot>
             </td>
@@ -194,27 +210,5 @@ function getSortIconClass(columnKey: string): string {
         <slot name="last-row" />
       </tbody>
     </table>
-    <Transition
-      enter-active-class="transition-opacity duration-200"
-      leave-active-class="transition-opacity duration-200"
-      enter-from-class="opacity-0"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="props.loading"
-        class="absolute inset-0 bg-base-100/80 backdrop-blur-sm"
-        role="status"
-        aria-live="polite"
-      >
-        <slot name="loading-overlay">
-          <div
-            class="flex items-center justify-center h-full font-medium gap-x-2"
-          >
-            <Icon name="ri:loader-5-line" class="animate-spin size-10" />
-            <span>Loading...</span>
-          </div>
-        </slot>
-      </div>
-    </Transition>
   </div>
 </template>

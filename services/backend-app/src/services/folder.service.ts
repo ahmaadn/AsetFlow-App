@@ -40,17 +40,27 @@ export class FolderService {
       `Fetching folders for user ID: ${user_id}, Page: ${page}, Per Page: ${per_page}, Search: "${search}", Sort By: ${sort_by}, Order: ${order}`
     );
 
+    logger.debug(`type of page: ${typeof page}`);
+    logger.debug(`type of per_page: ${typeof per_page}`);
+    logger.debug(`type of search: ${typeof search}`);
+    logger.debug(`type of sort_by: ${typeof sort_by}`);
+    logger.debug(`type of order: ${typeof order}`);
+
     // Mengambil folder dari repository
     const folders = await this.folderRepository.getByFilter({
-      where: {
-        ownerId: user_id,
-        ...(search && { name: { $like: `%${search}%` } }),
-      },
+      ownerId: user_id,
+      searchQuery: search,
       limit: per_page,
       offset: (page - 1) * per_page,
       sort_by,
       order,
     });
+
+    const totalFolders = await this.folderRepository.countFoldersByOwner({
+      ownerId: user_id,
+      searchQuery: search,
+    });
+    logger.info(`Total folders for user ID ${user_id}: ${totalFolders}`);
 
     // Mapping ke response type
     return {
@@ -61,7 +71,8 @@ export class FolderService {
         assetCount: _count.assets,
         tags: [],
       })),
-      total: folders.length,
+
+      total: totalFolders,
       page,
       per_page,
     };
@@ -77,13 +88,8 @@ export class FolderService {
     user_id: string,
     data: CreateFolderInput
   ): Promise<FolderDetailResponse> {
-    let slug = data.slug;
-    if (typeof data.slug !== 'string') {
-      // Buat slug dari nama dengan mengganti spasi menjadi '-'
-      slug = data.name.trim().toLowerCase().replace(/\s+/g, '-');
-    } else {
-      slug = data.slug.trim().toLowerCase();
-    }
+    const slug =
+      data.name.trim().toLowerCase().replace(/\s+/g, '-') + `-${Date.now()}`;
 
     // cek slug sudah dipakai atau belum
     const existingFolder = await this.folderRepository.findSlug(slug);
@@ -193,8 +199,8 @@ export class FolderService {
    * @param folderId ID folder yang akan diambil
    * @returns Folder yang ditemukan
    */
-  async getFolderById(folderId: string) {
-    const folder = await this.folderRepository.findById(folderId);
+  async getFolderById(folderId: string): Promise<FolderDetailResponse> {
+    const folder = await this.folderRepository.findDetailById(folderId);
     if (!folder) {
       throw new NotFoundError({
         message: `Folder with ID "${folderId}" does not exist.`,
@@ -202,6 +208,15 @@ export class FolderService {
       });
     }
 
-    return folder;
+    return {
+      ...folder,
+      createdAt: folder.createdAt.toISOString(),
+      updatedAt: folder.updatedAt.toISOString(),
+      assetCount: folder._count.assets,
+      tags: folder.tags.map(({ tag }) => ({
+        id: tag.id,
+        name: tag.name,
+      })),
+    };
   }
 }

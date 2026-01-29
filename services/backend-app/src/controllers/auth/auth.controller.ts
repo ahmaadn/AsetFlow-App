@@ -82,7 +82,6 @@ export class AuthController {
       res.status(200).json({
         accessToken: result.accessToken,
         expiresIn: 15 * 60, // 15 minutes
-        user: result.user,
       });
     } catch (error) {
       console.error('Refresh token error:', error);

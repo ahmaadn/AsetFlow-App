@@ -10,7 +10,7 @@ import createUserRoutes from './user.routes.js';
 const router: Router = Router();
 
 router.use('/auth', createAuthRoute());
-router.use('/user', createUserRoutes());
+router.use('/users', createUserRoutes());
 router.use('/assets', createAssetRoutes());
 router.use('/folders', createFolderRoutes());
 router.use('/folders', createUploadRoutes());

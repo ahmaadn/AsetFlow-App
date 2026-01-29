@@ -1,17 +1,17 @@
 import { type FolderModel, prisma } from '@asetflow/database';
 
-interface FolderQueryOptionsDTO {
-  where: {
-    ownerId: string;
-    name?: {
-      $like: string;
-    };
-  };
-  limit: number;
-  offset: number;
-  sort_by?: string;
-  order?: 'asc' | 'desc';
-}
+// interface FolderQueryOptionsDTO {
+//   where: {
+//     ownerId: string;
+//     name?: {
+//       $like: string;
+//     };
+//   };
+//   limit: number;
+//   offset: number;
+//   sort_by?: string;
+//   order?: 'asc' | 'desc';
+// }
 
 interface CreateFolderDTO {
   name: string;
@@ -28,6 +28,23 @@ interface FolderWithAssetCountQuery extends FolderModel {
   _count: {
     assets: number;
   };
+}
+interface FolderWithAssetCountAndTagsQuery extends FolderWithAssetCountQuery {
+  tags: {
+    tag: {
+      id: string;
+      name: string;
+    };
+  }[];
+}
+
+interface FolderQueryOptionsDTO {
+  ownerId: string;
+  searchQuery?: string;
+  limit: number;
+  offset: number;
+  sort_by?: string;
+  order?: 'asc' | 'desc';
 }
 
 export interface IFolderRepository {
@@ -83,6 +100,21 @@ export interface IFolderRepository {
    * @returns The found folder or null
    */
   findById(id: string): Promise<FolderModel | null>;
+
+  /**
+   * Find folder detail by ID including asset count and tags.
+   * @param id Folder ID
+   * @returns The found folder with details or null
+   */
+  findDetailById(id: string): Promise<FolderWithAssetCountAndTagsQuery | null>;
+
+  /**
+   * Count folders by owner ID.
+   * @param ownerId Owner ID
+   */
+  countFoldersByOwner(
+    query: Pick<FolderQueryOptionsDTO, 'ownerId' | 'searchQuery'>
+  ): Promise<number>;
 }
 
 /**
@@ -96,12 +128,12 @@ class FolderRepository implements IFolderRepository {
   async getByFilter(
     options: FolderQueryOptionsDTO
   ): Promise<FolderWithAssetCountQuery[]> {
-    const { where, limit, offset, sort_by, order } = options;
+    const { ownerId, searchQuery, limit, offset, sort_by, order } = options;
 
     return await prisma.folder.findMany({
       where: {
-        ownerId: where.ownerId,
-        ...(where.name ? { name: { contains: where.name.$like } } : {}),
+        ownerId: ownerId,
+        ...(searchQuery ? { name: { contains: searchQuery } } : {}),
       },
       take: limit || 1,
       skip: offset,
@@ -162,6 +194,43 @@ class FolderRepository implements IFolderRepository {
     return await prisma.folder.findUnique({
       where: {
         id,
+      },
+    });
+  }
+
+  async countFoldersByOwner({
+    ownerId,
+    searchQuery,
+  }: Pick<FolderQueryOptionsDTO, 'ownerId' | 'searchQuery'>): Promise<number> {
+    return await prisma.folder.count({
+      where: {
+        ownerId,
+        ...(searchQuery ? { name: { contains: searchQuery } } : {}),
+      },
+    });
+  }
+
+  async findDetailById(
+    id: string
+  ): Promise<FolderWithAssetCountAndTagsQuery | null> {
+    return await prisma.folder.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        _count: {
+          select: { assets: true },
+        },
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
   }

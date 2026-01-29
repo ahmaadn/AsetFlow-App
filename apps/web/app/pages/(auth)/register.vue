@@ -1,46 +1,12 @@
 <script setup lang="ts">
+import type { ApiErrorResponse } from '@asetflow/shared';
 import { RegisterSchema } from '@asetflow/validators';
 
 definePageMeta({
   layout: 'auth',
 });
 
-const { auth: authApi } = useApi();
-const isLoading = ref(false);
-
-const { values, errors, handleSubmit } = useForm({
-  initialValues: {
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  },
-  validationSchema: RegisterSchema,
-  onSubmit: async (values) => {
-    isLoading.value = true;
-    try {
-      await authApi.register({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        confirmPassword: values.confirmPassword,
-      });
-      useToast().success(
-        'Registration successful! You can now log in with your credentials.'
-      );
-      navigateTo('/login');
-    } catch (error) {
-      useToast().error(
-        error.response?.data?.message ||
-          'An error occurred during registration. Please try again.'
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  },
-});
-
-const registerFeatures = [
+const FEATURES = [
   {
     icon: 'ri:user-add-line',
     title: 'Quick Setup',
@@ -57,6 +23,41 @@ const registerFeatures = [
     description: 'Start uploading and organizing your assets immediately',
   },
 ];
+
+const { values, errors, handleSubmit } = useForm({
+  initialValues: {
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  },
+  validationSchema: RegisterSchema,
+  onSubmit: async () => {
+    await execute();
+  },
+});
+
+const { execute, pending: isLoading } = useFetchAPI('/v1/auth/register', {
+  method: 'POST',
+  immediate: false,
+  watch: false,
+  body: values,
+  async onResponse({ response }) {
+    if (response.ok) {
+      useToast().success('Registration successful! You can now log in.');
+      await navigateTo('/login');
+    }
+  },
+  onResponseError({ response }) {
+    const errorData = response._data as unknown as ApiErrorResponse;
+    if (errorData && errorData.message) {
+      useToast().error(
+        errorData.message ||
+          'An error occurred during registration. Please try again.'
+      );
+    }
+  },
+});
 </script>
 
 <template>
@@ -64,7 +65,7 @@ const registerFeatures = [
     <auth-sidebar
       title="Join AsetFlow Today"
       subtitle="Start managing your digital assets with our powerful platform. Create your account and get organized in minutes."
-      :features="registerFeatures"
+      :features="FEATURES"
       class="lg:col-span-2"
     />
 

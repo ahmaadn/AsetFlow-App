@@ -1,4 +1,4 @@
-import { MAX_CONCURRENT_UPLOADS } from '@asetflow/shared';
+import { MAX_CONCURRENT_UPLOADS, ErrorCode } from '@asetflow/shared';
 
 export interface UploadItem {
   file: File;
@@ -21,7 +21,6 @@ export const useUploadQueue = () => {
   const config = useRuntimeConfig();
   const BASE_URL = config.public.apiBase as string;
   const VERSION = '/v1';
-  const { accessToken } = useAuth();
 
   const isUploading = computed(() =>
     queue.value.some((item) => item.status === 'uploading')
@@ -104,9 +103,13 @@ export const useUploadQueue = () => {
     }
   };
 
-  const uploadFile = async (item: UploadQueueItem): Promise<void> => {
-    const formData = new FormData();
+  const uploadFile = async (
+    item: UploadQueueItem,
+    retryCount = 0
+  ): Promise<void> => {
+    const MAX_RETRY = 1;
 
+    const formData = new FormData();
     formData.append('file', item.file);
     formData.append('filename', item.filename);
     if (item.slug) {
@@ -129,11 +132,67 @@ export const useUploadQueue = () => {
       });
 
       // Handle completion
-      xhr.addEventListener('load', () => {
+      xhr.addEventListener('load', async () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           item.status = 'completed';
           item.progress = 100;
           resolve(xhr.response);
+        } else if (xhr.status === 401 && retryCount < MAX_RETRY) {
+          // Parse response untuk cek errorCode
+          let errorCode: string | undefined;
+          try {
+            const responseData = JSON.parse(xhr.responseText);
+            errorCode = responseData?.errorCode;
+          } catch {
+            // Jika gagal parse, anggap bukan TOKEN_EXPIRED
+          }
+
+          const { refreshToken, setAccessToken, setRefreshToken } = useAuth();
+
+          // Token expired, coba refresh
+          if (errorCode === ErrorCode.TOKEN_EXPIRED) {
+            try {
+              if (!refreshToken.value) {
+                setAccessToken(null);
+                setRefreshToken(null);
+                await navigateTo('/login');
+                item.status = 'failed';
+                item.error = 'Session expired';
+                reject(new Error('Session expired'));
+                return;
+              }
+
+              // Refresh token
+              const { $api } = useNuxtApp();
+              const response = await $api<{ accessToken: string }>(
+                '/v1/auth/refresh',
+                {
+                  method: 'POST',
+                  body: {
+                    refreshToken: refreshToken.value,
+                  },
+                }
+              );
+
+              setAccessToken(response.accessToken);
+
+              // Retry upload dengan token baru
+              item.progress = 0;
+              await uploadFile(item, retryCount + 1);
+              resolve();
+            } catch (error) {
+              console.error('Failed to refresh token:', error);
+              await navigateTo('/logout');
+              item.status = 'failed';
+              item.error = 'Session expired';
+              reject(new Error('Session expired'));
+            }
+          } else {
+            // 401 tapi bukan TOKEN_EXPIRED
+            item.status = 'failed';
+            item.error = 'Unauthorized';
+            reject(new Error('Unauthorized'));
+          }
         } else {
           item.status = 'failed';
           item.error =
@@ -160,6 +219,7 @@ export const useUploadQueue = () => {
       });
 
       xhr.open('POST', `${BASE_URL}${VERSION}${item.apiEndpoint}`);
+      const { accessToken } = useAuth();
       if (accessToken.value) {
         xhr.setRequestHeader('Authorization', `Bearer ${accessToken.value}`);
       }
@@ -168,64 +228,45 @@ export const useUploadQueue = () => {
   };
 
   const processQueue = async () => {
-    const activeUploads: Promise<void>[] = [];
+    const activeUploads = new Map<string, Promise<void>>();
 
-    while (
-      queue.value.some(
-        (item) => item.status === 'pending' || item.status === 'uploading'
-      )
-    ) {
-      // Ambil file yang sedang diupload
-      let currentUploading = queue.value.filter(
-        (item) => item.status === 'uploading'
-      ).length;
+    const startNextUpload = async () => {
+      // Cari file pending berikutnya
+      const nextItem = queue.value.find((item) => item.status === 'pending');
 
-      // Jika masih bisa upload lebih banyak
-      while (currentUploading < MAX_CONCURRENT_UPLOADS) {
-        const nextItem = queue.value.find((item) => item.status === 'pending');
+      if (!nextItem) return;
 
-        if (nextItem) {
-          nextItem.status = 'uploading';
+      nextItem.status = 'uploading';
 
-          // Jalankan upload secara parallel
-          const uploadPromise = uploadFile(nextItem).catch((err) => {
-            console.error(`Upload failed for ${nextItem.filename}:`, err);
-          });
+      // Mulai upload dan track dengan ID
+      const uploadPromise = uploadFile(nextItem)
+        .catch((err) => {
+          console.error(`Upload failed for ${nextItem.filename}:`, err);
+        })
+        .finally(() => {
+          // Hapus dari active uploads ketika selesai
+          activeUploads.delete(nextItem.id);
 
-          activeUploads.push(uploadPromise);
-        }
-        currentUploading++;
-      }
-
-      // Tunggu salah satu upload selesai sebelum lanjut
-      if (activeUploads.length > 0) {
-        await Promise.race(activeUploads);
-        // Hapus promise yang sudah selesai
-        const settled = await Promise.allSettled(activeUploads);
-        activeUploads.length = 0;
-
-        // Tambahkan kembali yang belum selesai
-        settled.forEach((result) => {
-          if (result.status === 'rejected') {
-            activeUploads.push(Promise.resolve());
+          // Langsung lanjutkan dengan file baru jika masih ada slot
+          if (activeUploads.size < MAX_CONCURRENT_UPLOADS) {
+            startNextUpload();
           }
         });
-      }
 
-      // Jika tidak ada lagi pending dan semua upload selesai, keluar
-      if (
-        !queue.value.some((item) => item.status === 'pending') &&
-        !queue.value.some((item) => item.status === 'uploading')
-      ) {
-        break;
-      }
+      activeUploads.set(nextItem.id, uploadPromise);
+    };
 
-      // Small delay untuk menghindari busy loop
-      await new Promise((resolve) => setTimeout(resolve, 100));
+    // Mulai upload awal sampai MAX_CONCURRENT_UPLOADS
+    const initialUploads: Promise<void>[] = [];
+    for (let i = 0; i < MAX_CONCURRENT_UPLOADS; i++) {
+      initialUploads.push(startNextUpload());
     }
+    await Promise.all(initialUploads);
 
-    // Tunggu semua upload selesai
-    await Promise.all(activeUploads);
+    // Tunggu semua upload yang masih aktif selesai
+    while (activeUploads.size > 0) {
+      await Promise.race(activeUploads.values());
+    }
   };
 
   const startUpload = async () => {

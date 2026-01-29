@@ -3,22 +3,18 @@ import {
   ErrorCode,
   type AccessTokenPayload,
   type ApiErrorResponse,
-  type ValidationErrorResponse,
 } from '@asetflow/shared';
 import type {
+  AccessTokenCredentials,
   AccessTokenResponse,
   PayloadTokenResponse,
-  SimpleUserType,
+  UserInfoResponses,
 } from '@asetflow/shared-types';
-import type { FetchError } from 'ofetch';
-import { useFetchAPI } from './useApiFetch';
 
 /**
  * Main authentication composable providing reactive auth state and methods.
  */
-
 export function useAuth() {
-  // Cookies to store tokens securely
   const accessToken = useCookie<string | null>('auth.access_token', {
     secure: true,
     maxAge: 30 * 60, // 30 minutes
@@ -28,7 +24,7 @@ export function useAuth() {
     maxAge: 7 * 24 * 60 * 60, // 7 days
   });
 
-  const user = useState<SimpleUserType | null>('auth_user', () => null);
+  const user = useState<UserInfoResponses | null>('auth_user', () => null);
   const isAuthenticated = computed(
     () => !!accessToken.value && !!refreshToken.value
   );
@@ -43,13 +39,14 @@ export function useAuth() {
       return;
     }
 
-    const payload = decodeJWT(token) as AccessTokenPayload;
+    const payload =
+      decodeJWT<AccessTokenPayload<AccessTokenCredentials>>(token);
 
-    // for now use simple user info from token payload
     user.value = {
-      id: payload.sub!,
-      email: payload.email,
-      role: payload.role,
+      id: payload.userId as string,
+      name: payload.name as string,
+      email: payload.email as string,
+      role: payload.role as string,
     };
   };
 
@@ -77,48 +74,57 @@ export function useAuth() {
   };
 
   const refresh = async () => {
-    const { data, error } = await useFetchAPI<AccessTokenResponse>(
-      '/v1/auth/refresh',
-      {
+    const $api = useNuxtApp().$api;
+
+    try {
+      const response = await $api<AccessTokenResponse>('/v1/auth/refresh', {
         method: 'POST',
         body: {
           refreshToken: refreshToken.value,
         },
+      });
+      setAccessToken(response.accessToken);
+      return response;
+    } catch (error) {
+      if (isFetchError<ApiErrorResponse>(error)) {
+        const resErr = error.response;
+        if (
+          resErr?._data?.errorCode === ErrorCode.TOKEN_EXPIRED ||
+          resErr?._data?.errorCode === ErrorCode.UNAUTHORIZED
+        ) {
+          setAccessToken(null);
+          setRefreshToken(null);
+        }
       }
-    );
-
-    if (error.value) {
-      const { response: resErr } = error.value as FetchError<
-        ApiErrorResponse | ValidationErrorResponse
-      >;
-      console.error('Failed to refresh token:', error.value);
-      // expired token and unauthorized are handled by logging out the user
-      if (
-        resErr?._data?.errorCode === ErrorCode.TOKEN_EXPIRED ||
-        resErr?._data?.errorCode === ErrorCode.UNAUTHORIZED
-      ) {
-        setAccessToken(null);
-        setRefreshToken(null);
-      }
-      throw error.value;
+      throw error;
     }
-
-    if (data.value?.accessToken) {
-      setAccessToken(data.value.accessToken);
-    }
-    return data.value;
   };
 
-  const logout = () => {
-    clearTokens();
-    const { data, error } = useFetchAPI('/v1/auth/logout', {
-      method: 'POST',
-      body: {
-        refreshToken: refreshToken.value,
-      },
-    });
-    // ignore errors on logout
-    return { data, error };
+  const getUser = async () => {
+    if (!accessToken.value) {
+      const { $api } = useNuxtApp();
+      try {
+        const userInfo = await $api<UserInfoResponses>('/v1/users/me', {
+          method: 'GET',
+        });
+        user.value = userInfo;
+        return userInfo;
+      } catch (error) {
+        console.error('Failed to fetch user info:', error);
+        throw error;
+      }
+    }
+
+    const payload = decodeJWT<AccessTokenPayload<AccessTokenCredentials>>(
+      accessToken.value
+    );
+
+    user.value = {
+      id: payload.userId as string,
+      name: payload.name as string,
+      email: payload.email as string,
+      role: payload.role as string,
+    };
   };
 
   return {
@@ -134,6 +140,22 @@ export function useAuth() {
     setTokens,
     clearTokens,
     refresh,
-    logout,
+    getUser,
+  };
+}
+
+export function useUser() {
+  const user = useState<UserInfoResponses | null>('auth_user', () => null);
+
+  const fetch = async () => {
+    const { $api } = useNuxtApp();
+    const data = await $api<UserInfoResponses>('/v1/users/me');
+    user.value = data;
+    return data;
+  };
+
+  return {
+    user,
+    fetch,
   };
 }

@@ -29,5 +29,5 @@ const canConfirm = computed(() => {
       placeholder="ketik di sini"
     />
   </fieldset>
-  <slot :can-confirm="canConfirm"></slot>
+  <slot :can-confirm="canConfirm" :input-value="inputValue"></slot>
 </template>

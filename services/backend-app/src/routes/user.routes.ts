@@ -9,7 +9,7 @@ export function createUserRoutes(): Router {
 
   /**
    * @swagger
-   * /v1/user/me:
+   * /v1/users/me:
    *   get:
    *     summary: Get the profile of the logged-in user
    *     description: Retrieve the profile information of the authenticated user.

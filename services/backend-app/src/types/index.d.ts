@@ -8,6 +8,12 @@ declare namespace Express {
       id: string;
       role: string;
     };
+
+    resultValidation?: {
+      body?: unknown;
+      query?: unknown;
+      params?: unknown;
+    };
   }
 }
 

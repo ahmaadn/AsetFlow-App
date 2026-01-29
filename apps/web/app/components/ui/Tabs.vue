@@ -1,44 +1,161 @@
 <script setup lang="ts">
-const props = defineProps<{
-  tabs: string[];
-  modelValue?: number;
-  classTabs?: string;
-}>();
+export interface TabItem {
+  key: string;
+  label?: string;
+  icon?: string;
+  disabled?: boolean;
+}
 
-const emit = defineEmits<(e: 'update:modelValue', v: number) => void>();
+interface Emits {
+  'update:modelValue': [value: string | number];
+  change: [value: string | number, tab: TabItem];
+}
 
-const selected = ref<number>(props.modelValue ?? 0);
+type TabVariant = 'border' | 'box' | 'lift';
+type TabSize = 'xs' | 'sm' | 'md' | 'lg';
 
-function onSelect(i: number) {
-  selected.value = i;
-  emit('update:modelValue', i);
+const props = withDefaults(
+  defineProps<{
+    /** Array of tab items or simple string labels */
+    tabs: TabItem[] | string[];
+    /** Currently selected tab key or index */
+    modelValue?: string | number;
+    /** Tab style variant */
+    variant?: TabVariant;
+    /** Tab size */
+    size?: TabSize;
+    /** Additional classes for the tab list container */
+    classTabs?: string;
+    /** Show icons only (hide labels) */
+    iconOnly?: boolean;
+  }>(),
+  {
+    modelValue: 0,
+    variant: 'border',
+    size: 'md',
+    iconOnly: false,
+    classTabs: '',
+  }
+);
+
+const emit = defineEmits<Emits>();
+
+// Normalize tabs to TabItem format
+const normalizedTabs = computed<TabItem[]>(() => {
+  return props.tabs.map((tab, index) => {
+    if (typeof tab === 'string') {
+      return { key: String(index), label: tab };
+    }
+    return tab;
+  });
+});
+
+// Get the selected key (handles both string keys and numeric indices)
+const selectedKey = computed(() => {
+  if (typeof props.modelValue === 'number') {
+    return (
+      normalizedTabs.value[props.modelValue]?.key ?? String(props.modelValue)
+    );
+  }
+  return props.modelValue;
+});
+
+function onSelect(tab: TabItem, index: number) {
+  if (tab.disabled) return;
+
+  const value = typeof props.modelValue === 'number' ? index : tab.key;
+  emit('update:modelValue', value);
+  emit('change', value, tab);
+}
+
+function isSelected(tab: TabItem) {
+  return tab.key === selectedKey.value;
 }
 </script>
 
 <template>
-  <div>
-    <div role="tablist" class="tabs tabs-border" :class="classTabs">
+  <div class="ui-tabs">
+    <div
+      role="tablist"
+      :class="[
+        {
+          tabs: true,
+          'tabs-box': props.variant === 'box',
+          'tabs-lift': props.variant === 'lift',
+          'tabs-border': props.variant === 'border',
+          'tabs-xs': props.size === 'xs',
+          'tabs-sm': props.size === 'sm',
+          'tabs-md': props.size === 'md',
+          'tabs-lg': size === 'lg',
+        },
+        classTabs,
+      ]"
+    >
       <button
-        v-for="(t, i) in tabs"
-        :key="i"
+        v-for="(tab, index) in normalizedTabs"
+        :key="tab.key"
         role="tab"
         type="button"
         class="tab"
-        :class="{ 'tab-active': selected === i }"
-        @click="onSelect(i)"
+        :class="{
+          'tab-active': isSelected(tab),
+          'tab-disabled': tab.disabled,
+        }"
+        :disabled="tab.disabled"
+        :aria-selected="isSelected(tab)"
+        :aria-disabled="tab.disabled"
+        @click="onSelect(tab, index)"
       >
-        {{ t }}
+        <Icon
+          v-if="tab.icon"
+          :name="tab.icon"
+          :class="[
+            {
+              'opacity-80 hover:opacity-100': !isSelected(tab),
+              'opacity-100': isSelected(tab),
+            },
+            {
+              'size-3': props.size === 'xs',
+              'size-4': props.size === 'sm',
+              'size-5': props.size === 'md',
+              'size-6': props.size === 'lg',
+            },
+          ]"
+        />
+        <span v-if="tab.label && !iconOnly">{{ tab.label }}</span>
       </button>
     </div>
 
-    <div>
-      <slot :selected="selected" :select="onSelect" />
+    <!-- Tab panels slot -->
+    <div v-if="$slots.default" class="tab-panels">
+      <slot
+        :selected="selectedKey"
+        :selected-index="normalizedTabs.findIndex((t) => t.key === selectedKey)"
+        :select="onSelect"
+        :tabs="normalizedTabs"
+      />
     </div>
+
+    <!-- Named slots for each tab panel -->
+    <template v-for="(tab, index) in normalizedTabs" :key="`panel-${tab.key}`">
+      <div
+        v-if="$slots[`panel-${tab.key}`] && isSelected(tab)"
+        class="tab-panel"
+      >
+        <slot :name="`panel-${tab.key}`" :tab="tab" :index="index" />
+      </div>
+    </template>
   </div>
 </template>
 
 <style scoped>
 .tab {
   user-select: none;
+  transition: all 0.15s ease;
+}
+
+.tab-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>

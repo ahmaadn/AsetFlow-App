@@ -6,24 +6,16 @@ import {
   ErrorCode,
 } from '@asetflow/shared';
 import type { AccessTokenPayload, RefreshTokenPayload } from '@asetflow/shared';
+import {
+  AccessTokenCredentials,
+  RefreshTokenCredentials,
+} from '@asetflow/shared-types';
 import type { JWTPayload } from 'jose';
-import { JWTExpired, JWTInvalid } from 'jose/errors';
+import { JWTExpired } from 'jose/errors';
 
 import { UnauthorizedError } from './api-error.js';
 import { jwtConfig } from '../configs/jwt.config.js';
 import logger from '../configs/logger.config.js';
-
-export type AccessTokenCredentials = {
-  name: string;
-  userId: string;
-  email: string;
-  role: string;
-};
-
-export type RefreshTokenCredentials = {
-  userId: string;
-  tokenId: string;
-};
 
 /**
  * Generate access token with custom payload (Generic)
@@ -104,6 +96,7 @@ export async function verifyAccessToken<T extends AccessTokenCredentials>(
     });
 
     logger.debug('Verified access token payload');
+    logger.debug('Access Token Payload:', payload);
 
     if (payload.type !== 'access') {
       logger.warn('Access token type mismatch or invalid payload');

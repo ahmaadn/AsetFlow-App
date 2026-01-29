@@ -1,56 +1,41 @@
 <script setup lang="ts">
-import type { MenuItem, MenuSection } from '~/types';
+import type { MenuItem } from '~/types';
 
 interface Props {
   id?: string;
-  menuSections: MenuSection[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
   id: 'app-sidebar',
 });
 
-const route = useRoute();
+const { user } = useAuth();
+const { isCollapsed, menuSections } = useAppState();
+
+// Reference to SidebarMenu component for accessing activeMenuItem
+const sidebarMenuRef = ref<InstanceType<
+  typeof import('./sidebar/Menu.vue').default
+> | null>(null);
 
 const activeMenuItem = computed((): MenuItem | null => {
-  for (const section of props.menuSections) {
-    const activeItem = section.items.find(
-      (item) => item.to && isActiveLink(item.to)
-    );
-    if (activeItem) return activeItem;
-  }
-  return null;
+  return sidebarMenuRef.value?.activeMenuItem ?? null;
 });
 
 defineExpose({
   activeMenuItem,
 });
 
-const isActiveLink = (itemTo: string): boolean => {
-  if (!itemTo || itemTo === '') return false;
+// Storage data (can be replaced with real data from API)
+// const storageData = reactive({
+//   used: 7.2,
+//   total: 10,
+//   percentage: 72,
+// });
 
-  // Exact match untuk home/dashboard
-  if (itemTo === '/' || itemTo === '/dashboard') {
-    return route.path === itemTo;
-  }
-
-  // Starts with untuk nested routes
-  return route.path.startsWith(itemTo);
-};
-
-const handleItemClick = (item: MenuItem) => {
-  if (item.action && typeof item.action === 'function') {
-    item.action();
-  }
-};
-
-const getLinkClass = (item: MenuItem) => {
-  return {
-    'text-primary bg-base-200 hover:bg-base-300 border-l-4 border-primary':
-      item.to && isActiveLink(item.to),
-    'opacity-50 cursor-not-allowed': item.disabled,
-  };
-};
+// const handleUpgrade = () => {
+//   // Handle upgrade action
+//   console.log('Upgrade clicked');
+// };
 </script>
 
 <template>
@@ -61,7 +46,7 @@ const getLinkClass = (item: MenuItem) => {
       <slot />
     </main>
 
-    <aside class="drawer-side z-40">
+    <aside class="drawer-side group" :class="{ 'is-collapsed': isCollapsed }">
       <label
         :for="props.id"
         aria-label="close sidebar"
@@ -69,77 +54,32 @@ const getLinkClass = (item: MenuItem) => {
       />
 
       <div
-        class="min-h-full w-72 bg-base-100 shadow-lg shadow-base-300 border-r border-base-300 text-base-content flex flex-col"
+        class="min-h-full bg-base-100 shadow-lg shadow-base-300 border-r border-base-300 text-base-content flex flex-col transition-[width] duration-300 ease-in-out w-72 group-[.is-collapsed]:lg:w-20"
       >
         <!-- Logo/Brand -->
-        <div
-          class="p-4 flex items-center gap-x-2 font-brand border-b border-base-300"
-        >
-          <UiLogo class="h-11 w-11" />
-          <span class="font-bold text-2xl md:text-3xl">AsetFlow</span>
-        </div>
+        <AppSidebarLogo :is-collapsed="isCollapsed" />
 
         <!-- Menu Sections -->
-        <nav class="flex-1 overflow-y-auto">
-          <template
-            v-for="(section, sectionIndex) in props.menuSections"
-            :key="section.title"
-          >
-            <ul class="menu px-4 py-2 w-full">
-              <li>
-                <h2 class="menu-title">{{ section.title }}</h2>
-              </li>
+        <AppSidebarMenu
+          ref="sidebarMenuRef"
+          :sections="menuSections"
+          :is-collapsed="isCollapsed"
+        />
 
-              <li
-                v-for="(item, itemIndex) in section.items"
-                :key="`${sectionIndex}-${itemIndex}`"
-              >
-                <!-- External Link -->
-                <a
-                  v-if="item.external"
-                  :href="item.to"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  :class="getLinkClass(item)"
-                  @click="handleItemClick(item)"
-                >
-                  <Icon :name="item.icon" class="size-5" />
-                  <span class="flex-1">{{ item.label }}</span>
-                  <Icon
-                    v-if="item.external"
-                    name="ri:external-link-line"
-                    class="size-4 opacity-50"
-                  />
-                  <span v-if="item.badge" class="badge badge-sm badge-primary">
-                    {{ item.badge }}
-                  </span>
-                </a>
+        <!-- Footer / User & Storage -->
+        <div
+          class="p-4 border-t border-base-300 overflow-hidden flex flex-col gap-4 bg-base-100 shrink-0"
+          :class="{ 'items-center px-2 py-4': isCollapsed }"
+        >
+          <!-- Storage Widget -->
+          <!-- <AppSidebarStorageWidget
+            :storage="storageData"
+            :is-collapsed="isCollapsed"
+            @upgrade="handleUpgrade"
+          /> -->
 
-                <!-- Internal Link -->
-                <NuxtLink
-                  v-else
-                  :to="item.to"
-                  :class="getLinkClass(item)"
-                  :aria-current="
-                    item.to && isActiveLink(item.to) ? 'page' : undefined
-                  "
-                  :tabindex="item.disabled ? -1 : 0"
-                  @click="handleItemClick(item)"
-                >
-                  <Icon :name="item.icon" class="size-5" />
-                  <span class="flex-1">{{ item.label }}</span>
-                  <span v-if="item.badge" class="badge badge-sm badge-primary">
-                    {{ item.badge }}
-                  </span>
-                </NuxtLink>
-              </li>
-            </ul>
-          </template>
-        </nav>
-
-        <!-- Footer (Optional Slot) -->
-        <div v-if="$slots.footer" class="p-4 border-t border-base-300">
-          <slot name="footer" />
+          <!-- User Profile -->
+          <AppSidebarUserProfile :user="user" :is-collapsed="isCollapsed" />
         </div>
       </div>
     </aside>

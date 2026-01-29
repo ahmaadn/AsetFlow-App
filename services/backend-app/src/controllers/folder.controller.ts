@@ -10,7 +10,8 @@ export class FolderController {
   constructor() {
     this.folderService = new FolderService(folderRepository);
 
-    this.getAllFolder = this.getAllFolder.bind(this);
+    this.getAllFolders = this.getAllFolders.bind(this);
+    this.getFolderById = this.getFolderById.bind(this);
     this.createFolder = this.createFolder.bind(this);
     this.updateFolder = this.updateFolder.bind(this);
     this.deleteFolder = this.deleteFolder.bind(this);
@@ -20,17 +21,35 @@ export class FolderController {
   /**
    * Mengambil semua folder.
    */
-  async getAllFolder(req: Request, res: Response, next: NextFunction) {
+  async getAllFolders(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req.user;
       if (!user) {
         throw new UnauthorizedError({ message: 'User not authenticated' });
       }
-      const queryParams = req.query as Partial<GetFolderInput>;
+      const queryParams = req.resultValidation
+        ?.query as Partial<GetFolderInput>;
       const result = await this.folderService.getAllFolders(
         user.id,
         queryParams
       );
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Mendapatkan folder detail berdasarkan ID.
+   */
+  async getFolderById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.user;
+      if (!user) {
+        throw new UnauthorizedError({ message: 'User not authenticated' });
+      }
+      const folderId = req.params.id as string;
+      const result = await this.folderService.getFolderById(folderId);
       res.status(200).json(result);
     } catch (error) {
       next(error);

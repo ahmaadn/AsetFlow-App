@@ -12,11 +12,15 @@ import { BadRequestError } from '../utils/api-error.js';
 export const validate = (schema: z.ZodSchema) => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync({
+      const result = await schema.parseAsync({
         body: req.body,
         query: req.query,
         params: req.params,
       });
+
+      // Simpan hasil validasi ke request object
+      // @ts-expect-error: Extend request type
+      req.resultValidation = result;
 
       // Jika validasi berhasil, lanjutkan ke controller berikutnya
       return next();

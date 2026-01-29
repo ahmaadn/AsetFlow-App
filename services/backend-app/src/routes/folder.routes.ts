@@ -3,6 +3,7 @@ import {
   httpCreateFolderSchema,
   httpFoldersQuerySchema,
   httpGetAssetsSchema,
+  httpGetFolderDetailSchema,
   httpUpdateFolderSchema,
 } from '@asetflow/validators';
 import { Router } from 'express';
@@ -43,7 +44,7 @@ export function createFolderRoutes(): Router {
   router.get(
     '/',
     validate(httpFoldersQuerySchema),
-    folderController.getAllFolder.bind(folderController)
+    folderController.getAllFolders.bind(folderController)
   );
 
   /**
@@ -106,6 +107,32 @@ export function createFolderRoutes(): Router {
     '/:id',
     validate(httpUpdateFolderSchema),
     folderController.updateFolder.bind(folderController)
+  );
+
+  /**
+   * @swagger
+   * /v1/folders/{id}:
+   *  get:
+   *    summary: Get a Folder by ID
+   *    tags: [Folders]
+   *    security:
+   *      - bearerAuth: []
+   *    parameters:
+   *      - $ref: '#/components/parameters/FolderIdParam'
+   *    responses:
+   *       200:
+   *         $ref : '#/components/responses/DetailFolderResponse'
+   *       401:
+   *         $ref : '#/components/responses/UnauthorizedError'
+   *       422:
+   *         $ref : '#/components/responses/ValidationError'
+   *       500:
+   *         $ref : '#/components/responses/ApiError'
+   */
+  router.get(
+    '/:id',
+    validate(httpGetFolderDetailSchema),
+    folderController.getFolderById.bind(folderController)
   );
 
   /**

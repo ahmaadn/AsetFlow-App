@@ -10,20 +10,20 @@ const route = useRoute();
 const folderId = ref(route.params.id);
 
 const onClickUpload = () => {
-  const url = '/media/add';
+  const url = '/assets/create';
   if (folderId.value) {
     navigateTo(url + '?folderId=' + folderId.value);
     return;
   }
-  navigateTo('/media/add');
+  navigateTo('/assets/create');
 };
 </script>
 
 <template>
-  <div class="flex-1 overflow-y-auto rounded-lg">
+  <div class="rounded-lg">
     <div
       v-if="assets.length > 0"
-      class="flex flex-col md:grid gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      class="grid gap-2 p-2 sm:gap-4 sm:p-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
     >
       <template v-for="asset in assets" :key="asset.id">
         <slot :asset="asset" />
