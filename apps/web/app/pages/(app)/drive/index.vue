@@ -223,8 +223,8 @@ watch(selectedFolder, async (newFolder, oldFolder) => {
 onUnmounted(stopIntersection);
 </script>
 <template>
-  <div>
-    <div class="flex flex-col w-full space-y-8">
+  <div class="flex-1 relative">
+    <div class="mb-8">
       <AppBanner
         title="Drive Folders"
         subtitle="Manage your folders to organize your digital assets effectively."
@@ -240,157 +240,137 @@ onUnmounted(stopIntersection);
           </button>
         </div>
       </AppBanner>
-      <div class="h-full overflow-auto w-full space-y-4">
-        <div class="flex flex-col md:flex-row gap-4 md:items-center">
-          <div class="flex-1 md:flex-none">
-            <label class="input w-full md:min-w-72">
-              <Icon name="ri:search-line" class="h-[1em] opacity-50"></Icon>
-              <input
-                v-model="searchQuery"
-                type="text"
-                class="grow"
-                placeholder="Search folders "
-              />
-            </label>
-          </div>
-          <div class="flex-1 flex items-center justify-between py-1 flex-wrap">
-            <!-- Left side: Item count -->
-            <div class="flex items-center gap-4">
-              <!-- Filter ComboBox for Tags -->
-              <UiComboBox
-                v-model="filterQuery"
-                class="w-auto"
-                multiple
-                :options="filterOptions"
-              >
-                <template #display="{ modelValue, isOpen, open }">
-                  <button
-                    class="btn bg-base-100 btn-sm gap-2"
-                    :class="{
-                      'btn-active':
-                        isOpen ||
-                        (Array.isArray(modelValue) && modelValue.length > 0),
-                    }"
-                    @click="open"
-                  >
-                    <Icon name="ri:filter-3-line" class="size-4" />
-                    Filter
-                    <Icon
-                      :name="
-                        isOpen ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'
-                      "
-                      class="size-4"
-                    />
-                  </button>
-                </template>
-              </UiComboBox>
+    </div>
 
-              <!-- Sort Button -->
-              <UiComboBox
-                class="w-auto"
-                :options="[
-                  { label: 'Name', value: 'name' },
-                  { label: 'Date Created', value: 'createdAt' },
-                  { label: 'Last Modified', value: 'updatedAt' },
-                ]"
-                @update:model-value="
-                  (val: any) => onSortChange(val?.value, 'asc')
-                "
-              >
-                <template #display="{ modelValue, isOpen, open }">
-                  <button
-                    class="btn bg-base-100 btn-sm gap-2"
-                    :class="{ 'btn-active': isOpen || modelValue }"
-                    @click="open"
-                  >
-                    <Icon name="ri:sort-desc" class="size-4" />
-                    Sort
-                    <Icon
-                      :name="
-                        isOpen ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'
-                      "
-                      class="size-4"
-                    />
-                  </button>
-                </template>
-              </UiComboBox>
-            </div>
-
-            <!-- Right side: View mode tabs -->
-            <div class="flex items-center divide-x divide-base-300 gap-x-4">
-              <p class="text-sm text-base-content/80 pr-4">
-                {{ folderState.folders.length }} Items
-              </p>
-
-              <UiTabs
-                v-model="viewMode"
-                :tabs="viewTabs"
-                variant="box"
-                size="sm"
-                class-tabs="bg-base-300"
-                icon-only
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="flex-1 overflow-auto h-full">
-          <!-- List View -->
-          <AppFolderList
-            v-if="viewMode === 'list'"
-            :folders="folderState.folders"
-            :loading="folderState.isLoading"
-            @click="(folder) => (selectedFolder = folder)"
-            @double-click="onDoubleClick"
-            @sort-change="onSortChange"
-          />
-
-          <!-- Grid View -->
-          <AppFolderGrid
-            v-else
-            :folders="folderState.folders"
-            :loading="folderState.isLoading"
-            @click="(folder) => (selectedFolder = folder)"
-            @double-click="onDoubleClick"
-          />
-
-          <div
-            v-if="folderState.hasMore"
-            ref="loadMoreRef"
-            class="flex justify-center p-4"
+    <div class="space-y-4">
+      <UiFilterToolbar
+        v-model:search="searchQuery"
+        search-placeholder="Search folders"
+        :item-count="folderState.folders.length"
+      >
+        <template #left>
+          <!-- Filter ComboBox for Tags -->
+          <UiComboBox
+            v-model="filterQuery"
+            class="w-auto"
+            multiple
+            :options="filterOptions"
           >
-            <span class="loading loading-spinner loading-md text-primary" />
-          </div>
+            <template #display="{ modelValue, isOpen, open }">
+              <button
+                class="btn bg-base-100 btn-sm gap-2"
+                :class="{
+                  'btn-active':
+                    isOpen ||
+                    (Array.isArray(modelValue) && modelValue.length > 0),
+                }"
+                @click="open"
+              >
+                <Icon name="ri:filter-3-line" class="size-4" />
+                Filter
+                <Icon
+                  :name="isOpen ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'"
+                  class="size-4"
+                />
+              </button>
+            </template>
+          </UiComboBox>
+
+          <!-- Sort Button -->
+          <UiComboBox
+            class="w-auto"
+            :options="[
+              { label: 'Name', value: 'name' },
+              { label: 'Date Created', value: 'createdAt' },
+              { label: 'Last Modified', value: 'updatedAt' },
+            ]"
+            @update:model-value="(val: any) => onSortChange(val?.value, 'asc')"
+          >
+            <template #display="{ modelValue, isOpen, open }">
+              <button
+                class="btn bg-base-100 btn-sm gap-2"
+                :class="{ 'btn-active': isOpen || modelValue }"
+                @click="open"
+              >
+                <Icon name="ri:sort-desc" class="size-4" />
+                Sort
+                <Icon
+                  :name="isOpen ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'"
+                  class="size-4"
+                />
+              </button>
+            </template>
+          </UiComboBox>
+        </template>
+
+        <template #right>
+          <UiTabs
+            v-model="viewMode"
+            :tabs="viewTabs"
+            variant="box"
+            size="sm"
+            class-tabs="bg-base-300"
+            icon-only
+          />
+        </template>
+      </UiFilterToolbar>
+
+      <div class="flex-1 overflow-auto h-full">
+        <!-- List View -->
+        <AppFolderList
+          v-if="viewMode === 'list'"
+          :folders="folderState.folders"
+          :loading="folderState.isLoading"
+          @click="(folder) => (selectedFolder = folder)"
+          @double-click="onDoubleClick"
+          @sort-change="onSortChange"
+        />
+
+        <!-- Grid View -->
+        <AppFolderGrid
+          v-else
+          :folders="folderState.folders"
+          :loading="folderState.isLoading"
+          @click="(folder) => (selectedFolder = folder)"
+          @double-click="onDoubleClick"
+        />
+
+        <div
+          v-if="folderState.hasMore"
+          ref="loadMoreRef"
+          class="flex justify-center p-4"
+        >
+          <span class="loading loading-spinner loading-md text-primary" />
         </div>
-
-        <!-- Modal Create -->
-        <AppFolderModelCreate
-          v-if="isCreateFolder"
-          v-model="isCreateFolder"
-          @submit="createFolder"
-        />
-
-        <!-- Modal update -->
-        <AppFolderModalEdit
-          v-if="selectedFolder && isOpenModalEdit"
-          v-model="isOpenModalEdit"
-          :folder-item="selectedFolder"
-          @update="onUpdate"
-        />
-
-        <!-- Folder Panel -->
-        <AppFolderPanel
-          v-if="selectedFolder"
-          v-model="selectedFolder"
-          :folder-detail="folderDetail"
-          :activities="activities"
-          :is-loading="isPanelLoading"
-          @close="selectedFolder = null"
-          @open="onDoubleClick"
-          @delete="handleModalDelete"
-          @rename="openModalUpdate"
-        />
       </div>
+
+      <!-- Modal Create -->
+      <AppFolderModelCreate
+        v-if="isCreateFolder"
+        v-model="isCreateFolder"
+        @submit="createFolder"
+      />
+
+      <!-- Modal update -->
+      <AppFolderModalEdit
+        v-if="selectedFolder && isOpenModalEdit"
+        v-model="isOpenModalEdit"
+        :folder-item="selectedFolder"
+        @update="onUpdate"
+      />
+
+      <!-- Folder Panel -->
+      <AppFolderPanel
+        v-if="selectedFolder"
+        v-model="selectedFolder"
+        :folder-detail="folderDetail"
+        :activities="activities"
+        :is-loading="isPanelLoading"
+        @close="selectedFolder = null"
+        @open="onDoubleClick"
+        @delete="handleModalDelete"
+        @rename="openModalUpdate"
+      />
     </div>
   </div>
 </template>

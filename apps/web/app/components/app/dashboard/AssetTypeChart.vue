@@ -13,12 +13,19 @@ const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
 });
 
-const colors = [
-  'var(--color-secondary)',
-  'var(--color-accent)',
-  'var(--color-success)',
-  'var(--color-info)',
-];
+const createPrimaryGradient = (steps = 4) => {
+  const mixPoints = [100, 75, 60, 40, 20, 0];
+  return mixPoints
+    .slice(0, steps)
+    .map(
+      (point) =>
+        `color-mix(in srgb, var(--color-primary) ${point}%,   var(--color-base-content) ${
+          100 - point
+        }%)`
+    );
+};
+
+const colors = createPrimaryGradient(5);
 
 const chartData = computed(() => {
   return props.data.map((item, index) => ({
@@ -70,11 +77,9 @@ const triggers = {
         <Icon name="ri:pie-chart-2-line" class="w-5 h-5" />
         Asset Type Distribution
       </h2>
-
       <div v-if="isLoading" class="flex justify-center py-8">
         <span class="loading loading-spinner loading-md text-primary" />
       </div>
-
       <div
         v-else-if="props.data.length === 0"
         class="py-8 text-center flex-1 flex justify-center items-center w-full"
@@ -87,12 +92,13 @@ const triggers = {
           <p class="text-sm text-base-content/60 h-fit">No data available</p>
         </div>
       </div>
-
-      <div v-else class="flex flex-col md:flex-row items-center gap-6 py-4">
+      <div
+        v-else
+        class="flex flex-col lg:flex-row items-center gap-6 py-4 flex-warp"
+      >
         <!-- Donut Chart -->
-
-        <ClientOnly>
-          <div class="shrink-0 w-48 h-48">
+        <div class="shrink-0 w-48 h-48 flex-1">
+          <ClientOnly>
             <VisSingleContainer
               :data="chartData"
               :height="200"
@@ -107,9 +113,8 @@ const triggers = {
               >
               </VisDonut>
             </VisSingleContainer>
-          </div>
-        </ClientOnly>
-
+          </ClientOnly>
+        </div>
         <!-- Legend -->
         <div class="flex-1 w-full">
           <div class="space-y-2">
@@ -135,7 +140,6 @@ const triggers = {
               </div>
             </div>
           </div>
-
           <div class="mt-4 pt-4 border-t border-base-300">
             <div class="flex justify-between items-center">
               <span class="text-sm font-medium">Total Assets</span>

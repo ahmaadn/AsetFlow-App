@@ -31,29 +31,21 @@ const props = withDefaults(defineProps<Props>(), {
       name="media-preview"
     >
       <NuxtImg
-        :src="asset.url"
-        :alt="asset.name"
+        :src="props.asset.url"
+        :alt="props.asset.name"
         class="h-full w-full object-contain"
       />
     </slot>
-
     <div v-else class="flex h-full w-full items-center justify-center">
       <Icon
-        :name="getIconForMimeType(asset.mimeType)"
+        :name="getIconForMimeType(props.asset.mimeType)"
         class="h-20 w-20 text-base-content/30"
       />
     </div>
-
     <div
       class="absolute left-2 top-2 rounded bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm"
     >
-      {{ getAssetTypeFromMime(asset.mimeType) }}
-    </div>
-    <div
-      class="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm inline-flex items-center gap-x-1"
-    >
-      <Icon name="ri:eye-fill" class="size-4" />
-      <span>{{ asset.viewCount }}</span>
+      {{ getAssetTypeFromMime(props.asset.mimeType) }}
     </div>
     <slot />
   </div>

@@ -11,6 +11,7 @@ interface MenuItem {
   external?: boolean;
 
   action?: () => void;
+  children?: MenuItem[];
 }
 
 interface MenuSection {

@@ -187,12 +187,16 @@ function getSortIconClass(columnKey: keyof T | string): string {
             :key="getRowKey(row)"
             class="hover:cursor-pointer hover:bg-base-300 transition-colors"
             :class="{
-              'bg-base-200': props.selectedRowKey === getRowKey(row),
+              'bg-base-300': props.selectedRowKey === getRowKey(row),
             }"
             @click="emit('row-click', row)"
             @dblclick="emit('double-click', row)"
           >
-            <td v-for="col in props.columns" :key="col.key">
+            <td
+              v-for="col in props.columns"
+              :key="col.key"
+              :class="col.className"
+            >
               <slot
                 :name="`cell-${String(col.key)}`"
                 :row="row"

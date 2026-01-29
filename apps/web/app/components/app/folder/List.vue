@@ -41,11 +41,11 @@ const columns = [
         <div class="flex items-center gap-3 min-w-md">
           <Icon
             name="ri:folder-fill"
-            class="min-h-5 min-w-5 size-5 text-amber-500"
+            class="min-h-5 min-w-5 size-5 text-primary shrink-0"
           />
-          <div class="flex-1">
+          <NuxtLink :to="`/drive/${row.id}`" class="flex-none link link-hover">
             {{ row.name }}
-          </div>
+          </NuxtLink>
         </div>
       </template>
 

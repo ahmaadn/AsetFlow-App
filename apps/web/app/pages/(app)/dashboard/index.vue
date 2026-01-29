@@ -48,7 +48,7 @@ const formattedDate = computed(() => {
       >
         <!-- Upload Asset -->
         <AppDashboardActionCard
-          to="/media/add"
+          to="/assets/create"
           icon="ri:upload-cloud-2-fill"
           title="Upload Asset"
           description="Drag & drop or browse"

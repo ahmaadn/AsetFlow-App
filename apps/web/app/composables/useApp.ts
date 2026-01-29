@@ -1,4 +1,5 @@
 import type { MenuSection, ViewMode } from '~/types';
+import { defaultMenuSections, findMenuLabel } from '~/utils/menu';
 
 export const useAppState = () => {
   const isCollapsed = useState('sidebar-collapsed', () => false);
@@ -27,57 +28,9 @@ export const useAppState = () => {
     folderViewMode.value = mode;
   };
 
-  const defaultMenuSections: MenuSection[] = [
-    {
-      title: 'Home',
-      items: [
-        {
-          label: 'Dashboard',
-          icon: 'ri:function-line',
-          to: '/dashboard',
-        },
-      ],
-    },
-    {
-      title: 'Files',
-      items: [
-        { label: 'Folder', icon: 'ri:folder-line', to: '/drive' },
-        { label: 'Media Library', icon: 'ri:stack-line', to: '/assets' },
-        {
-          label: 'Documents',
-          icon: 'ri:file-2-line',
-          to: '/assets?type=document',
-        },
-        {
-          label: 'Photos',
-          icon: 'ri:multi-image-line',
-          to: '/assets?type=image',
-        },
-        {
-          label: 'Videos',
-          icon: 'ri:video-on-line',
-          to: '/assets?type=video',
-        },
-        {
-          label: 'Music',
-          icon: 'ri:music-line',
-          to: '/assets?type=audio',
-        },
-      ],
-    },
-  ];
+  const menuSections = computed((): MenuSection[] => defaultMenuSections);
 
-  const menuSections = computed((): MenuSection[] => {
-    return defaultMenuSections;
-  });
-
-  const getLabelByRoute = (path: string) => {
-    for (const section of defaultMenuSections) {
-      const found = section.items.find((item) => item.to === path);
-      if (found) return found.label;
-    }
-    return undefined;
-  };
+  const getLabelByRoute = (path: string) => findMenuLabel(path);
 
   return {
     // Sidebar

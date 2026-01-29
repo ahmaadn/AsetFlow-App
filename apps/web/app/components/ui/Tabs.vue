@@ -71,26 +71,26 @@ function onSelect(tab: TabItem, index: number) {
 function isSelected(tab: TabItem) {
   return tab.key === selectedKey.value;
 }
-
-// Compute tab list classes
-const tabListClasses = computed(() => {
-  const classes = ['tabs'];
-
-  // Variant
-  if (props.variant === 'box') classes.push('tabs-box');
-  else if (props.variant === 'lift') classes.push('tabs-lift');
-  else classes.push('tabs-border');
-
-  // Size
-  if (props.size !== 'md') classes.push(`tabs-${props.size}`);
-
-  return classes;
-});
 </script>
 
 <template>
   <div class="ui-tabs">
-    <div role="tablist" :class="[tabListClasses, classTabs]">
+    <div
+      role="tablist"
+      :class="[
+        {
+          tabs: true,
+          'tabs-box': props.variant === 'box',
+          'tabs-lift': props.variant === 'lift',
+          'tabs-border': props.variant === 'border',
+          'tabs-xs': props.size === 'xs',
+          'tabs-sm': props.size === 'sm',
+          'tabs-md': props.size === 'md',
+          'tabs-lg': size === 'lg',
+        },
+        classTabs,
+      ]"
+    >
       <button
         v-for="(tab, index) in normalizedTabs"
         :key="tab.key"
@@ -109,11 +109,18 @@ const tabListClasses = computed(() => {
         <Icon
           v-if="tab.icon"
           :name="tab.icon"
-          class="size-5"
-          :class="{
-            'opacity-80 hover:opacity-100': !isSelected(tab),
-            'opacity-100': isSelected(tab),
-          }"
+          :class="[
+            {
+              'opacity-80 hover:opacity-100': !isSelected(tab),
+              'opacity-100': isSelected(tab),
+            },
+            {
+              'size-3': props.size === 'xs',
+              'size-4': props.size === 'sm',
+              'size-5': props.size === 'md',
+              'size-6': props.size === 'lg',
+            },
+          ]"
         />
         <span v-if="tab.label && !iconOnly">{{ tab.label }}</span>
       </button>
